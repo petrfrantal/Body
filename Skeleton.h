@@ -35,6 +35,8 @@ struct Skeleton {
 	Joint * root;
 	Joint ** bones;		// array of pointers to all bones in the skeleton
 	// ...
+
+	void drawSkeleton(long frame);		// OpenGL drawing method
 };
 
 
