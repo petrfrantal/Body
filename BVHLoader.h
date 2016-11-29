@@ -8,9 +8,13 @@
 #include <fstream>
 #include <string>
 #include <algorithm>	// std::remove
+#include <iostream>
+#include "Animation.h"
+#include "Skeleton.h"
 
 struct BVHLoader {
-	void load(const std::string & fileName);
-	void loadHierarchy(const std::istream & file);
-	void loadMotion(const std::string & fileName);
+	Animation * loadAnimation(const std::string & fileName);
+	void loadHierarchy(const std::istream & file, Animation * animation);
+	void loadMotion(const std::istream & file);
+	Joint * loadJoint(const std::istream & file, Joint * parent = NULL);	// maybe to split it in two methods and not use the implicit parameter NULL
 };
