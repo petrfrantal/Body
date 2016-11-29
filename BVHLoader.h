@@ -14,7 +14,19 @@
 
 struct BVHLoader {
 	Animation * loadAnimation(const std::string & fileName);
-	void loadHierarchy(const std::istream & file, Animation * animation);
-	void loadMotion(const std::istream & file);
-	Joint * loadJoint(const std::istream & file, Joint * parent = NULL);	// maybe to split it in two methods and not use the implicit parameter NULL
+	void loadHierarchy(std::istream & file, Animation * animation);
+	void loadMotion(std::istream & file, Animation * animation);
+	Joint * loadJoint(std::istream & file, Animation * animation, Joint * parent = NULL);	// maybe to split it in two methods and not use the implicit parameter NULL
+};
+
+enum rotations {
+	xRotation,
+	yRotation,
+	zRotation
+};
+
+enum offset {
+	xOffset,
+	yOffset,
+	zOffset
 };

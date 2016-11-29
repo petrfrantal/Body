@@ -15,6 +15,7 @@ struct Animation {
 	BVHInfo * animationInfo;
 	Skeleton * skeleton;
 
+	Animation(void);
 	void playAnimation(long frame);
 	void goToFrame(long frame);		// this method maybe will not be necessary
 };

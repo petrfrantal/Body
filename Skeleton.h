@@ -5,6 +5,8 @@
 */
 
 #include <string>
+#include <vector>
+#include "Math.h"
 
 /**
 *	Joint representation. 
@@ -14,16 +16,15 @@ struct Joint {
 	std::string name;
 	float offset[3];
 	//float euler[3];
+	float position[3];		// position of a root joint
 	float rotation[3];		// initial pose rotation - maybe not needed?
-	float rotationOrder[3];	
-	// ...
+	int rotationOrder[3];	
 	int childrenCount;
-	Joint ** children;
+	std::vector<Joint *> children;
 	Joint * parent;
-	float ** offsetPerFrame;
+	std::vector<Vector3f> offsetPerFrame;	// used only in the root joint, only which has the position channels defined in BVH file
 	//float ** eulerPerFrame;
-	float ** rotationPerFrame;
-	// scale is not used in BVH
+	std::vector<Vector3f> rotationPerFrame;
 	// ...
 };
 
@@ -33,7 +34,7 @@ struct Joint {
 */
 struct Skeleton {
 	Joint * root;
-	Joint ** bones;		// array of pointers to all bones in the skeleton
+	std::vector<Joint *> joints;		// array of pointers to all joints in the skeleton
 	// ...
 
 	void drawSkeleton(long frame);		// OpenGL drawing method
