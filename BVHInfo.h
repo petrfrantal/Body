@@ -5,8 +5,8 @@
 */
 
 struct BVHInfo {
-	int jointCount;
-	long frameCount;
-	int framesPerSecond;
-	long currentFrame;
+	unsigned int jointCount;
+	int frameCount;
+	float framesPerSecond;
+	int currentFrame;
 };
