@@ -11,6 +11,8 @@ void BVHLoader::loadMotion(std::istream & file, Animation * animation) {
 	file >> input;		// Frames:
 	file >> frameCount;
 	animation->animationInfo->frameCount = frameCount;
+	file >> input;
+	file >> input;
 	file >> frameDuration;
 	animation->animationInfo->framesPerSecond = 1.0f / frameDuration;
 	// now the rest of the file is the motion data, each line contains one frame
@@ -85,7 +87,7 @@ Joint * BVHLoader::loadJoint(std::istream & file, Animation * animation, Joint *
 	// now only keywords JOINT, End Site or '}' can occur
 	while (file.good()) {
 		file >> input;
-		if (input == "Joint") {
+		if (input == "JOINT") {
 			Joint * child = loadJoint(file, animation, joint);
 			joint->children.push_back(child);
 		} else if (input == "End") {
@@ -115,6 +117,7 @@ void BVHLoader::loadHierarchy(std::istream & file, Animation * animation) {
 			animation->animationInfo->jointCount = animation->skeleton->joints.size();
 		} else if (input == "MOTION") {
 			loadMotion(file, animation);
+			return;
 		}
 	} 
 }
