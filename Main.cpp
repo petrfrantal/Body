@@ -6,6 +6,7 @@
 #include <iostream>
 #include <stdio.h>
 #include <string>
+#include "BVHLoader.h"
 
 #define WINDOW_WIDTH 600
 #define WINDOW_HEIGHT 400
@@ -56,9 +57,10 @@ bool init(void) {
 
 int main(int argc, char* args[])
 {
-	if (!init()) {
+	/*if (!init()) {
 		return 1;
-	}
+	}*/
+
 	/*
 	//The window we'll be rendering to
 	SDL_Window* window = NULL;
@@ -101,7 +103,11 @@ int main(int argc, char* args[])
 	SDL_Quit();
 	*/
 
-	SDL_Delay(1000);
+	//SDL_Delay(1000);
+
+	// BVH parser test
+	//BVHLoader loader;
+	//Animation * animation = loader.loadAnimation("BVH Files/01_01.bvh");
 
 	return 0;
 }
