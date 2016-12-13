@@ -1,21 +1,26 @@
-#include <SDL.h>
-#include <glew.h>
-#include <SDL_opengl.h>
-#include <gl\GLU.h>
+#include <SDL2/SDL.h>
+//#include <GL/glew.h>
+//#include <gl\GLU.h>
 #undef main
 #include <iostream>
 #include <stdio.h>
 #include <string>
 #include "BVHLoader.h"
+#include "display.h"
+#include "mesh.h"
+#include "shader.h"
+#include "texture.h"
+#include "transform.h"
+#include "camera.h"
 
-#define WINDOW_WIDTH 600
-#define WINDOW_HEIGHT 400
+static const int DISPLAY_WIDTH = 800;
+static const int DISPLAY_HEIGHT = 600;
 
-SDL_Window * window;
-SDL_GLContext context;
+//SDL_Window * window;
+//SDL_GLContext context;
 std::string applicationName = "Body Animation";
 
-bool initOpenGL(void) {
+/*bool initOpenGL(void) {
 	// set OpenGL version to 3.1
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
@@ -29,7 +34,7 @@ bool initOpenGL(void) {
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	GLenum error = glGetError();
 	if (error != GL_NO_ERROR) {
-		//std::cout << "Error while initializing OpenGL. Error string: " /*<< gluErrorString(error) <<*/ std::endl;		// gluErrorString does not work so far
+		//std::cout << "Error while initializing OpenGL. Error string: " << gluErrorString(error) << std::endl;		// gluErrorString does not work so far
 		return false;
 	} else {
 		return true;
@@ -41,7 +46,7 @@ bool init(void) {
 		std::cout << "SDL could not initialize! SDL_Error: " << SDL_GetError() << std::endl;
 		return false;
 	}
-	window = SDL_CreateWindow(applicationName.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_OPENGL);
+	window = SDL_CreateWindow(applicationName.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, DISPLAY_WIDTH, DISPLAY_HEIGHT, SDL_WINDOW_OPENGL);
 	if (!window) {
 		std::cout << "Error while creating and SDL OpenGL window.";
 		return false;
@@ -52,11 +57,106 @@ bool init(void) {
 	}
 	SDL_GL_SetSwapInterval(1);
 	return true;
-}
+}*/
 
 
 int main(int argc, char* args[])
 {
+	Display display(DISPLAY_WIDTH, DISPLAY_HEIGHT, applicationName.c_str());
+
+	Vertex vertices[] =
+	{
+		Vertex(glm::vec3(-1, -1, -1), glm::vec2(1, 0), glm::vec3(0, 0, -1)),
+		Vertex(glm::vec3(-1, 1, -1), glm::vec2(0, 0), glm::vec3(0, 0, -1)),
+		Vertex(glm::vec3(1, 1, -1), glm::vec2(0, 1), glm::vec3(0, 0, -1)),
+		Vertex(glm::vec3(1, -1, -1), glm::vec2(1, 1), glm::vec3(0, 0, -1)),
+
+		Vertex(glm::vec3(-1, -1, 1), glm::vec2(1, 0), glm::vec3(0, 0, 1)),
+		Vertex(glm::vec3(-1, 1, 1), glm::vec2(0, 0), glm::vec3(0, 0, 1)),
+		Vertex(glm::vec3(1, 1, 1), glm::vec2(0, 1), glm::vec3(0, 0, 1)),
+		Vertex(glm::vec3(1, -1, 1), glm::vec2(1, 1), glm::vec3(0, 0, 1)),
+
+		Vertex(glm::vec3(-1, -1, -1), glm::vec2(0, 1), glm::vec3(0, -1, 0)),
+		Vertex(glm::vec3(-1, -1, 1), glm::vec2(1, 1), glm::vec3(0, -1, 0)),
+		Vertex(glm::vec3(1, -1, 1), glm::vec2(1, 0), glm::vec3(0, -1, 0)),
+		Vertex(glm::vec3(1, -1, -1), glm::vec2(0, 0), glm::vec3(0, -1, 0)),
+
+		Vertex(glm::vec3(-1, 1, -1), glm::vec2(0, 1), glm::vec3(0, 1, 0)),
+		Vertex(glm::vec3(-1, 1, 1), glm::vec2(1, 1), glm::vec3(0, 1, 0)),
+		Vertex(glm::vec3(1, 1, 1), glm::vec2(1, 0), glm::vec3(0, 1, 0)),
+		Vertex(glm::vec3(1, 1, -1), glm::vec2(0, 0), glm::vec3(0, 1, 0)),
+
+		Vertex(glm::vec3(-1, -1, -1), glm::vec2(1, 1), glm::vec3(-1, 0, 0)),
+		Vertex(glm::vec3(-1, -1, 1), glm::vec2(1, 0), glm::vec3(-1, 0, 0)),
+		Vertex(glm::vec3(-1, 1, 1), glm::vec2(0, 0), glm::vec3(-1, 0, 0)),
+		Vertex(glm::vec3(-1, 1, -1), glm::vec2(0, 1), glm::vec3(-1, 0, 0)),
+
+		Vertex(glm::vec3(1, -1, -1), glm::vec2(1, 1), glm::vec3(1, 0, 0)),
+		Vertex(glm::vec3(1, -1, 1), glm::vec2(1, 0), glm::vec3(1, 0, 0)),
+		Vertex(glm::vec3(1, 1, 1), glm::vec2(0, 0), glm::vec3(1, 0, 0)),
+		Vertex(glm::vec3(1, 1, -1), glm::vec2(0, 1), glm::vec3(1, 0, 0)),
+	};
+
+	unsigned int indices[] = { 0, 1, 2,
+		0, 2, 3,
+
+		6, 5, 4,
+		7, 6, 4,
+
+		10, 9, 8,
+		11, 10, 8,
+
+		12, 13, 14,
+		12, 14, 15,
+
+		16, 17, 18,
+		16, 18, 19,
+
+		22, 21, 20,
+		23, 22, 20
+	};
+
+
+	//Mesh mesh(vertices, sizeof(vertices) / sizeof(vertices[0]), indices, sizeof(indices) / sizeof(indices[0]));
+	Mesh monkey("./res/monkey3.obj");
+	Shader shader("./res/basicShader");
+	Texture texture("./res/bricks.jpg");
+	Transform transform;
+	Camera camera(glm::vec3(0.0f, 0.0f, -5.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 100.0f);
+	SDL_Event e;
+	bool isRunning = true;
+	float counter = 0.0f;
+
+	while (isRunning)
+	{
+		while (SDL_PollEvent(&e))
+		{
+			if (e.type == SDL_QUIT)
+				isRunning = false;
+		}
+
+		display.Clear(0.0f, 0.0f, 0.0f, 1.0f);
+
+		float sinCounter = sinf(counter);
+		float absSinCounter = abs(sinCounter);
+
+		//transform.GetPos()->x = sinCounter;
+		transform.GetRot()->y = counter * 0.2f;
+		//transform.GetRot()->z = counter * 1;
+		//transform.GetRot()->x = counter * 1;
+		//transform.GetScale()->x = absSinCounter;
+		//transform.GetScale()->y = absSinCounter;
+
+		shader.Bind();
+		texture.Bind();
+		shader.Update(transform, camera);
+		monkey.Draw();
+		//mesh.Draw();
+
+		display.SwapBuffers();
+		SDL_Delay(1);
+		counter += 0.01f;
+	}
 	/*if (!init()) {
 		return 1;
 	}*/
