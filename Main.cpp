@@ -119,6 +119,7 @@ int main(int argc, char* args[])
 
 	Mesh mesh(vertices, sizeof(vertices) / sizeof(vertices[0]), indices, sizeof(indices) / sizeof(indices[0]));
 	//Mesh monkey("./res/monkey3.obj");
+	std::cout << ":-D" << std::endl;
 	Shader shader("./Shaders/basicShader");
 	Texture texture("./res/bricks.jpg");
 	Transform transform;
