@@ -7,25 +7,20 @@
 #include <string>
 #include <vector>
 #include "Math.h"
+#include <glm/glm.hpp>
 
 /**
-*	Joint representation. 
-*	In the article is it called NODE. 
+*	Joint representation.
 */
 struct Joint {
 	std::string name;
-	float offset[3];
-	//float euler[3];
-	float position[3];		// position of a root joint
-	float rotation[3];		// initial pose rotation - maybe not needed?
-	int rotationOrder[3];	
-	int childrenCount;
-	std::vector<Joint *> children;
 	Joint * parent;
-	std::vector<Vector3f> offsetPerFrame;	// used only in the root joint, only which has the position channels defined in BVH file
-	//float ** eulerPerFrame;
-	std::vector<Vector3f> rotationPerFrame;
-	// ...
+	std::vector<Joint *> children;
+	int childrenCount;
+	float offset[3];
+	int rotationOrder[3];	
+	std::vector<glm::vec3> positionPerFrame;	// used only in the root joint, only which has the position channels defined in BVH file
+	std::vector<glm::vec3> rotationPerFrame;
 };
 
 /**
@@ -35,8 +30,6 @@ struct Joint {
 struct Skeleton {
 	Joint * root;
 	std::vector<Joint *> joints;		// array of pointers to all joints in the skeleton
-	// ...
-
 	void drawSkeleton(long frame);		// OpenGL drawing method
 };
 
