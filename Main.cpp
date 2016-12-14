@@ -117,8 +117,9 @@ int main(int argc, char* args[])
 	};
 
 
-	//Mesh mesh(vertices, sizeof(vertices) / sizeof(vertices[0]), indices, sizeof(indices) / sizeof(indices[0]));
-	Mesh monkey("./res/monkey3.obj");
+	Mesh mesh(vertices, sizeof(vertices) / sizeof(vertices[0]), indices, sizeof(indices) / sizeof(indices[0]));
+	//Mesh monkey("./res/monkey3.obj");
+	std::cout << ":-D" << std::endl;
 	Shader shader("./Shaders/basicShader");
 	Texture texture("./res/bricks.jpg");
 	Transform transform;
@@ -150,8 +151,8 @@ int main(int argc, char* args[])
 		shader.Bind();
 		texture.Bind();
 		shader.Update(transform, camera);
-		monkey.Draw();
-		//mesh.Draw();
+		//monkey.Draw();
+		mesh.Draw();
 
 		display.SwapBuffers();
 		SDL_Delay(1);
