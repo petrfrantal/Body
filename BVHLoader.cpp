@@ -3,6 +3,7 @@
 */
 
 #include "BVHLoader.h"
+#include <glm/glm.hpp>
 
 void BVHLoader::loadMotion(std::istream & file, Animation * animation) {
 	std::string input;
@@ -31,19 +32,19 @@ void BVHLoader::loadMotion(std::istream & file, Animation * animation) {
 		file >> rootOffsetPerFrameX;
 		file >> rootOffsetPerFrameY;
 		file >> rootOffsetPerFrameZ;
-		root->offsetPerFrame.push_back(Vector3f(rootOffsetPerFrameX, rootOffsetPerFrameY, rootOffsetPerFrameZ));
+		root->positionPerFrame.push_back(glm::vec3(rootOffsetPerFrameX, rootOffsetPerFrameY, rootOffsetPerFrameZ));
 		// rotations, store them in correct order based on rotationOrder
 		file >> rootRotationPerFrame[root->rotationOrder[0]];
 		file >> rootRotationPerFrame[root->rotationOrder[1]];
 		file >> rootRotationPerFrame[root->rotationOrder[2]];
-		root->rotationPerFrame.push_back(Vector3f(rootRotationPerFrame[0], rootRotationPerFrame[1], rootRotationPerFrame[2]));
+		root->rotationPerFrame.push_back(glm::vec3(rootRotationPerFrame[0], rootRotationPerFrame[1], rootRotationPerFrame[2]));
 		// load other joint values
 		for (unsigned int jointIndex = 1; jointIndex < jointCount; jointIndex++) {
 			joint = joints[jointIndex];
 			file >> jointRotationPerFrame[joint->rotationOrder[0]];
 			file >> jointRotationPerFrame[joint->rotationOrder[1]];
 			file >> jointRotationPerFrame[joint->rotationOrder[2]];
-			joint->rotationPerFrame.push_back(Vector3f(jointRotationPerFrame[0], jointRotationPerFrame[1], jointRotationPerFrame[2]));
+			joint->rotationPerFrame.push_back(glm::vec3(jointRotationPerFrame[0], jointRotationPerFrame[1], jointRotationPerFrame[2]));
 		}
 	}
 }

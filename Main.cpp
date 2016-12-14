@@ -119,7 +119,7 @@ int main(int argc, char* args[])
 
 	//Mesh mesh(vertices, sizeof(vertices) / sizeof(vertices[0]), indices, sizeof(indices) / sizeof(indices[0]));
 	Mesh monkey("./res/monkey3.obj");
-	Shader shader("./res/basicShader");
+	Shader shader("./Shaders/basicShader");
 	Texture texture("./res/bricks.jpg");
 	Transform transform;
 	Camera camera(glm::vec3(0.0f, 0.0f, -5.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 100.0f);
