@@ -8,7 +8,7 @@
 
 void BVHLoader::loadMotion(std::istream & file, Animation * animation) {
 	std::string input;
-	int frameCount;
+	unsigned int frameCount;
 	float frameDuration;
 	file >> input;		// Frames:
 	file >> frameCount;
@@ -30,7 +30,7 @@ void BVHLoader::loadMotion(std::istream & file, Animation * animation) {
 	glm::vec3 xAxis = glm::vec3(1.0f, 0.0f, 0.0f);
 	glm::vec3 yAxis = glm::vec3(0.0f, 1.0f, 0.0f);
 	glm::vec3 zAxis = glm::vec3(0.0f, 0.0f, 1.0f);
-	for (int frame = 0; frame < frameCount; frame++) {
+	for (unsigned int frame = 0; frame < frameCount; frame++) {
 		// load root values
 		// positions should always be in a x-y-z order
 		file >> rootPositionPerFrameX;
@@ -138,8 +138,8 @@ Joint * BVHLoader::loadJoint(std::istream & file, Animation * animation, Joint *
 	animation->skeleton->wireframeModel->vertices.push_back(globalOffsetZ);
 	// also save the indices for the actual joint and it's parent - together they are bone; this does not occur when parsing the root
 	if (parent != NULL) {
-		animation->skeleton->wireframeModel->indices.push_back(parent->index);
-		animation->skeleton->wireframeModel->indices.push_back(joint->index);
+		animation->skeleton->boneIndices.push_back(parent->index);
+		animation->skeleton->boneIndices.push_back(joint->index);
 	}
 	// now only keywords JOINT, End Site or '}' can occur
 	while (file.good()) {

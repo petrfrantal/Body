@@ -20,13 +20,6 @@ Mesh::Mesh(WireframeModel * wireframeModel, Shader * shader) {
 	glGenBuffers(1, &vertexBufferObject);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-	
-	// generate EBO, first copy indices
-	unsigned int * indices = new unsigned int[wireframeModel->indices.size()];
-	std::copy(wireframeModel->indices.begin(), wireframeModel->indices.end(), indices);
-	glGenBuffers(1, &elementBufferObject);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBufferObject);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 	// enable attributes to shaders
 	glEnableVertexAttribArray(shader->positionLocation);
@@ -34,7 +27,6 @@ Mesh::Mesh(WireframeModel * wireframeModel, Shader * shader) {
 
 	glBindVertexArray(0);
 	delete[] vertices;
-	delete[] indices;
 }
 
 Mesh::Mesh(const std::string& fileName)
@@ -79,12 +71,17 @@ Mesh::Mesh(Vertex* vertices, unsigned int numVertices, unsigned int* indices, un
 	for(unsigned int i = 0; i < numVertices; i++)
 	{
 		model.positions.push_back(*vertices[i].GetPos());
+		positions.push_back(*vertices[i].GetPos());
 		model.texCoords.push_back(*vertices[i].GetTexCoord());
 		model.normals.push_back(*vertices[i].GetNormal());
 	}
 	
 	for(unsigned int i = 0; i < numIndices; i++)
         model.indices.push_back(indices[i]);
+
+	/*for (unsigned int i = 0; i < numVertices; i++) {
+		std::cout << "Vertex " << i << " " << model.positions[i].x << " " << model.positions[i].y << " " << model.positions[i].z << std::endl;
+	}*/
 
     initMesh(model);
 }
@@ -93,7 +90,6 @@ Mesh::~Mesh()
 {
 	glDeleteVertexArrays(1, &vertexArrayObject);
 	glDeleteBuffers(1, &vertexBufferObject);
-	glDeleteBuffers(1, &elementBufferObject);
 	// former buffers
 	glDeleteBuffers(NUM_BUFFERS, m_vertexArrayBuffers);
 	glDeleteVertexArrays(1, &m_vertexArrayObject);
@@ -104,7 +100,19 @@ void Mesh::draw()
 	glBindVertexArray(m_vertexArrayObject);
 
 	//glDrawElements(GL_TRIANGLES, m_numIndices, GL_UNSIGNED_INT, 0);
-	glDrawElementsBaseVertex(GL_TRIANGLES, m_numIndices, GL_UNSIGNED_INT, 0, 0);
+	glDrawElementsBaseVertex(GL_POINTS, m_numIndices, GL_UNSIGNED_INT, 0, 0);
 
+	glBindVertexArray(0);
+}
+
+void Mesh::drawJointAlone(size_t jointIndex) {
+	glBindVertexArray(vertexArrayObject);
+	glDrawArrays(GL_POINTS, jointIndex, 1);		// draws one joint as a point
+	glBindVertexArray(0);
+}
+
+void Mesh::drawJointInBone(size_t jointIndex) {
+	glBindVertexArray(vertexArrayObject);
+	glDrawArrays(GL_LINES, jointIndex, 1);
 	glBindVertexArray(0);
 }

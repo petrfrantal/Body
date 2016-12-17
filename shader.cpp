@@ -2,20 +2,24 @@
 #include <iostream>
 #include <fstream>
 
-Shader::Shader(const std::string & fileName)
+Shader::Shader(const std::string & fileName, bool wireframe)
 {
 	shaderProgram = glCreateProgram();
 	vertexShader = createShader(loadShader(fileName + ".vs"), GL_VERTEX_SHADER);
 	fragmentShader = createShader(loadShader(fileName + ".fs"), GL_FRAGMENT_SHADER);
-	finishShaderCreation();
+	if (wireframe) {
+		finishWireframeShaderCreation();
+	} else {
+		finishShaderCreation();
+	}
 }
 
 Shader::Shader(const std::string vertexShaderName, const std::string fragmentShaderName) {
 	shaderProgram = glCreateProgram();
 	vertexShader = createShader(loadShader(vertexShaderName + ".vs"), GL_VERTEX_SHADER);
 	fragmentShader = createShader(loadShader(fragmentShaderName + ".fs"), GL_FRAGMENT_SHADER);
-	//finishShaderCreation();
-	finishWireframeShaderCreation();
+	finishShaderCreation();
+	//finishWireframeShaderCreation();
 }
 
 void Shader::finishWireframeShaderCreation(void) {
@@ -70,6 +74,10 @@ void Shader::Update(const Transform& transform, const Camera& camera)
 	glUniformMatrix4fv(m_uniforms[0], 1, GL_FALSE, &MVP[0][0]);
 	glUniformMatrix4fv(m_uniforms[1], 1, GL_FALSE, &Normal[0][0]);
 	glUniform3f(m_uniforms[2], 0.0f, 0.0f, 1.0f);
+}
+
+void Shader::setMVPMatrix(glm::mat4 & MVP) {
+	glUniformMatrix4fv(MVPLocation, 1, GL_FALSE, &MVP[0][0]);
 }
 
 std::string Shader::loadShader(const std::string& fileName)
