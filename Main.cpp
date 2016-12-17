@@ -116,6 +116,13 @@ int main(int argc, char* args[])
 		23, 22, 20
 	};
 
+	BVHLoader loader;
+	Animation * animation = loader.loadAnimation("BVH Files/01_01.bvh");
+	// create a wireframe shader
+	Shader wireframeShader("./Shaders/WireframeShader");
+	// we create a mesh from the loaded vertices; this has to be done after the GLEW init (which is done in Display constructor)
+	animation->skeleton->createWireframeModelMesh(&wireframeShader);
+	
 
 	Mesh mesh(vertices, sizeof(vertices) / sizeof(vertices[0]), indices, sizeof(indices) / sizeof(indices[0]));
 	//Mesh monkey("./res/monkey3.obj");
@@ -152,7 +159,7 @@ int main(int argc, char* args[])
 		texture.Bind();
 		shader.Update(transform, camera);
 		//monkey.Draw();
-		mesh.Draw();
+		mesh.draw();
 
 		display.SwapBuffers();
 		SDL_Delay(1);
@@ -206,9 +213,7 @@ int main(int argc, char* args[])
 
 	//SDL_Delay(1000);
 
-	// BVH parser test
-	//BVHLoader loader;
-	//Animation * animation = loader.loadAnimation("BVH Files/01_01.bvh");
+	
 
 	return 0;
 }

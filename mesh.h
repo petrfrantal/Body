@@ -1,11 +1,11 @@
-#ifndef MESH_INCLUDED_H
-#define MESH_INCLUDED_H
+#pragma once
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 #include <string>
 #include <vector>
 #include "obj_loader.h"
+#include "shader.h"
 
 struct Vertex
 {
@@ -37,24 +37,19 @@ enum MeshBufferPositions
 
 class Mesh
 {
-public:
-    Mesh(const std::string& fileName);
-	Mesh(Vertex* vertices, unsigned int numVertices, unsigned int* indices, unsigned int numIndices);
-
-	void Draw();
-
-	virtual ~Mesh();
-protected:
 private:
 	static const unsigned int NUM_BUFFERS = 4;
-	void operator=(const Mesh& mesh) {}
-	Mesh(const Mesh& mesh) {}
-
-    void InitMesh(const IndexedModel& model);
-
 	GLuint m_vertexArrayObject;
 	GLuint m_vertexArrayBuffers[NUM_BUFFERS];
+	GLuint vertexArrayObject;		// VAO
+	GLuint vertexBufferObject;		// VBO
+	GLuint elementBufferObject;		// EBO
 	unsigned int m_numIndices;
+	void initMesh(const IndexedModel& model);
+public:
+    Mesh(const std::string& fileName);
+	Mesh(WireframeModel * wireframeModel, Shader * shader);
+	Mesh(Vertex* vertices, unsigned int numVertices, unsigned int* indices, unsigned int numIndices);
+	void draw();
+	~Mesh();
 };
-
-#endif

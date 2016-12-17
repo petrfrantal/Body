@@ -15,7 +15,11 @@ class Shader {
 		void checkShaderError(GLuint shader, GLuint flag, bool isProgram, const std::string& errorMessage);
 		GLuint createShader(const std::string& text, unsigned int type);
 		void finishShaderCreation(void);
+		void finishWireframeShaderCreation(void);
 	public:
+		GLint positionLocation;
+		GLint MVPLocation;
+
 		Shader(const std::string& fileName);
 		Shader(const std::string vertexShaderName, const std::string fragmentShaderName);
 		void Bind();

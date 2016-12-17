@@ -134,6 +134,7 @@
     <ClCompile Include="mesh.cpp" />
     <ClCompile Include="obj_loader.cpp" />
     <ClCompile Include="shader.cpp" />
+    <ClCompile Include="Skeleton.cpp" />
     <ClCompile Include="stb_image.c" />
     <ClCompile Include="texture.cpp" />
   </ItemGroup>
@@ -156,6 +157,8 @@
   <ItemGroup>
     <None Include="Shaders\basicShader.fs" />
     <None Include="Shaders\basicShader.vs" />
+    <None Include="Shaders\WireframeShader.fs" />
+    <None Include="Shaders\WireframeShader.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

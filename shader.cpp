@@ -14,7 +14,19 @@ Shader::Shader(const std::string vertexShaderName, const std::string fragmentSha
 	shaderProgram = glCreateProgram();
 	vertexShader = createShader(loadShader(vertexShaderName + ".vs"), GL_VERTEX_SHADER);
 	fragmentShader = createShader(loadShader(fragmentShaderName + ".fs"), GL_FRAGMENT_SHADER);
-	finishShaderCreation();
+	//finishShaderCreation();
+	finishWireframeShaderCreation();
+}
+
+void Shader::finishWireframeShaderCreation(void) {
+	glAttachShader(shaderProgram, vertexShader);
+	glAttachShader(shaderProgram, fragmentShader);
+	glLinkProgram(shaderProgram);
+	checkShaderError(shaderProgram, GL_LINK_STATUS, true, "Error linking shader program");
+	glValidateProgram(shaderProgram);
+	checkShaderError(shaderProgram, GL_LINK_STATUS, true, "Invalid shader program");
+	positionLocation = glGetAttribLocation(shaderProgram, "position");
+	MVPLocation = glGetUniformLocation(shaderProgram, "MVP");
 }
 
 void Shader::finishShaderCreation(void) {

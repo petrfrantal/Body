@@ -1,5 +1,4 @@
-#ifndef OBJ_LOADER_H_INCLUDED
-#define OBJ_LOADER_H_INCLUDED
+#pragma once
 
 #include <glm/glm.hpp>
 #include <vector>
@@ -25,6 +24,11 @@ public:
     void CalcNormals();
 };
 
+struct WireframeModel {
+	std::vector<float> vertices;
+	std::vector<unsigned int> indices;
+};
+
 class OBJModel
 {
 public:
@@ -46,5 +50,3 @@ private:
     glm::vec3 ParseOBJVec3(const std::string& line);
     OBJIndex ParseOBJIndex(const std::string& token, bool* hasUVs, bool* hasNormals);
 };
-
-#endif // OBJ_LOADER_H_INCLUDED
