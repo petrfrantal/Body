@@ -119,21 +119,25 @@ int main(int argc, char* args[])
 	BVHLoader loader;
 	Animation * animation = loader.loadAnimation("BVH Files/01_01.bvh");
 	// create a wireframe shader
-	Shader wireframeShader("./Shaders/WireframeShader");
+	Shader wireframeShader("./Shaders/WireframeShader", true);
 	// we create a mesh from the loaded vertices; this has to be done after the GLEW init (which is done in Display constructor)
 	animation->skeleton->createWireframeModelMesh(&wireframeShader);
-	
+	unsigned int frameCount = animation->animationInfo->frameCount;
+	unsigned int frame = 0;
 
 	Mesh mesh(vertices, sizeof(vertices) / sizeof(vertices[0]), indices, sizeof(indices) / sizeof(indices[0]));
 	//Mesh monkey("./res/monkey3.obj");
-	std::cout << ":-D" << std::endl;
-	Shader shader("./Shaders/basicShader");
+	Shader shader("./Shaders/basicShader", false);
 	Texture texture("./res/bricks.jpg");
 	Transform transform;
 	Camera camera(glm::vec3(0.0f, 0.0f, -5.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 100.0f);
+	//Camera camera(glm::vec3(0.0f, 0.0f, -200.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 1000.0f);
 	SDL_Event e;
 	bool isRunning = true;
 	float counter = 0.0f;
+
+	// for debugging
+	std::vector<glm::vec3> cubePositions = mesh.positions;
 
 	while (isRunning)
 	{
@@ -158,11 +162,28 @@ int main(int argc, char* args[])
 		shader.Bind();
 		texture.Bind();
 		shader.Update(transform, camera);
-		//monkey.Draw();
-		mesh.draw();
+		//monkey.draw();
+		//mesh.draw();
+		
+		/*
+		glm::mat4 cubeModelMatrix = transform.GetModel();
+		std::cout << "CUBE" << std::endl;
+		for (int i = 0; i < cubePositions.size(); i++) {
+			glm::vec4 cubePositionModelCoords = cubeModelMatrix * glm::vec4(cubePositions[i], 1.0f);
+			std::cout << cubePositionModelCoords[0] << " " << cubePositionModelCoords[1] << " " << cubePositionModelCoords[2] << " " << cubePositionModelCoords[3] << std::endl;
+		}
+		std::cout << "--------------------------------------------------------------------------" << std::endl;*/
+
+		// draw wireframeModel
+		animation->skeleton->drawWireframeModel(&wireframeShader, frame, camera);
+		// update frame for animation of the wireframe model
+		frame++;
+		if (frame == frameCount) {
+			frame = 0;
+		}
 
 		display.SwapBuffers();
-		SDL_Delay(1);
+		SDL_Delay(1);		// 1; but with animation must be according to framerate
 		counter += 0.01f;
 	}
 	/*if (!init()) {
@@ -214,6 +235,6 @@ int main(int argc, char* args[])
 	//SDL_Delay(1000);
 
 	
-
+	delete animation;
 	return 0;
 }

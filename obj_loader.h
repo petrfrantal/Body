@@ -26,7 +26,6 @@ public:
 
 struct WireframeModel {
 	std::vector<float> vertices;
-	std::vector<unsigned int> indices;
 };
 
 class OBJModel

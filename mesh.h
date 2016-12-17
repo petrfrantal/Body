@@ -43,7 +43,6 @@ private:
 	GLuint m_vertexArrayBuffers[NUM_BUFFERS];
 	GLuint vertexArrayObject;		// VAO
 	GLuint vertexBufferObject;		// VBO
-	GLuint elementBufferObject;		// EBO
 	unsigned int m_numIndices;
 	void initMesh(const IndexedModel& model);
 public:
@@ -51,5 +50,9 @@ public:
 	Mesh(WireframeModel * wireframeModel, Shader * shader);
 	Mesh(Vertex* vertices, unsigned int numVertices, unsigned int* indices, unsigned int numIndices);
 	void draw();
+	void drawJointAlone(size_t jointIndex);
+	void drawJointInBone(size_t jointIndex);
 	~Mesh();
+
+	std::vector<glm::vec3> positions;
 };

@@ -20,9 +20,10 @@ class Shader {
 		GLint positionLocation;
 		GLint MVPLocation;
 
-		Shader(const std::string& fileName);
+		Shader(const std::string& fileName, bool wireframe);
 		Shader(const std::string vertexShaderName, const std::string fragmentShaderName);
 		void Bind();
 		void Update(const Transform& transform, const Camera& camera);
+		void setMVPMatrix(glm::mat4 & MVP);
 		~Shader();
 };

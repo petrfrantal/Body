@@ -34,8 +34,11 @@ struct Skeleton {
 	std::vector<Joint *> joints;		// array of pointers to all joints in the skeleton
 	Mesh * mesh;
 	WireframeModel * wireframeModel;
+	std::vector<unsigned int> boneIndices;
+	// constructors and methods
 	Skeleton(void);
 	void createWireframeModelMesh(Shader * shader);
+	void drawWireframeModel(Shader * shader, unsigned int frame, Camera & camera);
 	void drawSkeleton(long frame);		// OpenGL drawing method
 };
 

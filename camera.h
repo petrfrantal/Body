@@ -15,7 +15,7 @@ public:
 		this->projection = glm::perspective(fov, aspect, zNear, zFar);
 	}
 
-	inline glm::mat4 GetViewProjection() const
+	inline glm::mat4 getViewProjection() const
 	{
 		return projection * glm::lookAt(pos, pos + forward, up);
 	}
