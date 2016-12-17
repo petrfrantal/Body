@@ -14,7 +14,7 @@ void Skeleton::drawWireframeModel(Shader * shader, unsigned int frame, Camera & 
 	glPointSize(10.0f);		// 5.0f
 	size_t jointCount = joints.size();
 	std::cout << "SKELETON" << std::endl;
-	for (size_t jointIndex = 0; jointIndex < 1; jointIndex++) {
+	for (size_t jointIndex = 0; jointIndex < jointCount; jointIndex++) {
 		// transform the joint
 		glm::mat4 modelMatrix = joints[jointIndex]->transformPerFrame[frame];
 		glm::mat4 projectionViewMatrix = camera.getViewProjection();
