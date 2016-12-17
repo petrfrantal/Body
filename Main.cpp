@@ -116,8 +116,12 @@ int main(int argc, char* args[])
 		23, 22, 20
 	};
 
+
+	// BVH animation
+
 	BVHLoader loader;
 	Animation * animation = loader.loadAnimation("BVH Files/01_01.bvh");
+	//Animation * animation = loader.loadAnimation("BVH Files/basic.bvh");
 	// create a wireframe shader
 	Shader wireframeShader("./Shaders/WireframeShader", true);
 	// we create a mesh from the loaded vertices; this has to be done after the GLEW init (which is done in Display constructor)
@@ -125,13 +129,19 @@ int main(int argc, char* args[])
 	unsigned int frameCount = animation->animationInfo->frameCount;
 	unsigned int frame = 0;
 
+
+	// monkey / cube
 	Mesh mesh(vertices, sizeof(vertices) / sizeof(vertices[0]), indices, sizeof(indices) / sizeof(indices[0]));
 	//Mesh monkey("./res/monkey3.obj");
 	Shader shader("./Shaders/basicShader", false);
 	Texture texture("./res/bricks.jpg");
 	Transform transform;
-	//Camera camera(glm::vec3(0.0f, 0.0f, -5.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 100.0f);
-	Camera camera(glm::vec3(0.0f, 0.0f, -600.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 1000.0f);
+
+
+
+	//Camera camera(glm::vec3(0.0f, 0.0f, -5.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 100.0f);	// formerly for cube/monkey
+	//Camera camera(glm::vec3(0.0f, 0.0f, -10.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 100.0f);		// for bvh basic 
+	Camera camera(glm::vec3(0.0f, 0.0f, -300.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 1000.0f);		// for bvh 01_01
 	SDL_Event e;
 	bool isRunning = true;
 	float counter = 0.0f;

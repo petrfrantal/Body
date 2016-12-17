@@ -107,7 +107,7 @@ void Mesh::draw()
 
 void Mesh::drawJointAlone(size_t jointIndex) {
 	glBindVertexArray(vertexArrayObject);
-	glDrawArrays(GL_POINTS, 0, 10);		// draws one joint as a point
+	glDrawArrays(GL_POINTS, jointIndex, 1);		// draws one joint as a point
 	glBindVertexArray(0);
 }
 
