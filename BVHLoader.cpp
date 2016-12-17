@@ -16,6 +16,7 @@ void BVHLoader::loadMotion(std::istream & file, Animation * animation) {
 	file >> input;
 	file >> input;
 	file >> frameDuration;
+	animation->animationInfo->frameDuration = frameDuration;
 	animation->animationInfo->framesPerSecond = 1.0f / frameDuration;
 	// now the rest of the file is the motion data, each line contains one frame
 	unsigned int jointCount = animation->animationInfo->jointCount;

@@ -66,10 +66,10 @@ int main(int argc, char* args[])
 
 	Vertex vertices[] =
 	{
-		Vertex(glm::vec3(-1, -1, -1), glm::vec2(1, 0), glm::vec3(0, 0, -1)),
-		Vertex(glm::vec3(-1, 1, -1), glm::vec2(0, 0), glm::vec3(0, 0, -1)),
-		Vertex(glm::vec3(1, 1, -1), glm::vec2(0, 1), glm::vec3(0, 0, -1)),
-		Vertex(glm::vec3(1, -1, -1), glm::vec2(1, 1), glm::vec3(0, 0, -1)),
+		Vertex(glm::vec3(-0, -0, -0), glm::vec2(1, 0), glm::vec3(0, 0, -1)),
+		Vertex(glm::vec3(-0, 0, -0), glm::vec2(0, 0), glm::vec3(0, 0, -1)),
+		Vertex(glm::vec3(0, 0, -0), glm::vec2(0, 1), glm::vec3(0, 0, -1)),
+		Vertex(glm::vec3(0, -0, -0), glm::vec2(1, 1), glm::vec3(0, 0, -1)),
 
 		Vertex(glm::vec3(-1, -1, 1), glm::vec2(1, 0), glm::vec3(0, 0, 1)),
 		Vertex(glm::vec3(-1, 1, 1), glm::vec2(0, 0), glm::vec3(0, 0, 1)),
@@ -130,8 +130,8 @@ int main(int argc, char* args[])
 	Shader shader("./Shaders/basicShader", false);
 	Texture texture("./res/bricks.jpg");
 	Transform transform;
-	Camera camera(glm::vec3(0.0f, 0.0f, -5.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 100.0f);
-	//Camera camera(glm::vec3(0.0f, 0.0f, -200.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 1000.0f);
+	//Camera camera(glm::vec3(0.0f, 0.0f, -5.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 100.0f);
+	Camera camera(glm::vec3(0.0f, 0.0f, -600.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 1000.0f);
 	SDL_Event e;
 	bool isRunning = true;
 	float counter = 0.0f;
@@ -159,11 +159,13 @@ int main(int argc, char* args[])
 		//transform.GetScale()->x = absSinCounter;
 		//transform.GetScale()->y = absSinCounter;
 
+		// draw cube or monkey
+		/*
 		shader.Bind();
 		texture.Bind();
 		shader.Update(transform, camera);
 		//monkey.draw();
-		//mesh.draw();
+		mesh.draw();*/
 		
 		/*
 		glm::mat4 cubeModelMatrix = transform.GetModel();
@@ -175,6 +177,9 @@ int main(int argc, char* args[])
 		std::cout << "--------------------------------------------------------------------------" << std::endl;*/
 
 		// draw wireframeModel
+		// debug
+		//glm::mat4 cubeModelMatrix = transform.GetModel();
+		//animation->skeleton->root->transformPerFrame[0] = cubeModelMatrix;
 		animation->skeleton->drawWireframeModel(&wireframeShader, frame, camera);
 		// update frame for animation of the wireframe model
 		frame++;
@@ -183,7 +188,8 @@ int main(int argc, char* args[])
 		}
 
 		display.SwapBuffers();
-		SDL_Delay(1);		// 1; but with animation must be according to framerate
+		//SDL_Delay(animation->animationInfo->frameDuration);		// 1; but with animation must be according to framerate
+		SDL_Delay(250);
 		counter += 0.01f;
 	}
 	/*if (!init()) {
