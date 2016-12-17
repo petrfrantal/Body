@@ -27,6 +27,8 @@ Display::Display(int width, int height, const std::string& title)
 
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
+
+	glViewport(0, 0, (GLsizei)width, (GLsizei)height);
 }
 
 Display::~Display()
