@@ -45,6 +45,9 @@
     <ClCompile Include="stb_image.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Skeleton.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Skeleton.h">
@@ -95,6 +98,12 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="Shaders\basicShader.vs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\WireframeShader.vs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\WireframeShader.fs">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>
