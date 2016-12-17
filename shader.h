@@ -7,7 +7,7 @@
 class Shader {
 	private:
 		static const unsigned int NUM_UNIFORMS = 3;
-		GLuint shaderProgram;
+		
 		GLuint vertexShader;
 		GLuint fragmentShader;
 		GLuint m_uniforms[NUM_UNIFORMS];
@@ -17,6 +17,7 @@ class Shader {
 		void finishShaderCreation(void);
 		void finishWireframeShaderCreation(void);
 	public:
+		GLuint shaderProgram;
 		GLint positionLocation;
 		GLint MVPLocation;
 
