@@ -29,6 +29,61 @@ Mesh::Mesh(WireframeModel * wireframeModel, Shader * shader) {
 	delete[] vertices;
 }
 
+Mesh::Mesh(WireframeModel * wireframeModel, Shader * jointShader, Shader * lineBoneShader) {
+	// generate VAO
+	glGenVertexArrays(1, &vertexArrayObject);
+	glBindVertexArray(vertexArrayObject);
+
+	// generate VBO for drawing of the joints, first copy vertices
+	float * vertices = new float[wireframeModel->vertices.size()];
+	std::copy(wireframeModel->vertices.begin(), wireframeModel->vertices.end(), vertices);
+	glGenBuffers(1, &vertexBufferObject);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+	// enable attributes to the joint vertex shader
+	glEnableVertexAttribArray(jointShader->positionLocation);
+	glVertexAttribPointer(jointShader->positionLocation, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	
+	glBindVertexArray(0);
+
+	// generate VAO and VBO for drawing of the bones as lines
+	glGenVertexArrays(1, &lineBoneArrayObject);
+	glBindVertexArray(lineBoneArrayObject);
+
+	// copy the vertices
+	unsigned int boneVerticesSize = wireframeModel->boneVertices.size();
+	float * boneVertices = new float[boneVerticesSize];
+	std::copy(wireframeModel->boneVertices.begin(), wireframeModel->boneVertices.end(), boneVertices);
+
+	// create the indices; used to index the right transform matrix in shader
+	unsigned int * jointIndices = new unsigned int [wireframeModel->boneIndices.size()];
+	for (unsigned int i = 0; i < wireframeModel->boneIndices.size(); i++) {
+		jointIndices[i] = wireframeModel->boneIndices[i];
+	}
+
+	// buffer the vertices and indices
+	glGenBuffers(1, &jointBufferObject);
+	glBindBuffer(GL_ARRAY_BUFFER, jointBufferObject);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(boneVertices), boneVertices, GL_STATIC_DRAW);
+
+	glGenBuffers(1, &jointIndexBufferObject);
+	glBindBuffer(GL_ARRAY_BUFFER, jointIndexBufferObject);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(jointIndices), jointIndices, GL_STATIC_DRAW);
+
+	// shader for drawing bones as lines
+	glEnableVertexAttribArray(lineBoneShader->positionLocation);
+	glVertexAttribPointer(lineBoneShader->positionLocation, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(lineBoneShader->jointIndexLocation);
+	glVertexAttribPointer(lineBoneShader->jointIndexLocation, 1, GL_UNSIGNED_INT, GL_FALSE, sizeof(unsigned int), (void*)0);
+
+	glBindVertexArray(0);
+
+	delete[] boneVertices;
+	delete[] jointIndices;
+	delete[] vertices;
+}
+
 Mesh::Mesh(const std::string& fileName)
 {
     initMesh(OBJModel(fileName).ToIndexedModel());

@@ -41,13 +41,22 @@ private:
 	static const unsigned int NUM_BUFFERS = 4;
 	GLuint m_vertexArrayObject;
 	GLuint m_vertexArrayBuffers[NUM_BUFFERS];
-	GLuint vertexArrayObject;		// VAO
+	//GLuint vertexArrayObject;		// VAO
 	GLuint vertexBufferObject;		// VBO
+
+	// VBOs for bones as lines
+	GLuint jointBufferObject;
+	GLuint jointIndexBufferObject;
+
 	unsigned int m_numIndices;
 	void initMesh(const IndexedModel& model);
 public:
+	GLuint vertexArrayObject;		// VAO
+	GLuint lineBoneArrayObject;		// VAO for bones as lines
+
     Mesh(const std::string& fileName);
 	Mesh(WireframeModel * wireframeModel, Shader * shader);
+	Mesh(WireframeModel * wireframeModel, Shader * jointShader, Shader * lineBoneShader);
 	Mesh(Vertex* vertices, unsigned int numVertices, unsigned int* indices, unsigned int numIndices);
 	void draw();
 	void drawJointAlone(size_t jointIndex);

@@ -64,6 +64,16 @@ int main(int argc, char* args[])
 {
 	Display display(DISPLAY_WIDTH, DISPLAY_HEIGHT, applicationName.c_str());
 
+	/*
+	// find out how many uniforms can we use; this varies for vertex and fragment shader
+	GLint vertexUniformsCount = 0;
+	GLint fragmentUniformsCount = 0;
+	glGetIntegerv(GL_MAX_VERTEX_UNIFORM_COMPONENTS_ARB, &vertexUniformsCount);
+	glGetIntegerv(GL_MAX_FRAGMENT_UNIFORM_COMPONENTS_ARB, &fragmentUniformsCount);
+	std::cout << "Vertex shader usable uniforms count: " << vertexUniformsCount << std::endl;
+	std::cout << "Fragment shader usable uniforms count: " << fragmentUniformsCount << std::endl;
+	*/
+
 	Vertex vertices[] =
 	{
 		Vertex(glm::vec3(-0, -0, -0), glm::vec2(1, 0), glm::vec3(0, 0, -1)),
@@ -123,9 +133,12 @@ int main(int argc, char* args[])
 	Animation * animation = loader.loadAnimation("BVH Files/01_01.bvh");
 	//Animation * animation = loader.loadAnimation("BVH Files/basic.bvh");
 	// create a wireframe shader
-	Shader wireframeShader("./Shaders/WireframeShader", true);
+	Shader wireframeShader("./Shaders/WireframeShader");
+	Shader boneShader("./Shaders/LineBoneShader", "./Shaders/WireframeShader");
 	// we create a mesh from the loaded vertices; this has to be done after the GLEW init (which is done in Display constructor)
-	animation->skeleton->createWireframeModelMesh(&wireframeShader);
+	//animation->skeleton->createWireframeModelMesh(&wireframeShader);
+	animation->skeleton->createWireframeModelMesh(&wireframeShader, &boneShader);
+
 	unsigned int frameCount = animation->animationInfo->frameCount;
 	unsigned int frame = 0;
 
@@ -133,7 +146,7 @@ int main(int argc, char* args[])
 	// monkey / cube
 	Mesh mesh(vertices, sizeof(vertices) / sizeof(vertices[0]), indices, sizeof(indices) / sizeof(indices[0]));
 	//Mesh monkey("./res/monkey3.obj");
-	Shader shader("./Shaders/basicShader", false);
+	Shader shader("./Shaders/basicShader");
 	Texture texture("./res/bricks.jpg");
 	Transform transform;
 
@@ -190,7 +203,8 @@ int main(int argc, char* args[])
 		// debug
 		//glm::mat4 cubeModelMatrix = transform.GetModel();
 		//animation->skeleton->root->transformPerFrame[0] = cubeModelMatrix;
-		animation->skeleton->drawWireframeModel(&wireframeShader, frame, camera);
+		//animation->skeleton->drawOnlyJoints(&wireframeShader, frame, camera);
+		animation->skeleton->drawWireframeModel(&wireframeShader, &boneShader, frame, camera);
 		// update frame for animation of the wireframe model
 		frame++;
 		if (frame == frameCount) {
