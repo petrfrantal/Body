@@ -3,6 +3,7 @@
 */
 
 #include "BVHLoader.h"
+#include "Math.h"
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
 
@@ -45,13 +46,13 @@ void BVHLoader::loadMotion(std::istream & file, Animation * animation) {
 		for (int i = 0; i < 3; i++) {
 			switch (root->rotationOrder[i]) {
 				case xRotation:
-					rootTransform = glm::rotate(rootTransform, rootRotationPerFrame[root->rotationOrder[i]], xAxis);
+					rootTransform = glm::rotate(rootTransform, degreesToRadians(rootRotationPerFrame[root->rotationOrder[i]]), xAxis);
 					break;
 				case yRotation:
-					rootTransform = glm::rotate(rootTransform, rootRotationPerFrame[root->rotationOrder[i]], yAxis);
+					rootTransform = glm::rotate(rootTransform, degreesToRadians(rootRotationPerFrame[root->rotationOrder[i]]), yAxis);
 					break;
 				case zRotation:
-					rootTransform = glm::rotate(rootTransform, rootRotationPerFrame[root->rotationOrder[i]], zAxis);
+					rootTransform = glm::rotate(rootTransform, degreesToRadians(rootRotationPerFrame[root->rotationOrder[i]]), zAxis);
 					break;
 				}
 		}
@@ -67,13 +68,13 @@ void BVHLoader::loadMotion(std::istream & file, Animation * animation) {
 			for (int i = 0; i < 3; i++) {
 				switch (joint->rotationOrder[i]) {
 				case xRotation:
-					jointTransform = glm::rotate(jointTransform, jointRotationPerFrame[joint->rotationOrder[i]], xAxis);
+					jointTransform = glm::rotate(jointTransform, degreesToRadians(jointRotationPerFrame[joint->rotationOrder[i]]), xAxis);
 					break;
 				case yRotation:
-					jointTransform = glm::rotate(jointTransform, jointRotationPerFrame[joint->rotationOrder[i]], yAxis);
+					jointTransform = glm::rotate(jointTransform, degreesToRadians(jointRotationPerFrame[joint->rotationOrder[i]]), yAxis);
 					break;
 				case zRotation:
-					jointTransform = glm::rotate(jointTransform, jointRotationPerFrame[joint->rotationOrder[i]], zAxis);
+					jointTransform = glm::rotate(jointTransform, degreesToRadians(jointRotationPerFrame[joint->rotationOrder[i]]), zAxis);
 					break;
 				}
 			}
@@ -141,6 +142,13 @@ Joint * BVHLoader::loadJoint(std::istream & file, Animation * animation, Joint *
 	if (parent != NULL) {
 		animation->skeleton->boneIndices.push_back(parent->index);
 		animation->skeleton->boneIndices.push_back(joint->index);
+		// and push also offsets of the joint and it's parent to the array for creating bones as lines
+		animation->skeleton->wireframeModel->boneVertices.push_back(parent->offset[xOffset]);
+		animation->skeleton->wireframeModel->boneVertices.push_back(parent->offset[yOffset]);
+		animation->skeleton->wireframeModel->boneVertices.push_back(parent->offset[zOffset]);
+		animation->skeleton->wireframeModel->boneVertices.push_back(joint->offset[xOffset]);
+		animation->skeleton->wireframeModel->boneVertices.push_back(joint->offset[yOffset]);
+		animation->skeleton->wireframeModel->boneVertices.push_back(joint->offset[zOffset]);
 	}
 	// now only keywords JOINT, End Site or '}' can occur
 	while (file.good()) {

@@ -26,6 +26,8 @@ public:
 
 struct WireframeModel {
 	std::vector<float> vertices;
+	std::vector<float> boneVertices;
+	std::vector<unsigned int> boneIndices;
 };
 
 class OBJModel
