@@ -50,7 +50,7 @@ void Skeleton::drawWireframeModel(Shader * jointShader, Shader * boneShader, uns
 		glm::mat4 MVP = projectionViewMatrix * modelMatrix;			// multiplication from right to left
 		jointShader->setMVPMatrix(MVP);
 		// draw the joint
-		//mesh->drawJointAlone(jointIndex);			// draws one joint as a point
+		mesh->drawJointAlone(jointIndex);			// draws one joint as a point
 
 		// test draw
 		/*
