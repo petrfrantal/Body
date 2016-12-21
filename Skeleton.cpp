@@ -50,7 +50,7 @@ void Skeleton::drawWireframeModel(Shader * jointShader, Shader * boneShader, uns
 		glm::mat4 MVP = projectionViewMatrix * modelMatrix;			// multiplication from right to left
 		jointShader->setMVPMatrix(MVP);
 		// draw the joint
-		mesh->drawJointAlone(jointIndex);			// draws one joint as a point
+		//mesh->drawJointAlone(jointIndex);			// draws one joint as a point
 
 		// test draw
 		/*
@@ -63,6 +63,7 @@ void Skeleton::drawWireframeModel(Shader * jointShader, Shader * boneShader, uns
 		glDrawArrays(GL_POINTS, jointIndex, 1);
 		glBindVertexArray(0);*/
 
+		glBindVertexArray(0);
 		glUseProgram(0);
 
 		// debug output
@@ -87,18 +88,26 @@ void Skeleton::drawWireframeModel(Shader * jointShader, Shader * boneShader, uns
 	glLineWidth(3.0f);
 	// bind shader
 	glUseProgram(boneShader->shaderProgram);
-	// transform the bone's joint
-	glm::mat4 modelMatrix;
+	glBindVertexArray(mesh->lineBoneArrayObject);
+	size_t vertexCount = boneIndices.size();
+	glm::mat4 firstModelMatrix;
+	glm::mat4 secondModelMatrix;
+	glm::mat4 firstMVP;
+	glm::mat4 secondMVP;
 	glm::mat4 projectionViewMatrix = camera.getViewProjection();
-	glm::mat4 MVP;
-	for (int i = 0; i < BONE_COUNT; i++) {
-		modelMatrix = joints[i]->transformPerFrame[frame];
-		modelMatrix = glm::translate(modelMatrix, glm::vec3(-75.0f, -60.0f, -80.0f));
-		MVP = projectionViewMatrix * modelMatrix;
-		glUniformMatrix4fv(boneShader->MVPsLocations[i], 1, GL_FALSE, &MVP[0][0]);
+	for (int jointIndex = 0; jointIndex < vertexCount; jointIndex += 2) {
+		firstModelMatrix = joints[boneIndices[jointIndex]]->transformPerFrame[frame];
+		secondModelMatrix = joints[boneIndices[jointIndex + 1]]->transformPerFrame[frame];
+		firstModelMatrix = glm::translate(firstModelMatrix, glm::vec3(-75.0f, -60.0f, -80.0f));
+		secondModelMatrix = glm::translate(secondModelMatrix, glm::vec3(-75.0f, -60.0f, -80.0f));
+		firstMVP = projectionViewMatrix * firstModelMatrix;
+		secondMVP = projectionViewMatrix * secondModelMatrix;
+		glUniformMatrix4fv(boneShader->firstMVPLocation, 1, GL_FALSE, &firstMVP[0][0]);
+		glUniformMatrix4fv(boneShader->secondMVPLocation, 1, GL_FALSE, &secondMVP[0][0]);
+		glDrawArrays(GL_POINTS, jointIndex, 2);
 	}
-	// draw the bone's joint
-	glDrawArrays(GL_LINES, 0, 84 * 3);		// bone indices * 3 (3 verts)	-	make some variable for the 84
+	//glDrawArrays(GL_LINES, 0, 84 * 3);		// bone indices * 3 (3 verts)	-	make some variable for the 84
+	glBindVertexArray(0);
 	glUseProgram(0);
 	
 }

@@ -23,6 +23,8 @@ class Shader {
 		GLint positionLocation;
 		GLint jointIndexLocation;
 		GLint MVPLocation;
+		GLint firstMVPLocation;
+		GLint secondMVPLocation;
 		GLint MVPsLocations[BONE_COUNT];
 
 		Shader(const std::string& fileName);
