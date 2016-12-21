@@ -32,13 +32,16 @@ void Shader::finishLineBoneShaderCreation(void) {
 	checkShaderError(shaderProgram, GL_LINK_STATUS, true, "Invalid shader program");
 	positionLocation = glGetAttribLocation(shaderProgram, "position");
 	jointIndexLocation = glGetAttribLocation(shaderProgram, "index");
+	firstMVPLocation = glGetUniformLocation(shaderProgram, "firstMVP");
+	secondMVPLocation = glGetUniformLocation(shaderProgram, "secondMVP");
 
+	/*
 	std::string name;
 	for (int i = 0; i < BONE_COUNT; i++) {
 		name = "MVP[" + std::to_string(i);
 		name += "]";
 		MVPsLocations[i] = glGetUniformLocation(shaderProgram, name.c_str());
-	}
+	}*/
 }
 
 void Shader::finishWireframeShaderCreation(void) {

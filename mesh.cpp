@@ -52,14 +52,15 @@ Mesh::Mesh(WireframeModel * wireframeModel, Shader * jointShader, Shader * lineB
 	glBindVertexArray(lineBoneArrayObject);
 
 	// copy the vertices
-	unsigned int boneVerticesSize = wireframeModel->boneVertices.size();
-	float * boneVertices = new float[boneVerticesSize];
+	float * boneVertices = new float[wireframeModel->boneVertices.size()];
 	std::copy(wireframeModel->boneVertices.begin(), wireframeModel->boneVertices.end(), boneVertices);
 
 	// create the indices; used to index the right transform matrix in shader
-	unsigned int * jointIndices = new unsigned int [wireframeModel->boneIndices.size()];
-	for (unsigned int i = 0; i < wireframeModel->boneIndices.size(); i++) {
-		jointIndices[i] = wireframeModel->boneIndices[i];
+	unsigned int jointIndicesSize = wireframeModel->boneIndices.size();
+	int * jointIndices = new int [jointIndicesSize];
+	for (unsigned int i = 0; i < jointIndicesSize; i += 2) {
+		jointIndices[i] = 1;
+		jointIndices[i + 1] = 2;
 	}
 
 	// buffer the vertices and indices
@@ -67,15 +68,15 @@ Mesh::Mesh(WireframeModel * wireframeModel, Shader * jointShader, Shader * lineB
 	glBindBuffer(GL_ARRAY_BUFFER, jointBufferObject);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(boneVertices), boneVertices, GL_STATIC_DRAW);
 
+	glEnableVertexAttribArray(lineBoneShader->positionLocation);
+	glVertexAttribPointer(lineBoneShader->positionLocation, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+
 	glGenBuffers(1, &jointIndexBufferObject);
 	glBindBuffer(GL_ARRAY_BUFFER, jointIndexBufferObject);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(jointIndices), jointIndices, GL_STATIC_DRAW);
-
-	// shader for drawing bones as lines
-	glEnableVertexAttribArray(lineBoneShader->positionLocation);
-	glVertexAttribPointer(lineBoneShader->positionLocation, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	
 	glEnableVertexAttribArray(lineBoneShader->jointIndexLocation);
-	glVertexAttribPointer(lineBoneShader->jointIndexLocation, 1, GL_UNSIGNED_INT, GL_FALSE, sizeof(unsigned int), (void*)0);
+	glVertexAttribPointer(lineBoneShader->jointIndexLocation, 1, GL_INT, GL_FALSE, sizeof(int), (void*)0);
 
 	glBindVertexArray(0);
 
