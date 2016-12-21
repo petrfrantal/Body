@@ -31,7 +31,9 @@ void Skeleton::drawWireframeModel(Shader * shader, unsigned int frame, Camera & 
 		glm::vec4 transformed = MVP * position;
 		//std::cout << "Joint " << jointIndex << ": " << transformed[0] << " " << transformed[1] << " " << transformed[2] << " " << transformed[3] << std::endl;
 		//transformed = modelMatrix * position;
+		std::cout << "Joint " << jointIndex << ": " << position.x << " " << position.y << " " << position.z << " " << position.w << std::endl;
 		std::cout << "Joint " << jointIndex << ": " << transformed[0] / transformed[3] << " " << transformed[1] / transformed[3] << " " << transformed[2] / transformed[3] << " " << transformed[3] / transformed[3] << std::endl;
+		std::cout << "-------------------------------------------------------------" << std::endl;
 	}
 	//std::cout << "----------------------------------------------------------------------" << std::endl;
 	
