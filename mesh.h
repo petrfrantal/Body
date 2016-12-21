@@ -45,14 +45,14 @@ private:
 	GLuint vertexBufferObject;		// VBO
 
 	// VBOs for bones as lines
-	GLuint jointBufferObject;
-	GLuint jointIndexBufferObject;
+	GLuint lineVertexAttrBufferObject;		// vertices
+	GLuint lineIndexAttrBufferObject;	// indices 1 2, 1 2, ...
 
 	unsigned int m_numIndices;
 	void initMesh(const IndexedModel& model);
 public:
 	GLuint vertexArrayObject;		// VAO
-	GLuint lineBoneArrayObject;		// VAO for bones as lines
+	GLuint lineVertexArrayObject;		// VAO for bones as lines
 
     Mesh(const std::string& fileName);
 	Mesh(WireframeModel * wireframeModel, Shader * shader);
