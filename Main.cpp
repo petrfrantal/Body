@@ -130,8 +130,9 @@ int main(int argc, char* args[])
 	// BVH animation
 
 	BVHLoader loader;
-	Animation * animation = loader.loadAnimation("BVH Files/01_01.bvh");
+	//Animation * animation = loader.loadAnimation("BVH Files/01_01.bvh");
 	//Animation * animation = loader.loadAnimation("BVH Files/basic.bvh");
+	Animation * animation = loader.loadAnimation("BVH Files/test.bvh");
 	// create a wireframe shader
 	Shader wireframeShader("./Shaders/WireframeShader");
 	Shader boneShader("./Shaders/LineBoneShader", "./Shaders/WireframeShader");
@@ -154,7 +155,8 @@ int main(int argc, char* args[])
 
 	//Camera camera(glm::vec3(0.0f, 0.0f, -5.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 100.0f);	// formerly for cube/monkey
 	//Camera camera(glm::vec3(0.0f, 0.0f, -10.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 100.0f);		// for bvh basic 
-	Camera camera(glm::vec3(0.0f, 0.0f, -300.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 1000.0f);		// for bvh 01_01
+	//Camera camera(glm::vec3(0.0f, 0.0f, -300.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 1000.0f);		// for bvh 01_01
+	Camera camera(glm::vec3(0.0f, 0.0f, -30.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 1000.0f);		// for bvh 01_01
 	SDL_Event e;
 	bool isRunning = true;
 	float counter = 0.0f;

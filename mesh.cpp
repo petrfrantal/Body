@@ -41,6 +41,10 @@ Mesh::Mesh(WireframeModel * wireframeModel, Shader * jointShader, Shader * lineB
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
+	for (int i = 0; i < wireframeModel->vertices.size(); i++) {
+		std::cout << vertices[i] << std::endl;
+	}
+
 	// enable attributes to the joint vertex shader
 	glEnableVertexAttribArray(jointShader->positionLocation);
 	glVertexAttribPointer(jointShader->positionLocation, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
@@ -48,8 +52,8 @@ Mesh::Mesh(WireframeModel * wireframeModel, Shader * jointShader, Shader * lineB
 	glBindVertexArray(0);
 
 	// generate VAO and VBO for drawing of the bones as lines
-	glGenVertexArrays(1, &lineBoneArrayObject);
-	glBindVertexArray(lineBoneArrayObject);
+	glGenVertexArrays(1, &lineVertexArrayObject);
+	glBindVertexArray(lineVertexArrayObject);
 
 	// copy the vertices
 	float * boneVertices = new float[wireframeModel->boneVertices.size()];
@@ -61,22 +65,22 @@ Mesh::Mesh(WireframeModel * wireframeModel, Shader * jointShader, Shader * lineB
 	for (unsigned int i = 0; i < jointIndicesSize; i += 2) {
 		jointIndices[i] = 1;
 		jointIndices[i + 1] = 2;
-	}
+	}	
 
 	// buffer the vertices and indices
-	glGenBuffers(1, &jointBufferObject);
-	glBindBuffer(GL_ARRAY_BUFFER, jointBufferObject);
+	glGenBuffers(1, &lineVertexAttrBufferObject);
+	glBindBuffer(GL_ARRAY_BUFFER, lineVertexAttrBufferObject);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(boneVertices), boneVertices, GL_STATIC_DRAW);
 
 	glEnableVertexAttribArray(lineBoneShader->positionLocation);
 	glVertexAttribPointer(lineBoneShader->positionLocation, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 
-	glGenBuffers(1, &jointIndexBufferObject);
-	glBindBuffer(GL_ARRAY_BUFFER, jointIndexBufferObject);
+	glGenBuffers(1, &lineIndexAttrBufferObject);
+	glBindBuffer(GL_ARRAY_BUFFER, lineIndexAttrBufferObject);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(jointIndices), jointIndices, GL_STATIC_DRAW);
 	
 	glEnableVertexAttribArray(lineBoneShader->jointIndexLocation);
-	glVertexAttribPointer(lineBoneShader->jointIndexLocation, 1, GL_INT, GL_FALSE, sizeof(int), (void*)0);
+	glVertexAttribIPointer(lineBoneShader->jointIndexLocation, 1, GL_INT, sizeof(int), (void*)0);
 
 	glBindVertexArray(0);
 

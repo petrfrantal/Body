@@ -3,10 +3,6 @@
 in vec3 position;
 in int index;
 
-const uint boneCount = 43;		// length must be hard-coded
-
-uniform mat4 MVP[boneCount];
-
 uniform mat4 firstMVP;
 uniform mat4 secondMVP;
 
@@ -15,7 +11,7 @@ out vec4 color;
 void main()
 {
 	mat4 transform;
-	if (index == 0) {
+	if (index == 1) {
 		transform = firstMVP;
 		color = vec4(0.0, 0.0, 1.0, 0.0);
 	} else {

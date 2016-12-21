@@ -43,6 +43,7 @@ void BVHLoader::loadMotion(std::istream & file, Animation * animation) {
 		file >> rootRotationPerFrame[root->rotationOrder[1]];
 		file >> rootRotationPerFrame[root->rotationOrder[2]];
 		glm::mat4 rootTransform = glm::mat4(1.0f);
+		//rootTransform = glm::translate(rootTransform, glm::vec3(rootPositionPerFrameX, rootPositionPerFrameY, rootPositionPerFrameZ));		// test
 		for (int i = 0; i < 3; i++) {
 			switch (root->rotationOrder[i]) {
 				case xRotation:

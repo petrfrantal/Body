@@ -44,13 +44,13 @@ void Skeleton::drawWireframeModel(Shader * jointShader, Shader * boneShader, uns
 		// transform the joint
 		glm::mat4 modelMatrix = joints[jointIndex]->transformPerFrame[frame];
 		// testing translations to get the model to the camera
-		modelMatrix = glm::translate(modelMatrix, glm::vec3(-75.0f, -60.0f, -80.0f));
+		//modelMatrix = glm::translate(modelMatrix, glm::vec3(-75.0f, -60.0f, -80.0f));
 
 		glm::mat4 projectionViewMatrix = camera.getViewProjection();
 		glm::mat4 MVP = projectionViewMatrix * modelMatrix;			// multiplication from right to left
 		jointShader->setMVPMatrix(MVP);
 		// draw the joint
-		//mesh->drawJointAlone(jointIndex);			// draws one joint as a point
+		mesh->drawJointAlone(jointIndex);			// draws one joint as a point
 
 		// test draw
 		/*
@@ -85,10 +85,11 @@ void Skeleton::drawWireframeModel(Shader * jointShader, Shader * boneShader, uns
 	
 	// now draw bones as GL_LINEs consisting of two joints = so far doesn't work
 	
+	/*
 	glLineWidth(3.0f);
 	// bind shader
 	glUseProgram(boneShader->shaderProgram);
-	glBindVertexArray(mesh->lineBoneArrayObject);
+	glBindVertexArray(mesh->lineVertexArrayObject);
 	size_t vertexCount = boneIndices.size();
 	glm::mat4 firstModelMatrix;
 	glm::mat4 secondModelMatrix;
@@ -109,5 +110,5 @@ void Skeleton::drawWireframeModel(Shader * jointShader, Shader * boneShader, uns
 	//glDrawArrays(GL_LINES, 0, 84 * 3);		// bone indices * 3 (3 verts)	-	make some variable for the 84
 	glBindVertexArray(0);
 	glUseProgram(0);
-	
+	*/
 }
