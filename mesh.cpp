@@ -35,15 +35,13 @@ Mesh::Mesh(WireframeModel * wireframeModel, Shader * jointShader, Shader * lineB
 	glBindVertexArray(vertexArrayObject);
 
 	// generate VBO for drawing of the joints, first copy vertices
-	float * vertices = new float[wireframeModel->vertices.size()];
+	int verticesSize = wireframeModel->vertices.size();
+	float * vertices = new float[verticesSize];
 	std::copy(wireframeModel->vertices.begin(), wireframeModel->vertices.end(), vertices);
 	glGenBuffers(1, &vertexBufferObject);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-	for (int i = 0; i < wireframeModel->vertices.size(); i++) {
-		std::cout << vertices[i] << std::endl;
-	}
+	//glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * verticesSize, vertices, GL_STATIC_DRAW);
 
 	// enable attributes to the joint vertex shader
 	glEnableVertexAttribArray(jointShader->positionLocation);
@@ -60,24 +58,25 @@ Mesh::Mesh(WireframeModel * wireframeModel, Shader * jointShader, Shader * lineB
 	std::copy(wireframeModel->boneVertices.begin(), wireframeModel->boneVertices.end(), boneVertices);
 
 	// create the indices; used to index the right transform matrix in shader
-	unsigned int jointIndicesSize = wireframeModel->boneIndices.size();
+	int jointIndicesSize = wireframeModel->boneIndices.size();
 	int * jointIndices = new int [jointIndicesSize];
-	for (unsigned int i = 0; i < jointIndicesSize; i += 2) {
+	for (int i = 0; i < jointIndicesSize; i += 2) {
 		jointIndices[i] = 1;
 		jointIndices[i + 1] = 2;
 	}	
 
 	// buffer the vertices and indices
+	int boneVerticesSize = wireframeModel->boneVertices.size();
 	glGenBuffers(1, &lineVertexAttrBufferObject);
 	glBindBuffer(GL_ARRAY_BUFFER, lineVertexAttrBufferObject);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(boneVertices), boneVertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * boneVerticesSize, boneVertices, GL_STATIC_DRAW);
 
 	glEnableVertexAttribArray(lineBoneShader->positionLocation);
 	glVertexAttribPointer(lineBoneShader->positionLocation, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 
 	glGenBuffers(1, &lineIndexAttrBufferObject);
 	glBindBuffer(GL_ARRAY_BUFFER, lineIndexAttrBufferObject);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(jointIndices), jointIndices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(int) * jointIndicesSize, jointIndices, GL_STATIC_DRAW);
 	
 	glEnableVertexAttribArray(lineBoneShader->jointIndexLocation);
 	glVertexAttribIPointer(lineBoneShader->jointIndexLocation, 1, GL_INT, sizeof(int), (void*)0);
@@ -165,7 +164,7 @@ void Mesh::draw()
 	glBindVertexArray(0);
 }
 
-void Mesh::drawJointAlone(size_t jointIndex) {
+void Mesh::drawJointAlone(int jointIndex) {
 	glBindVertexArray(vertexArrayObject);
 	glDrawArrays(GL_POINTS, jointIndex, 1);		// draws one joint as a point
 	glBindVertexArray(0);

@@ -13,10 +13,11 @@ void main()
 	mat4 transform;
 	if (index == 1) {
 		transform = firstMVP;
-		color = vec4(0.0, 0.0, 1.0, 0.0);
+		//color = vec4(0.0, 0.0, 1.0, 0.0);
 	} else {
 		transform = secondMVP;
-		color = vec4(1.0, 0.0, 0.0, 0.0);
+		//color = vec4(1.0, 0.0, 0.0, 0.0);
 	}
+	color = vec4(1.0, 1.0, 1.0, 0.0);
 	gl_Position = transform * vec4(position, 1.0);
 }

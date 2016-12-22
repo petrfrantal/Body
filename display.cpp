@@ -23,6 +23,8 @@ Display::Display(int width, int height, const std::string& title)
 		std::cerr << "Glew failed to initialize!" << std::endl;
     }
 
+	//std::cout << glGetString(GL_VERSION) << std::endl;
+
 	glEnable(GL_DEPTH_TEST);
 
 	glEnable(GL_CULL_FACE);
