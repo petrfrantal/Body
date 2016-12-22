@@ -211,7 +211,7 @@ int main(int argc, char* args[])
 		//animation->skeleton->drawOnlyJoints(&wireframeShader, frame, camera);
 		animation->skeleton->drawWireframeModel(&wireframeShader, &boneShader, frame, camera);
 		// update frame for animation of the wireframe model
-		//frame++;
+		frame++;
 		if (frame == frameCount) {
 			frame = 0;
 		}
