@@ -59,7 +59,7 @@ public:
 	Mesh(WireframeModel * wireframeModel, Shader * jointShader, Shader * lineBoneShader);
 	Mesh(Vertex* vertices, unsigned int numVertices, unsigned int* indices, unsigned int numIndices);
 	void draw();
-	void drawJointAlone(size_t jointIndex);
+	void drawJointAlone(int jointIndex);
 	void drawJointInBone(size_t jointIndex);
 	~Mesh();
 

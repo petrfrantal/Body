@@ -130,9 +130,9 @@ int main(int argc, char* args[])
 	// BVH animation
 
 	BVHLoader loader;
-	//Animation * animation = loader.loadAnimation("BVH Files/01_01.bvh");
+	Animation * animation = loader.loadAnimation("BVH Files/01_01.bvh");
 	//Animation * animation = loader.loadAnimation("BVH Files/basic.bvh");
-	Animation * animation = loader.loadAnimation("BVH Files/test.bvh");
+	//Animation * animation = loader.loadAnimation("BVH Files/test.bvh");
 	// create a wireframe shader
 	Shader wireframeShader("./Shaders/WireframeShader");
 	Shader boneShader("./Shaders/LineBoneShader", "./Shaders/WireframeShader");
@@ -146,6 +146,8 @@ int main(int argc, char* args[])
 
 	// monkey / cube
 	Mesh mesh(vertices, sizeof(vertices) / sizeof(vertices[0]), indices, sizeof(indices) / sizeof(indices[0]));
+	//std::vector<float> verticesVector = animation->skeleton->wireframeModel->vertices;
+	//Mesh mesh(vertices, sizeof(vertices) / sizeof(vertices[0]), indices, sizeof(indices) / sizeof(indices[0]));
 	//Mesh monkey("./res/monkey3.obj");
 	Shader shader("./Shaders/basicShader");
 	Texture texture("./res/bricks.jpg");
@@ -155,8 +157,8 @@ int main(int argc, char* args[])
 
 	//Camera camera(glm::vec3(0.0f, 0.0f, -5.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 100.0f);	// formerly for cube/monkey
 	//Camera camera(glm::vec3(0.0f, 0.0f, -10.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 100.0f);		// for bvh basic 
-	//Camera camera(glm::vec3(0.0f, 0.0f, -300.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 1000.0f);		// for bvh 01_01
-	Camera camera(glm::vec3(0.0f, 0.0f, -30.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 1000.0f);		// for bvh 01_01
+	Camera camera(glm::vec3(0.0f, 0.0f, -300.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 1000.0f);		// for bvh 01_01
+	//Camera camera(glm::vec3(0.0f, 0.0f, -30.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 1000.0f);		// for bvh 01_01
 	SDL_Event e;
 	bool isRunning = true;
 	float counter = 0.0f;
@@ -185,12 +187,13 @@ int main(int argc, char* args[])
 		//transform.GetScale()->y = absSinCounter;
 
 		// draw cube or monkey
+		
 		/*
 		shader.Bind();
 		texture.Bind();
 		shader.Update(transform, camera);
 		//monkey.draw();
-		mesh.draw();*/
+		//mesh.draw();*/
 		
 		/*
 		glm::mat4 cubeModelMatrix = transform.GetModel();
@@ -208,14 +211,14 @@ int main(int argc, char* args[])
 		//animation->skeleton->drawOnlyJoints(&wireframeShader, frame, camera);
 		animation->skeleton->drawWireframeModel(&wireframeShader, &boneShader, frame, camera);
 		// update frame for animation of the wireframe model
-		frame++;
+		//frame++;
 		if (frame == frameCount) {
 			frame = 0;
 		}
 
 		display.SwapBuffers();
 		//SDL_Delay(animation->animationInfo->frameDuration);		// 1; but with animation must be according to framerate
-		SDL_Delay(250);
+		SDL_Delay(10);
 		counter += 0.01f;
 	}
 	/*if (!init()) {
