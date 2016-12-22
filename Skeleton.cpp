@@ -1,6 +1,14 @@
 #include "Skeleton.h"
 #include <iostream>
 
+// test
+void printGlmMatrixColumnsAsColumns2(glm::mat4 & m) {
+	std::cout << m[0][0] << " " << m[1][0] << " " << m[2][0] << " " << m[3][0] << " |" << std::endl;
+	std::cout << m[0][1] << " " << m[1][1] << " " << m[2][1] << " " << m[3][1] << " |" << std::endl;
+	std::cout << m[0][2] << " " << m[1][2] << " " << m[2][2] << " " << m[3][2] << " |" << std::endl;
+	std::cout << m[0][3] << " " << m[1][3] << " " << m[2][3] << " " << m[3][3] << " V" << std::endl;
+}
+
 Skeleton::Skeleton(void) {
 	wireframeModel = new WireframeModel();
 }
@@ -39,16 +47,18 @@ void Skeleton::drawWireframeModel(Shader * jointShader, Shader * boneShader, uns
 	int jointCount = joints.size();
 	// bind shader
 	glUseProgram(jointShader->shaderProgram);
+	glm::mat4 projectionViewMatrix = camera.getViewProjection();
 	for (int jointIndex = 0; jointIndex < jointCount; jointIndex++) {
 		// transform the joint
 		glm::mat4 modelMatrix = joints[jointIndex]->transformPerFrame[frame];
 		// testing translations to get the model to the camera
-		modelMatrix = glm::translate(modelMatrix, glm::vec3(-75.0f, -60.0f, -80.0f));
-		glm::mat4 projectionViewMatrix = camera.getViewProjection();
+		//printGlmMatrixColumnsAsColumns2(modelMatrix);
+		glm::mat4 translation = glm::translate(glm::mat4(1.0f), glm::vec3(-75.0f, -60.0f, -80.0f));
+		modelMatrix = translation * modelMatrix;
 		glm::mat4 MVP = projectionViewMatrix * modelMatrix;			// multiplication from right to left
 		jointShader->setMVPMatrix(MVP);
 		// draw the joint
-		//mesh->drawJointAlone(jointIndex);			// draws one joint as a point
+		mesh->drawJointAlone(jointIndex);			// draws one joint as a point
 
 		// test draw
 		/*
@@ -92,17 +102,17 @@ void Skeleton::drawWireframeModel(Shader * jointShader, Shader * boneShader, uns
 	glm::mat4 secondModelMatrix;
 	glm::mat4 firstMVP;
 	glm::mat4 secondMVP;
-	glm::mat4 projectionViewMatrix = camera.getViewProjection();
 	for (int jointIndex = 0; jointIndex < vertexCount; jointIndex += 2) {
 		firstModelMatrix = joints[boneIndices[jointIndex]]->transformPerFrame[frame];
 		secondModelMatrix = joints[boneIndices[jointIndex + 1]]->transformPerFrame[frame];
-		firstModelMatrix = glm::translate(firstModelMatrix, glm::vec3(-75.0f, -60.0f, -80.0f));
-		secondModelMatrix = glm::translate(secondModelMatrix, glm::vec3(-75.0f, -60.0f, -80.0f));
+		glm::mat4 translation = glm::translate(glm::mat4(1.0f), glm::vec3(-75.0f, -60.0f, -80.0f));
+		firstModelMatrix = translation * firstModelMatrix;
+		secondModelMatrix = translation * secondModelMatrix;
 		firstMVP = projectionViewMatrix * firstModelMatrix;
 		secondMVP = projectionViewMatrix * secondModelMatrix;
 		glUniformMatrix4fv(boneShader->firstMVPLocation, 1, GL_FALSE, &firstMVP[0][0]);
 		glUniformMatrix4fv(boneShader->secondMVPLocation, 1, GL_FALSE, &secondMVP[0][0]);
-		glDrawArrays(GL_LINES, jointIndex, 2);
+		//glDrawArrays(GL_LINES, jointIndex, 2);
 	}
 	//glDrawArrays(GL_LINES, 0, 84 * 3);		// bone indices * 3 (3 verts)	-	make some variable for the 84
 	glBindVertexArray(0);
