@@ -157,7 +157,7 @@ int main(int argc, char* args[])
 
 	//Camera camera(glm::vec3(0.0f, 0.0f, -5.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 100.0f);	// formerly for cube/monkey
 	//Camera camera(glm::vec3(0.0f, 0.0f, -10.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 100.0f);		// for bvh basic 
-	Camera camera(glm::vec3(0.0f, 0.0f, -300.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 1000.0f);		// for bvh 01_01
+	Camera camera(glm::vec3(-300.0f, 0.0f, 0.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 1000.0f);		// for bvh 01_01
 	//Camera camera(glm::vec3(0.0f, 0.0f, -30.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 1000.0f);		// for bvh 01_01
 	SDL_Event e;
 	bool isRunning = true;

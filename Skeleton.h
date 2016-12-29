@@ -22,6 +22,7 @@ struct Joint {
 	std::vector<Joint *> children;
 	int childrenCount;
 	float offset[3];
+	float globalOffset[3];
 	int rotationOrder[3];
 	std::vector<glm::mat4> transformPerFrame;
 };
