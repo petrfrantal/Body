@@ -31,13 +31,16 @@ void Skeleton::drawOnlyJoints(Shader * shader, unsigned int frame, Camera & came
 		// transform the joint
 		glm::mat4 modelMatrix = joints[jointIndex]->transformPerFrame[frame];
 		// testing translations to get the model to the camera
-		modelMatrix = glm::translate(modelMatrix, glm::vec3(-75.0f, -60.0f, -80.0f));		// ONLY FOR TEST
+		//modelMatrix = glm::translate(modelMatrix, glm::vec3(-75.0f, -60.0f, -80.0f));		// ONLY FOR TEST
 		glm::mat4 projectionViewMatrix = camera.getViewProjection();
 		glm::mat4 MVP = projectionViewMatrix * modelMatrix;			// multiplication from right to left
 		shader->setMVPMatrix(MVP);
+		
+		
 		// draw the joint
 		mesh->drawJointAlone(jointIndex);
 	}
+	
 	glUseProgram(0);
 }
 
@@ -53,11 +56,17 @@ void Skeleton::drawWireframeModel(Shader * jointShader, Shader * boneShader, uns
 		glm::mat4 modelMatrix = joints[jointIndex]->transformPerFrame[frame];
 		// testing translations to get the model to the camera
 		//printGlmMatrixColumnsAsColumns2(modelMatrix);
-		glm::mat4 translation = glm::translate(glm::mat4(1.0f), glm::vec3(-75.0f, -60.0f, -80.0f));
-		modelMatrix = translation * modelMatrix;
+		//glm::mat4 translation = glm::translate(glm::mat4(1.0f), glm::vec3(-75.0f, -60.0f, -80.0f));
+		//modelMatrix = translation * modelMatrix;
 		glm::mat4 MVP = projectionViewMatrix * modelMatrix;			// multiplication from right to left
 		jointShader->setMVPMatrix(MVP);
 		// draw the joint
+
+		if (jointIndex != jointCount - 1) {
+			glm::vec4 v = glm::vec4(joints[jointIndex + 1]->globalOffset[0], joints[jointIndex + 1]->globalOffset[1], joints[jointIndex + 1]->globalOffset[2], 1.0f);
+			glm::vec4 a = modelMatrix * v;
+			std::cout << a.x << " " << a.y << " " << a.z << " " << a.w << std::endl;
+		}
 		mesh->drawJointAlone(jointIndex);			// draws one joint as a point
 
 		// test draw
@@ -86,6 +95,7 @@ void Skeleton::drawWireframeModel(Shader * jointShader, Shader * boneShader, uns
 		// after viewport
 		//std::cout << "Joint " << jointIndex << "(" << joints[jointIndex]->name << ") " << ": " << transformedWithViewport[0] / transformedWithViewport[3] << " " << transformedWithViewport[1] / transformedWithViewport[3] << " " << transformedWithViewport[2] / transformedWithViewport[3] << " " << transformedWithViewport[3] / transformedWithViewport[3] << std::endl;
 	}
+	std::cout << "--------------" << std::endl;
 	glBindVertexArray(0);
 	glUseProgram(0);
 	//std::cout << "----------------------------------------------------------------------" << std::endl;
@@ -105,9 +115,9 @@ void Skeleton::drawWireframeModel(Shader * jointShader, Shader * boneShader, uns
 	for (int jointIndex = 0; jointIndex < vertexCount; jointIndex += 2) {
 		firstModelMatrix = joints[boneIndices[jointIndex]]->transformPerFrame[frame];
 		secondModelMatrix = joints[boneIndices[jointIndex + 1]]->transformPerFrame[frame];
-		glm::mat4 translation = glm::translate(glm::mat4(1.0f), glm::vec3(-75.0f, -60.0f, -80.0f));
-		firstModelMatrix = translation * firstModelMatrix;
-		secondModelMatrix = translation * secondModelMatrix;
+		//glm::mat4 translation = glm::translate(glm::mat4(1.0f), glm::vec3(-75.0f, -60.0f, -80.0f));
+		//firstModelMatrix = translation * firstModelMatrix;
+		//secondModelMatrix = translation * secondModelMatrix;
 		firstMVP = projectionViewMatrix * firstModelMatrix;
 		secondMVP = projectionViewMatrix * secondModelMatrix;
 		glUniformMatrix4fv(boneShader->firstMVPLocation, 1, GL_FALSE, &firstMVP[0][0]);

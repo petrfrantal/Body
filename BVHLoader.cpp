@@ -41,6 +41,8 @@ void BVHLoader::loadMotion(std::istream & file, Animation * animation) {
 	glm::mat4 jointXrotation;
 	glm::mat4 jointYrotation;
 	glm::mat4 jointZrotation;
+	glm::mat4 jointTranslation;
+	glm::mat4 jointTranslation2;
 	for (unsigned int frame = 0; frame < frameCount; frame++) {
 		// init root related matrices that will be used later to identities
 		rootTransform = glm::mat4(1.0f);
@@ -109,6 +111,8 @@ void BVHLoader::loadMotion(std::istream & file, Animation * animation) {
 			file >> jointRotationPerFrame[joint->rotationOrder[0]];
 			file >> jointRotationPerFrame[joint->rotationOrder[1]];
 			file >> jointRotationPerFrame[joint->rotationOrder[2]];
+			jointTranslation = glm::translate(glm::mat4(1.0f), glm::vec3(-joints[jointIndex]->globalOffset[0], -joints[jointIndex]->globalOffset[1], -joints[jointIndex]->globalOffset[2]));
+			jointTransform = jointTranslation * jointTransform;
 			for (int i = 0; i < 3; i++) {
 				switch (joint->rotationOrder[i]) {
 				case xRotation:
@@ -125,6 +129,8 @@ void BVHLoader::loadMotion(std::istream & file, Animation * animation) {
 					break;
 				}
 			}
+			jointTranslation2 = glm::translate(glm::mat4(1.0f), glm::vec3(joints[jointIndex]->globalOffset[0], joints[jointIndex]->globalOffset[1], joints[jointIndex]->globalOffset[2]));
+			jointTransform = jointTranslation2 * jointTransform;
 			//printGlmMatrixColumnsAsColumns(joint->parent->transformPerFrame[frame] * jointTransform);
 			joint->transformPerFrame.push_back(joint->parent->transformPerFrame[frame] * jointTransform);
 		}
@@ -148,6 +154,9 @@ Joint * BVHLoader::loadJoint(std::istream & file, Animation * animation, Joint *
 	joint->offset[xOffset] = inputXOffset;
 	joint->offset[yOffset] = inputYOffset;
 	joint->offset[zOffset] = inputZOffset;
+	joint->globalOffset[xOffset] = inputXOffset;
+	joint->globalOffset[yOffset] = inputYOffset;
+	joint->globalOffset[zOffset] = inputZOffset;
 	// then there are always the channels
 	file >> input;
 	int channelCount;
@@ -175,17 +184,14 @@ Joint * BVHLoader::loadJoint(std::istream & file, Animation * animation, Joint *
 	animation->skeleton->joints.push_back(joint);
 	joint->index = animation->skeleton->joints.size() - 1;
 	// save the joint's vertex (tuple of three floats) into Wireframe's vertices; the offset read from BVH file line must be added to the joint's parent's offset
-	float globalOffsetX = inputXOffset;
-	float globalOffsetY = inputYOffset;
-	float globalOffsetZ = inputZOffset;
 	if (parent != NULL) {
-		globalOffsetX += parent->offset[xOffset];
-		globalOffsetY += parent->offset[yOffset];
-		globalOffsetZ += parent->offset[zOffset];
+		joint->globalOffset[xOffset] += parent->globalOffset[xOffset];
+		joint->globalOffset[yOffset] += parent->globalOffset[yOffset];
+		joint->globalOffset[zOffset] += parent->globalOffset[zOffset];
 	}
-	animation->skeleton->wireframeModel->vertices.push_back(globalOffsetX);
-	animation->skeleton->wireframeModel->vertices.push_back(globalOffsetY);
-	animation->skeleton->wireframeModel->vertices.push_back(globalOffsetZ);
+	animation->skeleton->wireframeModel->vertices.push_back(joint->globalOffset[xOffset]);
+	animation->skeleton->wireframeModel->vertices.push_back(joint->globalOffset[yOffset]);
+	animation->skeleton->wireframeModel->vertices.push_back(joint->globalOffset[zOffset]);
 	// also save the indices for the actual joint and it's parent - together they are bone; this does not occur when parsing the root
 	if (parent != NULL) {
 		animation->skeleton->boneIndices.push_back(parent->index);
