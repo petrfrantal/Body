@@ -6,11 +6,11 @@
 
 #include <string>
 #include <vector>
-#include "Math.h"
 #include <glm/glm.hpp>
 #include "mesh.h"
 #include "obj_loader.h"
 #include "shader.h"
+#include "glm/gtc/type_ptr.hpp"
 
 /**
 *	Joint representation.
@@ -35,10 +35,19 @@ struct Skeleton {
 	Mesh * mesh;
 	WireframeModel * wireframeModel;
 	std::vector<unsigned int> boneIndices;
+	const int BONE_COUNT = 43;
+	// testing viewport matrix
+	float arr [16] = {400.0f, 0.0f, 0.0f, 0.0f,
+						0.0f, 300.0f, 0.0f, 0.0f,
+						0.0f, 0.0, 1.0f, 0.0f, 
+						400.0f, 300.0f, 0.0f, 1.0f};
+	glm::mat4 viewport = glm::make_mat4(arr);
 	// constructors and methods
 	Skeleton(void);
 	void createWireframeModelMesh(Shader * shader);
-	void drawWireframeModel(Shader * shader, unsigned int frame, Camera & camera);
+	void createWireframeModelMesh(Shader * jointShader, Shader * boneShader);
+	void drawOnlyJoints(Shader * shader, unsigned int frame, Camera & camera);
+	void drawWireframeModel(Shader * jointShader, Shader * boneShader, unsigned int frame, Camera & camera);
 	void drawSkeleton(long frame);		// OpenGL drawing method
 };
 

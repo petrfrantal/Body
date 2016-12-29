@@ -58,113 +58,21 @@ bool init(void) {
 	SDL_GL_SetSwapInterval(1);
 	return true;
 }*/
-int main(int argc, char* args[]) {
-	Display display(DISPLAY_WIDTH, DISPLAY_HEIGHT, applicationName.c_str());
-
-	const GLubyte* renderer = glGetString(GL_RENDERER); // get renderer string
-	const GLubyte* version = glGetString(GL_VERSION); // version as a string
-	printf("Renderer: %s\n", renderer);
-	printf("OpenGL version supported %s\n", version);
-
-	// tell GL to only draw onto a pixel if the shape is closer to the viewer
-	glEnable(GL_DEPTH_TEST); // enable depth-testing
-	glDepthFunc(GL_LESS); // depth-testing interprets a smaller value as "closer"
-
-						  /* OTHER STUFF GOES HERE NEXT */
-
-						  // close GL context and any other GLFW resources
-
-	float points[] = {
-		0.0f,  0.5f,  0.0f,
-		0.5f, -0.5f,  0.0f,
-		-0.5f, -0.5f,  0.0f
-	};
-
-	GLuint vbo = 0;
-	glGenBuffers(1, &vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, 9 * sizeof(float), points, GL_STATIC_DRAW);
-
-	GLuint vao = 0;
-	glGenVertexArrays(1, &vao);
-	glBindVertexArray(vao);
-	glEnableVertexAttribArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-
-	const char* vertex_shader =
-		"#version 120\n"
-		"attribute vec3 vp;"
-		"void main() {"
-		"  gl_Position = vec4(vp, 1.0);"
-		"}";
-
-	const char* fragment_shader =
-		"#version 120\n"
-		"void main() {"
-		"  gl_FragColor = vec4(0.5, 0.0, 0.5, 1.0);"
-		"}";
-
-	GLuint vs = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vs, 1, &vertex_shader, NULL);
-	glCompileShader(vs);
-	GLuint fs = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fs, 1, &fragment_shader, NULL);
-	glCompileShader(fs);
-
-	GLuint shader_programme = glCreateProgram();
-	glAttachShader(shader_programme, fs);
-	glAttachShader(shader_programme, vs);
-	glLinkProgram(shader_programme);
 
 
-
-	SDL_Event e;
-	bool isRunning = true;
-	while (isRunning)
-	{
-		while (SDL_PollEvent(&e))
-		{
-			if (e.type == SDL_QUIT)
-				isRunning = false;
-		}
-
-		display.Clear(1.0f, 0.0f, 0.0f, 1.0f);
-
-		glUseProgram(shader_programme);
-
-		glBindVertexArray(vao);
-		// draw points 0-3 from the currently bound VAO with current in-use shader
-		glDrawArrays(GL_TRIANGLES, 0, 3);
-
-		display.SwapBuffers();
-		SDL_Delay(250);
-	}
-
-	return 0;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-int main2(int argc, char* args[])
+int main(int argc, char* args[])
 {
 	Display display(DISPLAY_WIDTH, DISPLAY_HEIGHT, applicationName.c_str());
 
-
-	float points[] = {
-		0.0f,  0.5f,  0.0f,
-		0.5f, -0.5f,  0.0f,
-		-0.5f, -0.5f,  0.0f
-	};
+	/*
+	// find out how many uniforms can we use; this varies for vertex and fragment shader
+	GLint vertexUniformsCount = 0;
+	GLint fragmentUniformsCount = 0;
+	glGetIntegerv(GL_MAX_VERTEX_UNIFORM_COMPONENTS_ARB, &vertexUniformsCount);
+	glGetIntegerv(GL_MAX_FRAGMENT_UNIFORM_COMPONENTS_ARB, &fragmentUniformsCount);
+	std::cout << "Vertex shader usable uniforms count: " << vertexUniformsCount << std::endl;
+	std::cout << "Fragment shader usable uniforms count: " << fragmentUniformsCount << std::endl;
+	*/
 
 	Vertex vertices[] =
 	{
@@ -222,20 +130,26 @@ int main2(int argc, char* args[])
 	// BVH animation
 
 	BVHLoader loader;
-	Animation * animation = loader.loadAnimation("BVH Files/basic.bvh");
+	Animation * animation = loader.loadAnimation("BVH Files/01_01.bvh");
 	//Animation * animation = loader.loadAnimation("BVH Files/basic.bvh");
+	//Animation * animation = loader.loadAnimation("BVH Files/test.bvh");
 	// create a wireframe shader
-	Shader wireframeShader("./Shaders/WireframeShader", true);
+	Shader wireframeShader("./Shaders/WireframeShader");
+	Shader boneShader("./Shaders/LineBoneShader", "./Shaders/WireframeShader");
 	// we create a mesh from the loaded vertices; this has to be done after the GLEW init (which is done in Display constructor)
-	animation->skeleton->createWireframeModelMesh(&wireframeShader);
+	//animation->skeleton->createWireframeModelMesh(&wireframeShader);
+	animation->skeleton->createWireframeModelMesh(&wireframeShader, &boneShader);
+
 	unsigned int frameCount = animation->animationInfo->frameCount;
 	unsigned int frame = 0;
 
 
 	// monkey / cube
+	Mesh mesh(vertices, sizeof(vertices) / sizeof(vertices[0]), indices, sizeof(indices) / sizeof(indices[0]));
+	//std::vector<float> verticesVector = animation->skeleton->wireframeModel->vertices;
 	//Mesh mesh(vertices, sizeof(vertices) / sizeof(vertices[0]), indices, sizeof(indices) / sizeof(indices[0]));
 	//Mesh monkey("./res/monkey3.obj");
-	Shader shader("./Shaders/basicShader", false);
+	Shader shader("./Shaders/basicShader");
 	Texture texture("./res/bricks.jpg");
 	Transform transform;
 
@@ -243,13 +157,14 @@ int main2(int argc, char* args[])
 
 	//Camera camera(glm::vec3(0.0f, 0.0f, -5.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 100.0f);	// formerly for cube/monkey
 	//Camera camera(glm::vec3(0.0f, 0.0f, -10.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 100.0f);		// for bvh basic 
-	Camera camera(glm::vec3(0.0f, 0.0f, -20.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 1000.0f);		// for bvh 01_01
+	Camera camera(glm::vec3(0.0f, 0.0f, -300.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 1000.0f);		// for bvh 01_01
+	//Camera camera(glm::vec3(0.0f, 0.0f, -30.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 1000.0f);		// for bvh 01_01
 	SDL_Event e;
 	bool isRunning = true;
 	float counter = 0.0f;
 
 	// for debugging
-	//std::vector<glm::vec3> cubePositions = mesh.positions;
+	std::vector<glm::vec3> cubePositions = mesh.positions;
 
 	while (isRunning)
 	{
@@ -261,23 +176,24 @@ int main2(int argc, char* args[])
 
 		display.Clear(0.0f, 0.0f, 0.0f, 1.0f);
 
-		//float sinCounter = sinf(counter);
-		//float absSinCounter = abs(sinCounter);
+		float sinCounter = sinf(counter);
+		float absSinCounter = abs(sinCounter);
 
 		//transform.GetPos()->x = sinCounter;
-		//transform.GetRot()->y = counter * 0.2f;
+		transform.GetRot()->y = counter * 0.2f;
 		//transform.GetRot()->z = counter * 1;
 		//transform.GetRot()->x = counter * 1;
 		//transform.GetScale()->x = absSinCounter;
 		//transform.GetScale()->y = absSinCounter;
 
 		// draw cube or monkey
+		
 		/*
 		shader.Bind();
 		texture.Bind();
 		shader.Update(transform, camera);
 		//monkey.draw();
-		mesh.draw();*/
+		//mesh.draw();*/
 		
 		/*
 		glm::mat4 cubeModelMatrix = transform.GetModel();
@@ -292,7 +208,8 @@ int main2(int argc, char* args[])
 		// debug
 		//glm::mat4 cubeModelMatrix = transform.GetModel();
 		//animation->skeleton->root->transformPerFrame[0] = cubeModelMatrix;
-		animation->skeleton->drawWireframeModel(&wireframeShader, frame, camera);
+		//animation->skeleton->drawOnlyJoints(&wireframeShader, frame, camera);
+		animation->skeleton->drawWireframeModel(&wireframeShader, &boneShader, frame, camera);
 		// update frame for animation of the wireframe model
 		frame++;
 		if (frame == frameCount) {
@@ -301,7 +218,7 @@ int main2(int argc, char* args[])
 
 		display.SwapBuffers();
 		//SDL_Delay(animation->animationInfo->frameDuration);		// 1; but with animation must be according to framerate
-		SDL_Delay(250);
+		SDL_Delay(10);
 		counter += 0.01f;
 	}
 	/*if (!init()) {

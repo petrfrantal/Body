@@ -7,6 +7,7 @@
 class Shader {
 	private:
 		static const unsigned int NUM_UNIFORMS = 3;
+		static const int BONE_COUNT = 43;
 		
 		GLuint vertexShader;
 		GLuint fragmentShader;
@@ -16,12 +17,17 @@ class Shader {
 		GLuint createShader(const std::string& text, unsigned int type);
 		void finishShaderCreation(void);
 		void finishWireframeShaderCreation(void);
+		void finishLineBoneShaderCreation(void);
 	public:
 		GLuint shaderProgram;
 		GLint positionLocation;
+		GLint jointIndexLocation;
 		GLint MVPLocation;
+		GLint firstMVPLocation;
+		GLint secondMVPLocation;
+		GLint MVPsLocations[BONE_COUNT];
 
-		Shader(const std::string& fileName, bool wireframe);
+		Shader(const std::string& fileName);
 		Shader(const std::string vertexShaderName, const std::string fragmentShaderName);
 		void Bind();
 		void Update(const Transform& transform, const Camera& camera);

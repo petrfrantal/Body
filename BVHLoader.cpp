@@ -3,6 +3,7 @@
 */
 
 #include "BVHLoader.h"
+#include "Math.h"
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
 
@@ -31,7 +32,23 @@ void BVHLoader::loadMotion(std::istream & file, Animation * animation) {
 	glm::vec3 xAxis = glm::vec3(1.0f, 0.0f, 0.0f);
 	glm::vec3 yAxis = glm::vec3(0.0f, 1.0f, 0.0f);
 	glm::vec3 zAxis = glm::vec3(0.0f, 0.0f, 1.0f);
+	glm::mat4 rootTransform;
+	glm::mat4 rootTranslation;
+	glm::mat4 rootRotation;
+	glm::mat4 rootXrotation;
+	glm::mat4 rootYrotation;
+	glm::mat4 rootZrotation;
+	glm::mat4 jointXrotation;
+	glm::mat4 jointYrotation;
+	glm::mat4 jointZrotation;
 	for (unsigned int frame = 0; frame < frameCount; frame++) {
+		// init root related matrices that will be used later to identities
+		rootTransform = glm::mat4(1.0f);
+		rootTranslation = glm::mat4(1.0f);
+		rootRotation = glm::mat4(1.0f);
+		rootXrotation = glm::mat4(1.0f);
+		rootYrotation = glm::mat4(1.0f);
+		rootZrotation = glm::mat4(1.0f);
 		// load root values
 		// positions should always be in a x-y-z order
 		file >> rootPositionPerFrameX;
@@ -41,42 +58,74 @@ void BVHLoader::loadMotion(std::istream & file, Animation * animation) {
 		file >> rootRotationPerFrame[root->rotationOrder[0]];
 		file >> rootRotationPerFrame[root->rotationOrder[1]];
 		file >> rootRotationPerFrame[root->rotationOrder[2]];
-		glm::mat4 rootTransform = glm::mat4(1.0f);
+		//rootTransform = glm::translate(rootTransform, glm::vec3(rootPositionPerFrameX, rootPositionPerFrameY, rootPositionPerFrameZ));		// test
+
+		// Test matrices
+		/*
+		if (frame == 2) {
+			glm::mat4 testRotation = glm::mat4(1.0);
+			glm::mat4 testTranslation = glm::mat4(1.0);
+			testRotation = glm::rotate(testRotation, degreesToRadians(rootRotationPerFrame[root->rotationOrder[2]]), yAxis);		// rotation around y axis
+			testTranslation = glm::translate(testTranslation, glm::vec3(rootPositionPerFrameX, rootPositionPerFrameY, rootPositionPerFrameZ));
+			std::cout << "Matrix rotated around Y axis" << std::endl;
+			printGlmMatrixColumnsAsColumns(testRotation);
+			std::cout << "Matrix translated in X axis" << std::endl;
+			printGlmMatrixColumnsAsColumns(testTranslation);
+			std::cout << "Matice slozene transformace, nejdriv rotace, pak translace" << std::endl;
+			glm::mat4 testMat3 = testTranslation * testRotation;
+			printGlmMatrixColumnsAsColumns(testMat3);
+		}*/
+
+
 		for (int i = 0; i < 3; i++) {
 			switch (root->rotationOrder[i]) {
 				case xRotation:
-					rootTransform = glm::rotate(rootTransform, rootRotationPerFrame[root->rotationOrder[i]], xAxis);
+					rootXrotation = glm::rotate(glm::mat4(1.0f), degreesToRadians(rootRotationPerFrame[root->rotationOrder[i]]), xAxis);
+					rootRotation = rootXrotation * rootRotation;
 					break;
 				case yRotation:
-					rootTransform = glm::rotate(rootTransform, rootRotationPerFrame[root->rotationOrder[i]], yAxis);
+					rootYrotation = glm::rotate(glm::mat4(1.0f), degreesToRadians(rootRotationPerFrame[root->rotationOrder[i]]), yAxis);
+					rootRotation = rootYrotation * rootRotation;
 					break;
 				case zRotation:
-					rootTransform = glm::rotate(rootTransform, rootRotationPerFrame[root->rotationOrder[i]], zAxis);
+					rootZrotation = glm::rotate(glm::mat4(1.0f), degreesToRadians(rootRotationPerFrame[root->rotationOrder[i]]), zAxis);
+					rootRotation = rootZrotation * rootRotation;
 					break;
 				}
 		}
-		rootTransform = glm::translate(rootTransform, glm::vec3(rootPositionPerFrameX, rootPositionPerFrameY, rootPositionPerFrameZ));
+		rootTranslation = glm::translate(glm::mat4(1.0f), glm::vec3(rootPositionPerFrameX, rootPositionPerFrameY, rootPositionPerFrameZ));
+		rootTransform = rootTranslation * rootRotation;
+		//printGlmMatrixColumnsAsColumns(rootTransform);
 		root->transformPerFrame.push_back(rootTransform);
 		// load other joint values
 		for (unsigned int jointIndex = 1; jointIndex < jointCount; jointIndex++) {
+			// init rotations to identities
+			jointXrotation = glm::mat4(1.0f);
+			jointYrotation = glm::mat4(1.0f);
+			jointZrotation = glm::mat4(1.0f);
+			glm::mat4 jointTransform = glm::mat4(1.0f);
+			// get joint and load values
 			joint = joints[jointIndex];
 			file >> jointRotationPerFrame[joint->rotationOrder[0]];
 			file >> jointRotationPerFrame[joint->rotationOrder[1]];
 			file >> jointRotationPerFrame[joint->rotationOrder[2]];
-			glm::mat4 jointTransform = glm::mat4(1.0f);
 			for (int i = 0; i < 3; i++) {
 				switch (joint->rotationOrder[i]) {
 				case xRotation:
-					jointTransform = glm::rotate(jointTransform, jointRotationPerFrame[joint->rotationOrder[i]], xAxis);
+					jointXrotation = glm::rotate(glm::mat4(1.0f), degreesToRadians(jointRotationPerFrame[joint->rotationOrder[i]]), xAxis);
+					jointTransform = jointXrotation * jointTransform;
 					break;
 				case yRotation:
-					jointTransform = glm::rotate(jointTransform, jointRotationPerFrame[joint->rotationOrder[i]], yAxis);
+					jointYrotation = glm::rotate(glm::mat4(1.0f), degreesToRadians(jointRotationPerFrame[joint->rotationOrder[i]]), yAxis);
+					jointTransform = jointYrotation * jointTransform;
 					break;
 				case zRotation:
-					jointTransform = glm::rotate(jointTransform, jointRotationPerFrame[joint->rotationOrder[i]], zAxis);
+					jointZrotation = glm::rotate(glm::mat4(1.0f), degreesToRadians(jointRotationPerFrame[joint->rotationOrder[i]]), zAxis);
+					jointTransform = jointZrotation * jointTransform;
 					break;
 				}
 			}
+			//printGlmMatrixColumnsAsColumns(joint->parent->transformPerFrame[frame] * jointTransform);
 			joint->transformPerFrame.push_back(joint->parent->transformPerFrame[frame] * jointTransform);
 		}
 	}
@@ -141,6 +190,13 @@ Joint * BVHLoader::loadJoint(std::istream & file, Animation * animation, Joint *
 	if (parent != NULL) {
 		animation->skeleton->boneIndices.push_back(parent->index);
 		animation->skeleton->boneIndices.push_back(joint->index);
+		// and push also offsets of the joint and it's parent to the array for creating bones as lines
+		animation->skeleton->wireframeModel->boneVertices.push_back(parent->offset[xOffset]);
+		animation->skeleton->wireframeModel->boneVertices.push_back(parent->offset[yOffset]);
+		animation->skeleton->wireframeModel->boneVertices.push_back(parent->offset[zOffset]);
+		animation->skeleton->wireframeModel->boneVertices.push_back(joint->offset[xOffset]);
+		animation->skeleton->wireframeModel->boneVertices.push_back(joint->offset[yOffset]);
+		animation->skeleton->wireframeModel->boneVertices.push_back(joint->offset[zOffset]);
 	}
 	// now only keywords JOINT, End Site or '}' can occur
 	while (file.good()) {

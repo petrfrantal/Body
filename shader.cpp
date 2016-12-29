@@ -2,24 +2,46 @@
 #include <iostream>
 #include <fstream>
 
-Shader::Shader(const std::string & fileName, bool wireframe)
+Shader::Shader(const std::string vertexShaderName, const std::string fragmentShaderName) {
+	shaderProgram = glCreateProgram();
+	vertexShader = createShader(loadShader(vertexShaderName + ".vs"), GL_VERTEX_SHADER);
+	fragmentShader = createShader(loadShader(fragmentShaderName + ".fs"), GL_FRAGMENT_SHADER);
+	//finishShaderCreation();
+	//finishWireframeShaderCreation();
+	finishLineBoneShaderCreation();
+}
+
+Shader::Shader(const std::string & fileName)
 {
 	shaderProgram = glCreateProgram();
 	vertexShader = createShader(loadShader(fileName + ".vs"), GL_VERTEX_SHADER);
 	fragmentShader = createShader(loadShader(fileName + ".fs"), GL_FRAGMENT_SHADER);
-	if (wireframe) {
+	if (fileName == "./Shaders/WireframeShader") {
 		finishWireframeShaderCreation();
 	} else {
 		finishShaderCreation();
 	}
 }
 
-Shader::Shader(const std::string vertexShaderName, const std::string fragmentShaderName) {
-	shaderProgram = glCreateProgram();
-	vertexShader = createShader(loadShader(vertexShaderName + ".vs"), GL_VERTEX_SHADER);
-	fragmentShader = createShader(loadShader(fragmentShaderName + ".fs"), GL_FRAGMENT_SHADER);
-	finishShaderCreation();
-	//finishWireframeShaderCreation();
+void Shader::finishLineBoneShaderCreation(void) {
+	glAttachShader(shaderProgram, vertexShader);
+	glAttachShader(shaderProgram, fragmentShader);
+	glLinkProgram(shaderProgram);
+	checkShaderError(shaderProgram, GL_LINK_STATUS, true, "Error linking shader program");
+	glValidateProgram(shaderProgram);
+	checkShaderError(shaderProgram, GL_LINK_STATUS, true, "Invalid shader program");
+	positionLocation = glGetAttribLocation(shaderProgram, "position");
+	jointIndexLocation = glGetAttribLocation(shaderProgram, "index");
+	firstMVPLocation = glGetUniformLocation(shaderProgram, "firstMVP");
+	secondMVPLocation = glGetUniformLocation(shaderProgram, "secondMVP");
+
+	/*
+	std::string name;
+	for (int i = 0; i < BONE_COUNT; i++) {
+		name = "MVP[" + std::to_string(i);
+		name += "]";
+		MVPsLocations[i] = glGetUniformLocation(shaderProgram, name.c_str());
+	}*/
 }
 
 void Shader::finishWireframeShaderCreation(void) {
