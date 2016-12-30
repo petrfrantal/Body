@@ -138,20 +138,36 @@ void Skeleton::drawCylindricalModel(Shader * shader, unsigned int frame, Camera 
 	glUseProgram(shader->shaderProgram);
 	glBindVertexArray(cylindricalMesh->vertexArrayObject);
 	glm::mat4 projectionViewMatrix = camera.getViewProjection();
-	glm::mat4 modelMatrix = joints[0]->transformPerFrame[frame];
+	glm::mat4 modelMatrix;
 	glm::mat4 MVP;
+	/*
+	size_t jointCount = joints.size();
+	for (size_t i = 0; i < 1; i++) {
+		modelMatrix = joints[i]->transformPerFrame[frame];
+		modelMatrix = glm::rotate(modelMatrix, 1.57079633f, glm::vec3(1.0f, 0.0f, 0.0f));		// rotate for 90 degrees to adjust cylinder direction
+		modelMatrix = glm::scale(modelMatrix, glm::vec3(5.0f, 5.0f, 5.0f));
+		MVP = projectionViewMatrix * modelMatrix;
+		glUniformMatrix4fv(shader->MVPLocation, 1, GL_FALSE, &MVP[0][0]);
+		glDrawElements(GL_TRIANGLES, cylindricalMesh->cylinderTriangleCount * 3, GL_UNSIGNED_INT, 0);
+	}*/
+	size_t boneCount = cylinderBones.size();
+	CylinderBone * bone;
+	for (size_t i = 0; i < boneCount; i++) {
+		bone = cylinderBones[i];
 
-	// test scale
-	modelMatrix = glm::scale(modelMatrix, glm::vec3(25.0f, 25.0f, 25.0f));
-	//modelMatrix = scale * modelMatrix;
+		// first translate, then transform
+		//modelMatrix = glm::translate(glm::mat4(1.0f), bone->halfTranslation);		// translate to the center of the bone
+		//modelMatrix = bone->parentJoint->transformPerFrame[frame] * modelMatrix;	// get the parent's transform and use it
 
-	MVP = projectionViewMatrix * modelMatrix;
-	//MVP = projectionViewMatrix;
+		// first transform, then translate
+		modelMatrix = bone->parentJoint->transformPerFrame[frame];
+		modelMatrix = glm::translate(modelMatrix, bone->halfTranslation);
+		//modelMatrix = glm::scale(modelMatrix, glm::vec3(3.0f, 3.0f, 3.0f));			// so far test scale
 
-	//MVP = glm::scale(MVP, glm::vec3(5.0f, 5.0f, 5.0f));
-	glUniformMatrix4fv(shader->MVPLocation, 1, GL_FALSE, &MVP[0][0]);
-	//glDrawElements(GL_LINE_LOOP, cylinderTriangleCount * 3, GL_UNSIGNED_INT, 0);
-	glDrawElements(GL_TRIANGLES, cylindricalMesh->cylinderTriangleCount * 3, GL_UNSIGNED_INT, 0);
+		MVP = projectionViewMatrix * modelMatrix;
+		glUniformMatrix4fv(shader->MVPLocation, 1, GL_FALSE, &MVP[0][0]);
+		glDrawElements(GL_TRIANGLES, cylindricalMesh->cylinderTriangleCount * 3, GL_UNSIGNED_INT, 0);
+	}
 	glBindVertexArray(0);
 	glUseProgram(0);
 }

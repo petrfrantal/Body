@@ -188,6 +188,14 @@ Joint * BVHLoader::loadJoint(std::istream & file, Animation * animation, Joint *
 		joint->globalOffset[xOffset] += parent->globalOffset[xOffset];
 		joint->globalOffset[yOffset] += parent->globalOffset[yOffset];
 		joint->globalOffset[zOffset] += parent->globalOffset[zOffset];
+		// add translation values for bones of cylindrical model - half of the input offset - to get to the half of the bone
+		glm::vec3 cylinderBoneTranslation = glm::vec3(inputXOffset, inputYOffset, inputZOffset);
+		cylinderBoneTranslation /= 2.0f;
+		CylinderBone * bone = new CylinderBone();
+		bone->halfTranslation = cylinderBoneTranslation;
+		bone->parentJoint = parent;
+		animation->skeleton->cylinderBones.push_back(bone);
+		//animation->skeleton->cylinderTranslations.push_back(cylinderBoneTranslation);
 	}
 	animation->skeleton->wireframeModel->vertices.push_back(joint->globalOffset[xOffset]);
 	animation->skeleton->wireframeModel->vertices.push_back(joint->globalOffset[yOffset]);
@@ -197,6 +205,8 @@ Joint * BVHLoader::loadJoint(std::istream & file, Animation * animation, Joint *
 		animation->skeleton->boneIndices.push_back(parent->index);
 		animation->skeleton->boneIndices.push_back(joint->index);
 		// and push also offsets of the joint and it's parent to the array for creating bones as lines
+
+		// THESE ARE USED FOR BONES AS LINES AND ARE NOT CORRECT - THE GLOBAL OFFSET IS NOT USED
 		animation->skeleton->wireframeModel->boneVertices.push_back(parent->offset[xOffset]);
 		animation->skeleton->wireframeModel->boneVertices.push_back(parent->offset[yOffset]);
 		animation->skeleton->wireframeModel->boneVertices.push_back(parent->offset[zOffset]);
