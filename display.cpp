@@ -50,3 +50,13 @@ void Display::SwapBuffers()
 {
 	SDL_GL_SwapWindow(m_window);
 }
+
+// find out how many uniforms can we use; this varies for vertex and fragment shader
+void Display::printShaderUniformsCounts(void) {
+	GLint vertexUniformsCount = 0;
+	GLint fragmentUniformsCount = 0;
+	glGetIntegerv(GL_MAX_VERTEX_UNIFORM_COMPONENTS_ARB, &vertexUniformsCount);
+	glGetIntegerv(GL_MAX_FRAGMENT_UNIFORM_COMPONENTS_ARB, &fragmentUniformsCount);
+	std::cout << "Vertex shader usable uniforms count: " << vertexUniformsCount << std::endl;
+	std::cout << "Fragment shader usable uniforms count: " << fragmentUniformsCount << std::endl;
+}
