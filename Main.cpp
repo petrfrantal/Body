@@ -12,6 +12,7 @@
 #include "texture.h"
 #include "transform.h"
 #include "camera.h"
+#include "Cylinder.h"		// vertices and indices of the cylinder
 
 static const int DISPLAY_WIDTH = 800;
 static const int DISPLAY_HEIGHT = 600;
@@ -140,13 +141,15 @@ int main(int argc, char* args[])
 	//animation->skeleton->createWireframeModelMesh(&wireframeShader);
 	animation->skeleton->createWireframeModelMesh(&wireframeShader, &boneShader);
 
+	// create cylindrical mesh
+	animation->skeleton->createCylindricalMesh(&cylinderVertices[0], cylinderNVertices, &cylinderTriangles[0], cylinderNTriangles, &wireframeShader);
+
 	unsigned int frameCount = animation->animationInfo->frameCount;
 	unsigned int frame = 0;
 
 
 	// monkey / cube
 	Mesh mesh(vertices, sizeof(vertices) / sizeof(vertices[0]), indices, sizeof(indices) / sizeof(indices[0]));
-	//std::vector<float> verticesVector = animation->skeleton->wireframeModel->vertices;
 	//Mesh mesh(vertices, sizeof(vertices) / sizeof(vertices[0]), indices, sizeof(indices) / sizeof(indices[0]));
 	//Mesh monkey("./res/monkey3.obj");
 	Shader shader("./Shaders/basicShader");
@@ -179,7 +182,7 @@ int main(int argc, char* args[])
 		float sinCounter = sinf(counter);
 		float absSinCounter = abs(sinCounter);
 
-		//transform.GetPos()->x = sinCounter;
+		//transform.getPos()->x = sinCounter;
 		transform.GetRot()->y = counter * 0.2f;
 		//transform.GetRot()->z = counter * 1;
 		//transform.GetRot()->x = counter * 1;
@@ -210,6 +213,7 @@ int main(int argc, char* args[])
 		//animation->skeleton->root->transformPerFrame[0] = cubeModelMatrix;
 		//animation->skeleton->drawOnlyJoints(&wireframeShader, frame, camera);
 		animation->skeleton->drawWireframeModel(&wireframeShader, &boneShader, frame, camera);
+		animation->skeleton->drawCylindricalModel(&wireframeShader, frame, camera);
 		// update frame for animation of the wireframe model
 		frame++;
 		if (frame == frameCount) {
