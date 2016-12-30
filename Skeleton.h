@@ -34,6 +34,7 @@ struct Skeleton {
 	Joint * root;
 	std::vector<Joint *> joints;		// array of pointers to all joints in the skeleton
 	Mesh * mesh;
+	Mesh * cylindricalMesh;
 	WireframeModel * wireframeModel;
 	std::vector<unsigned int> boneIndices;
 	const int BONE_COUNT = 43;
@@ -47,9 +48,10 @@ struct Skeleton {
 	Skeleton(void);
 	void createWireframeModelMesh(Shader * shader);
 	void createWireframeModelMesh(Shader * jointShader, Shader * boneShader);
+	void createCylindricalMesh(const float * vertices, unsigned int verticesSize, const unsigned int * indices, unsigned int indicesSize, Shader * shader);
 	void drawOnlyJoints(Shader * shader, unsigned int frame, Camera & camera);
 	void drawWireframeModel(Shader * jointShader, Shader * boneShader, unsigned int frame, Camera & camera);
-	void drawSkeleton(long frame);		// OpenGL drawing method
+	void drawCylindricalModel(Shader * shader, unsigned int frame, Camera & camera);
 };
 
 

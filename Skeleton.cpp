@@ -17,6 +17,10 @@ void Skeleton::createWireframeModelMesh(Shader * shader) {
 	mesh = new Mesh(wireframeModel, shader);
 }
 
+void Skeleton::createCylindricalMesh(const float * vertices, unsigned int verticesSize, const unsigned int * indices, unsigned int indicesSize, Shader * shader) {
+	cylindricalMesh = new Mesh(vertices, verticesSize, indices, indicesSize, shader);
+}
+
 void Skeleton::createWireframeModelMesh(Shader * jointShader, Shader * boneShader) {
 	wireframeModel->boneIndices = boneIndices;
 	mesh = new Mesh(wireframeModel, jointShader, boneShader);
@@ -62,11 +66,11 @@ void Skeleton::drawWireframeModel(Shader * jointShader, Shader * boneShader, uns
 		jointShader->setMVPMatrix(MVP);
 		// draw the joint
 
-		if (jointIndex != jointCount - 1) {
+		/*if (jointIndex != jointCount - 1) {
 			glm::vec4 v = glm::vec4(joints[jointIndex + 1]->globalOffset[0], joints[jointIndex + 1]->globalOffset[1], joints[jointIndex + 1]->globalOffset[2], 1.0f);
 			glm::vec4 a = modelMatrix * v;
 			std::cout << a.x << " " << a.y << " " << a.z << " " << a.w << std::endl;
-		}
+		}*/
 		mesh->drawJointAlone(jointIndex);			// draws one joint as a point
 
 		// test draw
@@ -95,7 +99,7 @@ void Skeleton::drawWireframeModel(Shader * jointShader, Shader * boneShader, uns
 		// after viewport
 		//std::cout << "Joint " << jointIndex << "(" << joints[jointIndex]->name << ") " << ": " << transformedWithViewport[0] / transformedWithViewport[3] << " " << transformedWithViewport[1] / transformedWithViewport[3] << " " << transformedWithViewport[2] / transformedWithViewport[3] << " " << transformedWithViewport[3] / transformedWithViewport[3] << std::endl;
 	}
-	std::cout << "--------------" << std::endl;
+	//std::cout << "--------------" << std::endl;
 	glBindVertexArray(0);
 	glUseProgram(0);
 	//std::cout << "----------------------------------------------------------------------" << std::endl;
@@ -128,4 +132,26 @@ void Skeleton::drawWireframeModel(Shader * jointShader, Shader * boneShader, uns
 	glBindVertexArray(0);
 	glUseProgram(0);
 	
+}
+
+void Skeleton::drawCylindricalModel(Shader * shader, unsigned int frame, Camera & camera) {
+	glUseProgram(shader->shaderProgram);
+	glBindVertexArray(cylindricalMesh->vertexArrayObject);
+	glm::mat4 projectionViewMatrix = camera.getViewProjection();
+	glm::mat4 modelMatrix = joints[0]->transformPerFrame[frame];
+	glm::mat4 MVP;
+
+	// test scale
+	modelMatrix = glm::scale(modelMatrix, glm::vec3(25.0f, 25.0f, 25.0f));
+	//modelMatrix = scale * modelMatrix;
+
+	MVP = projectionViewMatrix * modelMatrix;
+	//MVP = projectionViewMatrix;
+
+	//MVP = glm::scale(MVP, glm::vec3(5.0f, 5.0f, 5.0f));
+	glUniformMatrix4fv(shader->MVPLocation, 1, GL_FALSE, &MVP[0][0]);
+	//glDrawElements(GL_LINE_LOOP, cylinderTriangleCount * 3, GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, cylindricalMesh->cylinderTriangleCount * 3, GL_UNSIGNED_INT, 0);
+	glBindVertexArray(0);
+	glUseProgram(0);
 }

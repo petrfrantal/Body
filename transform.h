@@ -35,7 +35,7 @@ public:
 		return VP * M;//camera.getViewProjection() * GetModel();
 	}
 
-	inline glm::vec3* GetPos() { return &pos; }
+	inline glm::vec3* getPos() { return &pos; }
 	inline glm::vec3* GetRot() { return &rot; }
 	inline glm::vec3* GetScale() { return &scale; }
 

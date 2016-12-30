@@ -143,6 +143,7 @@
     <ClInclude Include="BVHInfo.h" />
     <ClInclude Include="BVHLoader.h" />
     <ClInclude Include="camera.h" />
+    <ClInclude Include="Cylinder.h" />
     <ClInclude Include="debugTimer.h" />
     <ClInclude Include="display.h" />
     <ClInclude Include="Math.h" />
