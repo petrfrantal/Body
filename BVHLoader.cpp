@@ -189,8 +189,9 @@ Joint * BVHLoader::loadJoint(std::istream & file, Animation * animation, Joint *
 		joint->globalOffset[yOffset] += parent->globalOffset[yOffset];
 		joint->globalOffset[zOffset] += parent->globalOffset[zOffset];
 		// add translation values for bones of cylindrical model - half of the input offset - to get to the half of the bone
-		glm::vec3 cylinderBoneTranslation = glm::vec3(inputXOffset, inputYOffset, inputZOffset);
-		cylinderBoneTranslation /= 2.0f;
+		glm::vec3 cylinderBoneTranslation = glm::vec3(parent->globalOffset[xOffset] + inputXOffset / 2.0f, 
+														parent->globalOffset[yOffset] + inputYOffset / 2.0f, 
+														parent->globalOffset[zOffset] + inputZOffset / 2.0f);
 		CylinderBone * bone = new CylinderBone();
 		bone->halfTranslation = cylinderBoneTranslation;
 		bone->parentJoint = parent;
