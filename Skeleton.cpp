@@ -155,13 +155,19 @@ void Skeleton::drawCylindricalModel(Shader * shader, unsigned int frame, Camera 
 	for (size_t i = 0; i < boneCount; i++) {
 		bone = cylinderBones[i];
 
+		// test rotation by 90 degrees
+		//modelMatrix = glm::rotate(glm::mat4(1.0f), 1.57079633f, glm::vec3(0.0f, 0.0f, 1.0f));
+
 		// first translate, then transform
-		//modelMatrix = glm::translate(glm::mat4(1.0f), bone->halfTranslation);		// translate to the center of the bone
-		//modelMatrix = bone->parentJoint->transformPerFrame[frame] * modelMatrix;	// get the parent's transform and use it
+		modelMatrix = glm::translate(glm::mat4(1.0f), bone->halfTranslation);		// translate to the center of the bone	- BEFORE ROTATION
+		//modelMatrix = glm::translate(modelMatrix, bone->halfTranslation);
+		modelMatrix = bone->parentJoint->transformPerFrame[frame] * modelMatrix;	// get the parent's transform and use it
 
 		// first transform, then translate
-		modelMatrix = bone->parentJoint->transformPerFrame[frame];
-		modelMatrix = glm::translate(modelMatrix, bone->halfTranslation);
+		//modelMatrix = bone->parentJoint->transformPerFrame[frame];				// - BEFORE ROTATION
+		//modelMatrix = bone->parentJoint->transformPerFrame[frame] * modelMatrix;
+		//modelMatrix = glm::translate(modelMatrix, bone->halfTranslation);
+
 		//modelMatrix = glm::scale(modelMatrix, glm::vec3(3.0f, 3.0f, 3.0f));			// so far test scale
 
 		MVP = projectionViewMatrix * modelMatrix;
