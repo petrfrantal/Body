@@ -12,7 +12,7 @@
 #include "texture.h"
 #include "transform.h"
 #include "camera.h"
-#include "Cylinder.h"		// vertices and indices of the cylinder
+#include <glm/gtx/vector_angle.hpp>
 
 static const int DISPLAY_WIDTH = 800;
 static const int DISPLAY_HEIGHT = 600;
@@ -95,7 +95,7 @@ int main(int argc, char* args[])
 
 	//animation->skeleton->createWireframeModelMesh(&wireframeShader);					// we create a mesh from the loaded vertices; this has to be done after the GLEW init (which is done in Display constructor)
 	animation->skeleton->createWireframeModelMesh(&wireframeShader, &boneShader);
-	animation->skeleton->createCylindricalMesh(&cylinderVertices[0], cylinderNVertices, &cylinderTriangles[0], cylinderNTriangles, &wireframeShader);	// create cylindrical mesh
+	animation->skeleton->createCylindricalMesh(&wireframeShader);	// create cylindrical mesh
 
 	// OLD MESH / MODEL DEFINITIONS -----------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -107,13 +107,6 @@ int main(int argc, char* args[])
 	Texture texture("./res/bricks.jpg");
 	Transform transform;
 
-	// OLD CAMERA DEFINITIONS - STILL FUNCTIONAL -----------------------------------------------------------------------------------------------------------------------------------------------
-
-	//Camera camera(glm::vec3(0.0f, 0.0f, -5.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 100.0f);	// formerly for cube/monkey
-	//Camera camera(glm::vec3(0.0f, 0.0f, -10.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 100.0f);		// for bvh basic 
-	//Camera camera(glm::vec3(-300.0f, 0.0f, 0.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 1000.0f);		// for bvh 01_01
-	//Camera camera(glm::vec3(0.0f, 0.0f, -30.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 1000.0f);		// for bvh 01_01
-
 	// CAMERA DEFINITIONS -----------------------------------------------------------------------------------------------------------------------------------------------
 
 	// camera in -x axis looking to the origin
@@ -122,6 +115,7 @@ int main(int argc, char* args[])
 
 	// camera in x axis looking to the origin
 	//Camera camera(glm::vec3(300.0f, 0.0f, 0.0f), glm::vec3(-1.0f, 0.0f, 0.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 1000.0f);
+	//Camera camera(glm::vec3(50.0f, 0.0f, 0.0f), glm::vec3(-1.0f, 0.0f, 0.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 1000.0f);
 
 	// camera in y axis looking to the origin - from above - doesn't work
 	//Camera camera(glm::vec3(0.0f, 500.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 1000.0f);
@@ -129,15 +123,16 @@ int main(int argc, char* args[])
 	// camera in z axis looking to the origin (good for BVH "basic")
 	//Camera camera(glm::vec3(0.0f, 0.0f, 50.0f), glm::vec3(0.0f, 0.0f, -1.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 1000.0f);
 
-	// ------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	// FRAME DEFINITIONS ------------------------------------------------------------------------------------------------------------------------------------------------
 
+	unsigned int frameCount = animation->animationInfo->frameCount;
+	unsigned int frame = 0;
+
+	// ------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 	SDL_Event e;
 	bool isRunning = true;
 	float counter = 0.0f;
-
-	unsigned int frameCount = animation->animationInfo->frameCount;
-	unsigned int frame = 0;
 
 	while (isRunning)
 	{
@@ -153,7 +148,7 @@ int main(int argc, char* args[])
 		float absSinCounter = abs(sinCounter);
 
 		//transform.getPos()->x = sinCounter;
-		transform.GetRot()->y = counter * 0.2f;
+		//transform.GetRot()->y = counter * 0.2f;		// this was used for rotating the cube !!!
 		//transform.GetRot()->z = counter * 1;
 		//transform.GetRot()->x = counter * 1;
 		//transform.GetScale()->x = absSinCounter;
@@ -167,31 +162,18 @@ int main(int argc, char* args[])
 		shader.Update(transform, camera);
 		//monkey.draw();
 		//mesh.draw();*/
-		
-		/*
-		glm::mat4 cubeModelMatrix = transform.GetModel();
-		std::cout << "CUBE" << std::endl;
-		for (int i = 0; i < cubePositions.size(); i++) {
-			glm::vec4 cubePositionModelCoords = cubeModelMatrix * glm::vec4(cubePositions[i], 1.0f);
-			std::cout << cubePositionModelCoords[0] << " " << cubePositionModelCoords[1] << " " << cubePositionModelCoords[2] << " " << cubePositionModelCoords[3] << std::endl;
-		}
-		std::cout << "--------------------------------------------------------------------------" << std::endl;*/
 
-		// draw wireframeModel
-		// debug
-		//glm::mat4 cubeModelMatrix = transform.GetModel();
-		//animation->skeleton->root->transformPerFrame[0] = cubeModelMatrix;
-		//animation->skeleton->drawOnlyJoints(&wireframeShader, frame, camera);
-		animation->skeleton->drawWireframeModel(&wireframeShader, &boneShader, frame, camera);
-		animation->skeleton->drawCylindricalModel(&wireframeShader, frame, camera);
-		// update frame for animation of the wireframe model
+		animation->skeleton->drawWireframeModel(&wireframeShader, &boneShader, frame, camera);		// draw wireframeModel - points and lines
+		//animation->skeleton->drawCylindricalModel(&wireframeShader, frame, camera);				// draw cylindrical model - bones as cylinders
+		
+		// update frame for animation
 		frame++;
 		if (frame == frameCount) {
 			frame = 0;
 		}
 
 		display.SwapBuffers();
-		//SDL_Delay(animation->animationInfo->frameDuration);		// 1; but with animation must be according to framerate
+		//SDL_Delay(animation->animationInfo->frameDuration);		// 1; but with animation probably should be according to framerate
 		SDL_Delay(20);
 		counter += 0.01f;
 	}

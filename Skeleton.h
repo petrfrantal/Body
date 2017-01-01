@@ -29,6 +29,8 @@ struct Joint {
 
 struct CylinderBone {
 	glm::vec3 halfTranslation;		// translation to the center of the bone; that is half way from the one joint to the another
+	glm::mat4 rotation;				// rotation to adjust the bone's direction to point from first joint to the other
+	glm::mat4 scale;
 	Joint * parentJoint;			// a joint which translation this bone inherits
 };
 
@@ -59,7 +61,7 @@ struct Skeleton {
 	Skeleton(void);
 	void createWireframeModelMesh(Shader * shader);
 	void createWireframeModelMesh(Shader * jointShader, Shader * boneShader);
-	void createCylindricalMesh(const float * vertices, unsigned int verticesSize, const unsigned int * indices, unsigned int indicesSize, Shader * shader);
+	void createCylindricalMesh(Shader * shader);
 	void drawOnlyJoints(Shader * shader, unsigned int frame, Camera & camera);
 	void drawWireframeModel(Shader * jointShader, Shader * boneShader, unsigned int frame, Camera & camera);
 	void drawCylindricalModel(Shader * shader, unsigned int frame, Camera & camera);
