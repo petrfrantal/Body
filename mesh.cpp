@@ -90,7 +90,7 @@ Mesh::Mesh(WireframeModel * wireframeModel, Shader * jointShader, Shader * lineB
 }
 
 // Used for the cylindrical model
-Mesh::Mesh(const float * vertices, unsigned int verticesSize, const unsigned int * indices, unsigned int indicesSize, Shader * shader) {
+Mesh::Mesh(Shader * shader) {
 	// generate VAO
 	glGenVertexArrays(1, &vertexArrayObject);
 	glBindVertexArray(vertexArrayObject);
@@ -188,17 +188,5 @@ void Mesh::draw()
 	//glDrawElements(GL_TRIANGLES, m_numIndices, GL_UNSIGNED_INT, 0);
 	glDrawElementsBaseVertex(GL_POINTS, m_numIndices, GL_UNSIGNED_INT, 0, 0);
 
-	glBindVertexArray(0);
-}
-
-void Mesh::drawJointAlone(int jointIndex) {
-	glBindVertexArray(vertexArrayObject);
-	glDrawArrays(GL_POINTS, jointIndex, 1);		// draws one joint as a point
-	glBindVertexArray(0);
-}
-
-void Mesh::drawJointInBone(size_t jointIndex) {
-	glBindVertexArray(vertexArrayObject);
-	glDrawArrays(GL_LINES, jointIndex, 1);
 	glBindVertexArray(0);
 }

@@ -61,10 +61,8 @@ public:
 	Mesh(WireframeModel * wireframeModel, Shader * shader);
 	Mesh(WireframeModel * wireframeModel, Shader * jointShader, Shader * lineBoneShader);
 	Mesh(Vertex* vertices, unsigned int numVertices, unsigned int* indices, unsigned int numIndices);
-	Mesh(const float * vertices, unsigned int verticesSize, const unsigned int * indices, unsigned int indicesSize, Shader * shader);
+	Mesh(Shader * shader);
 	void draw();
-	void drawJointAlone(int jointIndex);
-	void drawJointInBone(size_t jointIndex);
 	~Mesh();
 
 	std::vector<glm::vec3> positions;
