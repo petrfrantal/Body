@@ -81,7 +81,7 @@ void BVHLoader::loadMotion(std::istream & file, Animation * animation) {
 		}*/
 
 
-		for (int i = 0; i < 3; i++) {
+		for (int i = 2; i >= 0; i--) {
 			switch (root->rotationOrder[i]) {
 				case xRotation:
 					rootXrotation = glm::rotate(glm::mat4(1.0f), degreesToRadians(rootRotationPerFrame[root->rotationOrder[i]]), xAxis);
@@ -115,7 +115,7 @@ void BVHLoader::loadMotion(std::istream & file, Animation * animation) {
 			file >> jointRotationPerFrame[joint->rotationOrder[2]];
 			jointTranslation = glm::translate(glm::mat4(1.0f), glm::vec3(-joints[jointIndex]->globalOffset[0], -joints[jointIndex]->globalOffset[1], -joints[jointIndex]->globalOffset[2]));
 			jointTransform = jointTranslation * jointTransform;
-			for (int i = 0; i < 3; i++) {
+			for (int i = 2; i >= 0; i--) {
 				switch (joint->rotationOrder[i]) {
 				case xRotation:
 					jointXrotation = glm::rotate(glm::mat4(1.0f), degreesToRadians(jointRotationPerFrame[joint->rotationOrder[i]]), xAxis);
@@ -129,8 +129,9 @@ void BVHLoader::loadMotion(std::istream & file, Animation * animation) {
 					jointZrotation = glm::rotate(glm::mat4(1.0f), degreesToRadians(jointRotationPerFrame[joint->rotationOrder[i]]), zAxis);
 					jointTransform = jointZrotation * jointTransform;
 					break;
-				}
+				}				
 			}
+			//jointTransform = jointYrotation * jointXrotation * jointZrotation * jointTransform;
 			jointTranslation2 = glm::translate(glm::mat4(1.0f), glm::vec3(joints[jointIndex]->globalOffset[0], joints[jointIndex]->globalOffset[1], joints[jointIndex]->globalOffset[2]));
 			jointTransform = jointTranslation2 * jointTransform;
 			//printGlmMatrixColumnsAsColumns(joint->parent->transformPerFrame[frame] * jointTransform);
