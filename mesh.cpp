@@ -8,6 +8,7 @@
 #include <iostream>
 #include <stdlib.h>
 #include "shader.h"
+#include "Cylinder.h"
 
 Mesh::Mesh(WireframeModel * wireframeModel, Shader * shader) {
 	// generate VAO
@@ -88,6 +89,32 @@ Mesh::Mesh(WireframeModel * wireframeModel, Shader * jointShader, Shader * lineB
 	delete[] vertices;
 }
 
+// Used for the cylindrical model
+Mesh::Mesh(Shader * shader) {
+	// generate VAO
+	glGenVertexArrays(1, &vertexArrayObject);
+	glBindVertexArray(vertexArrayObject);
+
+	// vertices - VBO
+	glGenBuffers(1, &vertexBufferObject);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
+	//glBufferData(GL_ARRAY_BUFFER, sizeof(float) * verticesSize, vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(cylinderVertices), cylinderVertices, GL_STATIC_DRAW);
+
+	// indices - EBO
+	glGenBuffers(1, &elementBufferObject);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBufferObject);
+	//glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * indicesSize, indices, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cylinderTriangles), cylinderTriangles, GL_STATIC_DRAW);
+
+	glEnableVertexAttribArray(shader->positionLocation);
+	glVertexAttribPointer(shader->positionLocation, 3, GL_FLOAT, GL_FALSE, cylinderNAttribsPerVertex * sizeof(float), (void*)0);
+
+	glBindVertexArray(0);
+
+	cylinderTriangleCount = cylinderNTriangles;
+}
+
 Mesh::Mesh(const std::string& fileName)
 {
     initMesh(OBJModel(fileName).ToIndexedModel());
@@ -129,10 +156,10 @@ Mesh::Mesh(Vertex* vertices, unsigned int numVertices, unsigned int* indices, un
 
 	for(unsigned int i = 0; i < numVertices; i++)
 	{
-		model.positions.push_back(*vertices[i].GetPos());
-		positions.push_back(*vertices[i].GetPos());
-		model.texCoords.push_back(*vertices[i].GetTexCoord());
-		model.normals.push_back(*vertices[i].GetNormal());
+		model.positions.push_back(*vertices[i].getPos());
+		positions.push_back(*vertices[i].getPos());
+		model.texCoords.push_back(*vertices[i].getTexCoord());
+		model.normals.push_back(*vertices[i].getNormal());
 	}
 	
 	for(unsigned int i = 0; i < numIndices; i++)
@@ -161,17 +188,5 @@ void Mesh::draw()
 	//glDrawElements(GL_TRIANGLES, m_numIndices, GL_UNSIGNED_INT, 0);
 	glDrawElementsBaseVertex(GL_POINTS, m_numIndices, GL_UNSIGNED_INT, 0, 0);
 
-	glBindVertexArray(0);
-}
-
-void Mesh::drawJointAlone(int jointIndex) {
-	glBindVertexArray(vertexArrayObject);
-	glDrawArrays(GL_POINTS, jointIndex, 1);		// draws one joint as a point
-	glBindVertexArray(0);
-}
-
-void Mesh::drawJointInBone(size_t jointIndex) {
-	glBindVertexArray(vertexArrayObject);
-	glDrawArrays(GL_LINES, jointIndex, 1);
 	glBindVertexArray(0);
 }

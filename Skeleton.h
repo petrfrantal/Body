@@ -27,6 +27,13 @@ struct Joint {
 	std::vector<glm::mat4> transformPerFrame;
 };
 
+struct CylinderBone {
+	glm::vec3 halfTranslation;		// translation to the center of the bone; that is half way from the one joint to the another
+	glm::mat4 rotation;				// rotation to adjust the bone's direction to point from first joint to the other
+	glm::mat4 scale;
+	Joint * parentJoint;			// a joint which translation this bone inherits
+};
+
 /**
 *	Skeleton representation.
 */
@@ -34,6 +41,13 @@ struct Skeleton {
 	Joint * root;
 	std::vector<Joint *> joints;		// array of pointers to all joints in the skeleton
 	Mesh * mesh;
+	Mesh * cylindricalMesh;
+
+	// cylinder bones
+	std::vector<glm::vec3> cylinderTranslations;		// translations of the cylinder to bones
+	//std::vector<glm::mat4> cylinderTransforms;		// transforms of the cylinder bones per frame
+	std::vector<CylinderBone *> cylinderBones;
+
 	WireframeModel * wireframeModel;
 	std::vector<unsigned int> boneIndices;
 	const int BONE_COUNT = 43;
@@ -47,9 +61,10 @@ struct Skeleton {
 	Skeleton(void);
 	void createWireframeModelMesh(Shader * shader);
 	void createWireframeModelMesh(Shader * jointShader, Shader * boneShader);
+	void createCylindricalMesh(Shader * shader);
 	void drawOnlyJoints(Shader * shader, unsigned int frame, Camera & camera);
 	void drawWireframeModel(Shader * jointShader, Shader * boneShader, unsigned int frame, Camera & camera);
-	void drawSkeleton(long frame);		// OpenGL drawing method
+	void drawCylindricalModel(Shader * shader, unsigned int frame, Camera & camera);
 };
 
 

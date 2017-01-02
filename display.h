@@ -11,6 +11,7 @@ public:
 
 	void Clear(float r, float g, float b, float a);
 	void SwapBuffers();
+	void printShaderUniformsCounts(void);
 
 	virtual ~Display();
 protected:

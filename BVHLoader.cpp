@@ -6,6 +6,8 @@
 #include "Math.h"
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
+#include <glm/gtx/vector_angle.hpp>
+#include <math.h>
 
 void BVHLoader::loadMotion(std::istream & file, Animation * animation) {
 	std::string input;
@@ -188,22 +190,65 @@ Joint * BVHLoader::loadJoint(std::istream & file, Animation * animation, Joint *
 		joint->globalOffset[xOffset] += parent->globalOffset[xOffset];
 		joint->globalOffset[yOffset] += parent->globalOffset[yOffset];
 		joint->globalOffset[zOffset] += parent->globalOffset[zOffset];
+
+		// create a new bone of the cylindrical model from parent to this joint
+		CylinderBone * bone = new CylinderBone();
+		bone->parentJoint = parent;
+
+		// add translation value for bone - half of the input offset - to get to the center of the bone
+		glm::vec3 cylinderBoneTranslation = glm::vec3(parent->globalOffset[xOffset] + inputXOffset / 2.0f, 
+														parent->globalOffset[yOffset] + inputYOffset / 2.0f, 
+														parent->globalOffset[zOffset] + inputZOffset / 2.0f);
+		bone->halfTranslation = cylinderBoneTranslation;
+		
+		// compute the rotations of the bone to point from one joint to the other
+		glm::vec3 desiredDirection = glm::vec3(joint->globalOffset[xOffset] - parent->globalOffset[xOffset],
+												joint->globalOffset[yOffset] - parent->globalOffset[yOffset], 
+												joint->globalOffset[zOffset] - parent->globalOffset[zOffset]);
+		// compute angle to turn around y axis
+		glm::vec3 desiredDirectionProjectedXZ = glm::vec3(desiredDirection.x, 0.0f, desiredDirection.z);		// direction projected to xz plane
+		float yRotAngle;																	// angle between projected direction and x axis
+		if (desiredDirectionProjectedXZ == glm::vec3(0.0f)) {
+			yRotAngle = 0.0f;
+		} else {
+			yRotAngle = glm::angle(glm::normalize(desiredDirectionProjectedXZ), glm::vec3(1.0f, 0.0f, 0.0f));
+		}
+		float cylinderYRotAngle = 1.57079633f - yRotAngle;									// 90 degrees minus the obtained angle - works only on cylinder loaded with Blender export plugin
+		// compute angle to turn around z axis (and also in vertical directions plane)
+		glm::mat4 directionRotationToXY = glm::rotate(glm::mat4(1.0f), yRotAngle, glm::vec3(0.0f, 1.0f, 0.0f));
+		glm::vec3 directionRotatedXY = glm::vec3(directionRotationToXY * glm::vec4(desiredDirection, 1.0f));
+		float cylinderZRotAngle = glm::angle(glm::normalize(directionRotatedXY), glm::vec3(1.0f, 0.0f, 0.0f));
+		// compute the matrix to rotate the cylinder into the desired direction
+		glm::mat4 cylinderYRotation = glm::rotate(glm::mat4(1.0f), cylinderYRotAngle, glm::vec3(0.0f, 1.0f, 0.0f));
+		glm::mat4 cylinderZRotation = glm::rotate(glm::mat4(1.0f), cylinderZRotAngle, glm::vec3(0.0f, 0.0f, 1.0f));
+		// the cylinder is first rotated around y axis, then around z axis
+		// also, the cylinder is assumed to be in the origin (and this rotation will be the first transformed applied on it), so there is no need to translate to the origin and back
+		glm::mat4 cylinderRotation = cylinderZRotation * cylinderYRotation;				
+		bone->rotation = cylinderRotation;
+
+		// lastly compute the scale for the bone; that will make it long aproximatelly from one joint to the other
+		float cylinderLength = 2.0f;
+		float desiredLength = sqrtf(desiredDirection.x * desiredDirection.x + desiredDirection.y * desiredDirection.y + desiredDirection.z * desiredDirection.z);
+		float zFactor = (desiredLength / cylinderLength) * 0.8;				// only 80% of the scale to leave space for the joints
+		glm::mat4 cylinderScale = glm::scale(glm::vec3(1.0f, 1.0f, zFactor));
+		bone->scale = cylinderScale;
+
+		animation->skeleton->cylinderBones.push_back(bone);
+
+		// save values for representation of bones as lines (drawed by GL_LINES)
+		animation->skeleton->boneIndices.push_back(parent->index);
+		animation->skeleton->boneIndices.push_back(joint->index);
+		// push offsets of the joint and it's parent
+		animation->skeleton->wireframeModel->boneVertices.push_back(parent->globalOffset[xOffset]);
+		animation->skeleton->wireframeModel->boneVertices.push_back(parent->globalOffset[yOffset]);
+		animation->skeleton->wireframeModel->boneVertices.push_back(parent->globalOffset[zOffset]);
+		animation->skeleton->wireframeModel->boneVertices.push_back(joint->globalOffset[xOffset]);
+		animation->skeleton->wireframeModel->boneVertices.push_back(joint->globalOffset[yOffset]);
+		animation->skeleton->wireframeModel->boneVertices.push_back(joint->globalOffset[zOffset]);
 	}
 	animation->skeleton->wireframeModel->vertices.push_back(joint->globalOffset[xOffset]);
 	animation->skeleton->wireframeModel->vertices.push_back(joint->globalOffset[yOffset]);
 	animation->skeleton->wireframeModel->vertices.push_back(joint->globalOffset[zOffset]);
-	// also save the indices for the actual joint and it's parent - together they are bone; this does not occur when parsing the root
-	if (parent != NULL) {
-		animation->skeleton->boneIndices.push_back(parent->index);
-		animation->skeleton->boneIndices.push_back(joint->index);
-		// and push also offsets of the joint and it's parent to the array for creating bones as lines
-		animation->skeleton->wireframeModel->boneVertices.push_back(parent->offset[xOffset]);
-		animation->skeleton->wireframeModel->boneVertices.push_back(parent->offset[yOffset]);
-		animation->skeleton->wireframeModel->boneVertices.push_back(parent->offset[zOffset]);
-		animation->skeleton->wireframeModel->boneVertices.push_back(joint->offset[xOffset]);
-		animation->skeleton->wireframeModel->boneVertices.push_back(joint->offset[yOffset]);
-		animation->skeleton->wireframeModel->boneVertices.push_back(joint->offset[zOffset]);
-	}
 	// now only keywords JOINT, End Site or '}' can occur
 	while (file.good()) {
 		file >> input;

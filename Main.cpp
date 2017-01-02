@@ -12,67 +12,15 @@
 #include "texture.h"
 #include "transform.h"
 #include "camera.h"
+#include <glm/gtx/vector_angle.hpp>
 
 static const int DISPLAY_WIDTH = 800;
 static const int DISPLAY_HEIGHT = 600;
-
-//SDL_Window * window;
-//SDL_GLContext context;
 std::string applicationName = "Body Animation";
-
-/*bool initOpenGL(void) {
-	// set OpenGL version to 3.1
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-
-	// init modelview and projection matrices
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-	GLenum error = glGetError();
-	if (error != GL_NO_ERROR) {
-		//std::cout << "Error while initializing OpenGL. Error string: " << gluErrorString(error) << std::endl;		// gluErrorString does not work so far
-		return false;
-	} else {
-		return true;
-	}
-}
-
-bool init(void) {
-	if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
-		std::cout << "SDL could not initialize! SDL_Error: " << SDL_GetError() << std::endl;
-		return false;
-	}
-	window = SDL_CreateWindow(applicationName.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, DISPLAY_WIDTH, DISPLAY_HEIGHT, SDL_WINDOW_OPENGL);
-	if (!window) {
-		std::cout << "Error while creating and SDL OpenGL window.";
-		return false;
-	}
-	context = SDL_GL_CreateContext(window);
-	if (!initOpenGL()) {
-		return false;
-	}
-	SDL_GL_SetSwapInterval(1);
-	return true;
-}*/
-
 
 int main(int argc, char* args[])
 {
 	Display display(DISPLAY_WIDTH, DISPLAY_HEIGHT, applicationName.c_str());
-
-	/*
-	// find out how many uniforms can we use; this varies for vertex and fragment shader
-	GLint vertexUniformsCount = 0;
-	GLint fragmentUniformsCount = 0;
-	glGetIntegerv(GL_MAX_VERTEX_UNIFORM_COMPONENTS_ARB, &vertexUniformsCount);
-	glGetIntegerv(GL_MAX_FRAGMENT_UNIFORM_COMPONENTS_ARB, &fragmentUniformsCount);
-	std::cout << "Vertex shader usable uniforms count: " << vertexUniformsCount << std::endl;
-	std::cout << "Fragment shader usable uniforms count: " << fragmentUniformsCount << std::endl;
-	*/
 
 	Vertex vertices[] =
 	{
@@ -130,41 +78,61 @@ int main(int argc, char* args[])
 	// BVH animation
 
 	BVHLoader loader;
-	Animation * animation = loader.loadAnimation("BVH Files/Female1_A07_Crouch.bvh");
+
+	// BVH DEFINITIONS -----------------------------------------------------------------------------------------------------------------------------------------------
+
+	Animation * animation = loader.loadAnimation("BVH Files/01_01.bvh");
 	//Animation * animation = loader.loadAnimation("BVH Files/basic.bvh");
+	//Animation * animation = loader.loadAnimation("BVH Files/basic2.bvh");
 	//Animation * animation = loader.loadAnimation("BVH Files/test.bvh");
-	// create a wireframe shader
+
+	// SHADER DEFINITIONS -----------------------------------------------------------------------------------------------------------------------------------------------
+
 	Shader wireframeShader("./Shaders/WireframeShader");
 	Shader boneShader("./Shaders/LineBoneShader", "./Shaders/WireframeShader");
-	// we create a mesh from the loaded vertices; this has to be done after the GLEW init (which is done in Display constructor)
-	//animation->skeleton->createWireframeModelMesh(&wireframeShader);
+
+	// MESH / MODEL DEFINITIONS -----------------------------------------------------------------------------------------------------------------------------------------------
+
+	//animation->skeleton->createWireframeModelMesh(&wireframeShader);					// we create a mesh from the loaded vertices; this has to be done after the GLEW init (which is done in Display constructor)
 	animation->skeleton->createWireframeModelMesh(&wireframeShader, &boneShader);
+	animation->skeleton->createCylindricalMesh(&wireframeShader);	// create cylindrical mesh
 
-	unsigned int frameCount = animation->animationInfo->frameCount;
-	unsigned int frame = 0;
-
+	// OLD MESH / MODEL DEFINITIONS -----------------------------------------------------------------------------------------------------------------------------------------------
 
 	// monkey / cube
 	Mesh mesh(vertices, sizeof(vertices) / sizeof(vertices[0]), indices, sizeof(indices) / sizeof(indices[0]));
-	//std::vector<float> verticesVector = animation->skeleton->wireframeModel->vertices;
 	//Mesh mesh(vertices, sizeof(vertices) / sizeof(vertices[0]), indices, sizeof(indices) / sizeof(indices[0]));
 	//Mesh monkey("./res/monkey3.obj");
 	Shader shader("./Shaders/basicShader");
 	Texture texture("./res/bricks.jpg");
 	Transform transform;
 
+	// CAMERA DEFINITIONS -----------------------------------------------------------------------------------------------------------------------------------------------
 
+	// camera in -x axis looking to the origin
+	Camera camera(glm::vec3(-300.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 1000.0f);
+	//Camera camera(glm::vec3(-50.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 1000.0f);
 
-	//Camera camera(glm::vec3(0.0f, 0.0f, -5.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 100.0f);	// formerly for cube/monkey
-	//Camera camera(glm::vec3(0.0f, 0.0f, -10.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 100.0f);		// for bvh basic 
-	Camera camera(glm::vec3(-300.0f, 0.0f, 0.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 1000.0f);		// for bvh 01_01
-	//Camera camera(glm::vec3(0.0f, 0.0f, -30.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 1000.0f);		// for bvh 01_01
+	// camera in x axis looking to the origin
+	//Camera camera(glm::vec3(300.0f, 0.0f, 0.0f), glm::vec3(-1.0f, 0.0f, 0.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 1000.0f);
+	//Camera camera(glm::vec3(50.0f, 0.0f, 0.0f), glm::vec3(-1.0f, 0.0f, 0.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 1000.0f);
+
+	// camera in y axis looking to the origin - from above - doesn't work
+	//Camera camera(glm::vec3(0.0f, 500.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 1000.0f);
+
+	// camera in z axis looking to the origin (good for BVH "basic")
+	//Camera camera(glm::vec3(0.0f, 0.0f, 50.0f), glm::vec3(0.0f, 0.0f, -1.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 1000.0f);
+
+	// FRAME DEFINITIONS ------------------------------------------------------------------------------------------------------------------------------------------------
+
+	unsigned int frameCount = animation->animationInfo->frameCount;
+	unsigned int frame = 0;
+
+	// ------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 	SDL_Event e;
 	bool isRunning = true;
 	float counter = 0.0f;
-
-	// for debugging
-	std::vector<glm::vec3> cubePositions = mesh.positions;
 
 	while (isRunning)
 	{
@@ -179,8 +147,8 @@ int main(int argc, char* args[])
 		float sinCounter = sinf(counter);
 		float absSinCounter = abs(sinCounter);
 
-		//transform.GetPos()->x = sinCounter;
-		transform.GetRot()->y = counter * 0.2f;
+		//transform.getPos()->x = sinCounter;
+		//transform.GetRot()->y = counter * 0.2f;		// this was used for rotating the cube !!!
 		//transform.GetRot()->z = counter * 1;
 		//transform.GetRot()->x = counter * 1;
 		//transform.GetScale()->x = absSinCounter;
@@ -194,81 +162,21 @@ int main(int argc, char* args[])
 		shader.Update(transform, camera);
 		//monkey.draw();
 		//mesh.draw();*/
-		
-		/*
-		glm::mat4 cubeModelMatrix = transform.GetModel();
-		std::cout << "CUBE" << std::endl;
-		for (int i = 0; i < cubePositions.size(); i++) {
-			glm::vec4 cubePositionModelCoords = cubeModelMatrix * glm::vec4(cubePositions[i], 1.0f);
-			std::cout << cubePositionModelCoords[0] << " " << cubePositionModelCoords[1] << " " << cubePositionModelCoords[2] << " " << cubePositionModelCoords[3] << std::endl;
-		}
-		std::cout << "--------------------------------------------------------------------------" << std::endl;*/
 
-		// draw wireframeModel
-		// debug
-		//glm::mat4 cubeModelMatrix = transform.GetModel();
-		//animation->skeleton->root->transformPerFrame[0] = cubeModelMatrix;
-		//animation->skeleton->drawOnlyJoints(&wireframeShader, frame, camera);
-		animation->skeleton->drawWireframeModel(&wireframeShader, &boneShader, frame, camera);
-		// update frame for animation of the wireframe model
+		animation->skeleton->drawWireframeModel(&wireframeShader, &boneShader, frame, camera);		// draw wireframeModel - points and lines
+		//animation->skeleton->drawCylindricalModel(&wireframeShader, frame, camera);				// draw cylindrical model - bones as cylinders
+		
+		// update frame for animation
 		frame++;
 		if (frame == frameCount) {
 			frame = 0;
 		}
 
 		display.SwapBuffers();
-		//SDL_Delay(animation->animationInfo->frameDuration);		// 1; but with animation must be according to framerate
-		SDL_Delay(10);
+		//SDL_Delay(animation->animationInfo->frameDuration);		// 1; but with animation probably should be according to framerate
+		SDL_Delay(20);
 		counter += 0.01f;
 	}
-	/*if (!init()) {
-		return 1;
-	}*/
-
-	/*
-	//The window we'll be rendering to
-	SDL_Window* window = NULL;
-
-	//The surface contained by the window
-	SDL_Surface* screenSurface = NULL;
-
-	//Initialize SDL
-	if (SDL_Init(SDL_INIT_VIDEO) < 0)
-	{
-		printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError()); 
-	}
-	else
-	{
-		//Create window
-		window = SDL_CreateWindow("SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 600, 400, SDL_WINDOW_SHOWN);
-		if (window == NULL)
-		{
-			printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
-		}
-		else
-		{
-			//Get window surface
-			screenSurface = SDL_GetWindowSurface(window);
-
-			//Fill the surface white
-			SDL_FillRect(screenSurface, NULL, SDL_MapRGB(screenSurface->format, 0xFF, 0xFF, 0xFF));
-
-			//Update the surface
-			SDL_UpdateWindowSurface(window);
-
-			//Wait two seconds
-			SDL_Delay(2000);
-		}
-	}
-	//Destroy window
-	SDL_DestroyWindow(window);
-
-	//Quit SDL subsystems
-	SDL_Quit();
-	*/
-
-	//SDL_Delay(1000);
-
 	
 	delete animation;
 	return 0;
