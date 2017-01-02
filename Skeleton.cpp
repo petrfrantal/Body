@@ -62,11 +62,11 @@ void Skeleton::drawWireframeModel(Shader * jointShader, Shader * boneShader, uns
 		jointShader->setMVPMatrix(MVP);
 		// draw the joint
 
-		if (jointIndex != jointCount - 1) {
+		/*if (jointIndex != jointCount - 1) {
 			glm::vec4 v = glm::vec4(joints[jointIndex + 1]->globalOffset[0], joints[jointIndex + 1]->globalOffset[1], joints[jointIndex + 1]->globalOffset[2], 1.0f);
 			glm::vec4 a = modelMatrix * v;
 			std::cout << a.x << " " << a.y << " " << a.z << " " << a.w << std::endl;
-		}
+		}*/
 		mesh->drawJointAlone(jointIndex);			// draws one joint as a point
 
 		// test draw
@@ -95,7 +95,7 @@ void Skeleton::drawWireframeModel(Shader * jointShader, Shader * boneShader, uns
 		// after viewport
 		//std::cout << "Joint " << jointIndex << "(" << joints[jointIndex]->name << ") " << ": " << transformedWithViewport[0] / transformedWithViewport[3] << " " << transformedWithViewport[1] / transformedWithViewport[3] << " " << transformedWithViewport[2] / transformedWithViewport[3] << " " << transformedWithViewport[3] / transformedWithViewport[3] << std::endl;
 	}
-	std::cout << "--------------" << std::endl;
+	//std::cout << "--------------" << std::endl;
 	glBindVertexArray(0);
 	glUseProgram(0);
 	//std::cout << "----------------------------------------------------------------------" << std::endl;

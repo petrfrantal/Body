@@ -130,7 +130,7 @@ int main(int argc, char* args[])
 	// BVH animation
 
 	BVHLoader loader;
-	Animation * animation = loader.loadAnimation("BVH Files/01_01.bvh");
+	Animation * animation = loader.loadAnimation("BVH Files/Female1_A07_Crouch.bvh");
 	//Animation * animation = loader.loadAnimation("BVH Files/basic.bvh");
 	//Animation * animation = loader.loadAnimation("BVH Files/test.bvh");
 	// create a wireframe shader
