@@ -81,7 +81,7 @@ int main(int argc, char* args[])
 
 	// BVH DEFINITIONS -----------------------------------------------------------------------------------------------------------------------------------------------
 
-	Animation * animation = loader.loadAnimation("BVH Files/Female1_A07_Crouch.bvh");
+	Animation * animation = loader.loadAnimation("BVH Files/01_01.bvh");
 	//Animation * animation = loader.loadAnimation("BVH Files/basic.bvh");
 	//Animation * animation = loader.loadAnimation("BVH Files/basic2.bvh");
 	//Animation * animation = loader.loadAnimation("BVH Files/test.bvh");
@@ -110,7 +110,7 @@ int main(int argc, char* args[])
 	// CAMERA DEFINITIONS -----------------------------------------------------------------------------------------------------------------------------------------------
 
 	// camera in -x axis looking to the origin
-	Camera camera(glm::vec3(-300.0f, 100.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 1000.0f);
+	Camera camera(glm::vec3(-700.0f, 100.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 1000.0f);
 	//Camera camera(glm::vec3(-50.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 1000.0f);
 
 	// camera in x axis looking to the origin
@@ -121,7 +121,7 @@ int main(int argc, char* args[])
 	//Camera camera(glm::vec3(0.0f, 500.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 1000.0f);
 
 	// camera in z axis looking to the origin (good for BVH "basic")
-	//Camera camera(glm::vec3(0.0f, 0.0f, 50.0f), glm::vec3(0.0f, 0.0f, -1.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 1000.0f);
+	//Camera camera(glm::vec3(0.0f, 100.0f, -300.0f), glm::vec3(0.0f, 0.0f, 1.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 1000.0f);
 
 	// FRAME DEFINITIONS ------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -164,7 +164,7 @@ int main(int argc, char* args[])
 		//mesh.draw();*/
 
 		animation->skeleton->drawWireframeModel(&wireframeShader, &boneShader, frame, camera);		// draw wireframeModel - points and lines
-		//animation->skeleton->drawCylindricalModel(&wireframeShader, frame, camera);				// draw cylindrical model - bones as cylinders
+		animation->skeleton->drawCylindricalModel(&wireframeShader, frame, camera);				// draw cylindrical model - bones as cylinders
 		
 		// update frame for animation
 		frame++;
@@ -174,7 +174,7 @@ int main(int argc, char* args[])
 
 		display.SwapBuffers();
 		//SDL_Delay(animation->animationInfo->frameDuration);		// 1; but with animation probably should be according to framerate
-		SDL_Delay(20);
+		SDL_Delay(5);
 		counter += 0.01f;
 	}
 	
