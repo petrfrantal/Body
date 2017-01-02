@@ -81,7 +81,7 @@ int main(int argc, char* args[])
 
 	// BVH DEFINITIONS -----------------------------------------------------------------------------------------------------------------------------------------------
 
-	Animation * animation = loader.loadAnimation("BVH Files/01_01.bvh");
+	Animation * animation = loader.loadAnimation("BVH Files/Female1_A07_Crouch.bvh");
 	//Animation * animation = loader.loadAnimation("BVH Files/basic.bvh");
 	//Animation * animation = loader.loadAnimation("BVH Files/basic2.bvh");
 	//Animation * animation = loader.loadAnimation("BVH Files/test.bvh");
@@ -110,7 +110,7 @@ int main(int argc, char* args[])
 	// CAMERA DEFINITIONS -----------------------------------------------------------------------------------------------------------------------------------------------
 
 	// camera in -x axis looking to the origin
-	Camera camera(glm::vec3(-300.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 1000.0f);
+	Camera camera(glm::vec3(-300.0f, 100.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 1000.0f);
 	//Camera camera(glm::vec3(-50.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 1000.0f);
 
 	// camera in x axis looking to the origin

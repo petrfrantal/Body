@@ -1,0 +1,38 @@
+HIERARCHY
+ROOT Hips
+{
+  OFFSET 0 0 0
+  CHANNELS 6 Xposition Yposition Zposition Zrotation Xrotation Yrotation
+  JOINT RightUpLeg
+  {
+    OFFSET -9 -7.17245 0
+    CHANNELS 3 Zrotation Xrotation Yrotation
+    JOINT RightLeg
+    {
+      OFFSET 0 -44.0551 0
+      CHANNELS 3 Zrotation Xrotation Yrotation
+      JOINT RightFoot
+      {
+        OFFSET 0 -36.1469 0
+        CHANNELS 3 Zrotation Xrotation Yrotation
+        JOINT RightToeBase
+        {
+          OFFSET 0 -4.92256 13
+          CHANNELS 3 Zrotation Xrotation Yrotation
+          End Site
+          {
+            OFFSET 0 1 6
+          }
+        }
+      }
+    }
+  }
+}
+MOTION
+Frames:	4
+Frame Time:	0.0333333
+36.1302 39.1311 5.38709 0.371546 -0.0561998 -0.909859 -72.8779 0.00 0.00 180 32.3868 158.694 -32.5082 -63.7876 -20.5667 3.02892 -11.0672 -2.48042 
+36.1302 39.1311 5.38709 0.371546 -0.0561998 -0.909859 -72.8779 -57.0454 0.00 180 32.3868 158.694 -32.5082 -63.7876 -20.5667 3.02892 -11.0672 -2.48042 
+36.1302 39.1311 5.38709 0.371546 -0.0561998 -0.909859 -72.8779 -57.0454 -100.475 180 32.3868 158.694 -32.5082 -63.7876 -20.5667 3.02892 -11.0672 -2.48042 
+0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00
+39.5107 99.4851 24.7919 1.29283 -5.72371 0.672317 -3.21779 7.68437 -9.34312 0.0551059 5.01404 -4.71352 -8.88908 -3.36204 -0.261081 3.329 -12.1909 -3.65467 

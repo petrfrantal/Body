@@ -62,11 +62,12 @@ void Skeleton::drawWireframeModel(Shader * jointShader, Shader * boneShader, uns
 
 		// testing prints
 
-		/*if (jointIndex != jointCount - 1) {
+		if (jointIndex != jointCount - 1) {
 			glm::vec4 v = glm::vec4(joints[jointIndex + 1]->globalOffset[0], joints[jointIndex + 1]->globalOffset[1], joints[jointIndex + 1]->globalOffset[2], 1.0f);
 			glm::vec4 a = modelMatrix * v;
-			std::cout << a.x << " " << a.y << " " << a.z << " " << a.w << std::endl;
-		}*/
+
+			//std::cout << a.x << " " << a.y << " " << a.z << " " << a.w << std::endl;
+		}
 
 		//glm::vec4 position = glm::vec4(wireframeModel->vertices[3 * jointIndex], wireframeModel->vertices[3 * jointIndex + 1], wireframeModel->vertices[3 * jointIndex + 2], 1.0f);
 		// model coords
