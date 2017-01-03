@@ -214,17 +214,21 @@ Joint * BVHLoader::loadJoint(std::istream & file, Animation * animation, Joint *
 		} else {
 			yRotAngle = glm::angle(glm::normalize(desiredDirectionProjectedXZ), glm::vec3(1.0f, 0.0f, 0.0f));
 		}
-		float cylinderYRotAngle = 1.57079633f - yRotAngle;									// 90 degrees minus the obtained angle - works only on cylinder loaded with Blender export plugin
+		float cylinderYRotAngle = yRotAngle;
 		// compute angle to turn around z axis (and also in vertical directions plane)
-		glm::mat4 directionRotationToXY = glm::rotate(glm::mat4(1.0f), yRotAngle, glm::vec3(0.0f, 1.0f, 0.0f));
+		glm::mat4 directionRotationToXY = glm::rotate(glm::mat4(1.0f), -yRotAngle, glm::vec3(0.0f, 1.0f, 0.0f));
 		glm::vec3 directionRotatedXY = glm::vec3(directionRotationToXY * glm::vec4(desiredDirection, 1.0f));
 		float cylinderZRotAngle = glm::angle(glm::normalize(directionRotatedXY), glm::vec3(1.0f, 0.0f, 0.0f));
+		/*if (desiredDirection.x < 0.0f) {
+			cylinderZRotAngle *= -1.0f;
+		}*/
 		// compute the matrix to rotate the cylinder into the desired direction
+		glm::mat4 cylinderToXYRotation = glm::rotate(glm::mat4(1.0f), -1.57079633f, glm::vec3(0.0f, 1.0f, 0.0f));		// rotate the cylinder 90 degrees to XY plane
 		glm::mat4 cylinderYRotation = glm::rotate(glm::mat4(1.0f), cylinderYRotAngle, glm::vec3(0.0f, 1.0f, 0.0f));
 		glm::mat4 cylinderZRotation = glm::rotate(glm::mat4(1.0f), cylinderZRotAngle, glm::vec3(0.0f, 0.0f, 1.0f));
 		// the cylinder is first rotated around y axis, then around z axis
 		// also, the cylinder is assumed to be in the origin (and this rotation will be the first transformed applied on it), so there is no need to translate to the origin and back
-		glm::mat4 cylinderRotation = cylinderZRotation * cylinderYRotation;				
+		glm::mat4 cylinderRotation = cylinderYRotation * cylinderZRotation * cylinderToXYRotation;
 		bone->rotation = cylinderRotation;
 
 		// lastly compute the scale for the bone; that will make it long aproximatelly from one joint to the other
