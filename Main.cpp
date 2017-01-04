@@ -136,6 +136,7 @@ int main(int argc, char* args[])
 	SDL_Event e;
 	bool isRunning = true;
 	float counter = 0.0f;
+	bool play = false;
 
 	while (isRunning)
 	{
@@ -143,41 +144,42 @@ int main(int argc, char* args[])
 		{
 			if (e.type == SDL_QUIT)
 				isRunning = false;
+			else if (e.type == SDL_KEYDOWN)
+			{
+				switch (e.key.keysym.sym)
+				{
+				case SDLK_RIGHT:
+					frame++;
+					break;
+				case SDLK_LEFT:
+					frame--;
+					break;
+				case SDLK_SPACE:
+					play = !play;
+					break;
+				default:
+					break;
+				}
+			}
 		}
 
 		display.Clear(0.0f, 0.0f, 0.0f, 1.0f);
 
-		float sinCounter = sinf(counter);
-		float absSinCounter = abs(sinCounter);
-
-		//transform.getPos()->x = sinCounter;
-		//transform.GetRot()->y = counter * 0.2f;		// this was used for rotating the cube !!!
-		//transform.GetRot()->z = counter * 1;
-		//transform.GetRot()->x = counter * 1;
-		//transform.GetScale()->x = absSinCounter;
-		//transform.GetScale()->y = absSinCounter;
-
-		// draw cube or monkey
-		
-		/*
-		shader.Bind();
-		texture.Bind();
-		shader.Update(transform, camera);
-		//monkey.draw();
-		//mesh.draw();*/
-
-		animation->skeleton->drawWireframeModel(&wireframeShader, &boneShader, frame, camera);		// draw wireframeModel - points and lines
-		animation->skeleton->drawCylindricalModel(&wireframeShader, frame, camera);				// draw cylindrical model - bones as cylinders
-		
-		// update frame for animation
-		frame++;
 		if (frame == frameCount) {
 			frame = 0;
 		}
+		else if (frame == -1) {
+			frame = frameCount - 1;
+		}
+
+		animation->skeleton->drawWireframeModel(&wireframeShader, &boneShader, frame, camera);		// draw wireframeModel - points and lines
+		animation->skeleton->drawCylindricalModel(&wireframeShader, frame, camera);				// draw cylindrical model - bones as cylinders
 
 		display.SwapBuffers();
-		//SDL_Delay(animation->animationInfo->frameDuration);		// 1; but with animation probably should be according to framerate
-		SDL_Delay(500);
+		if (play) {
+			frame++;
+			SDL_Delay(20);
+		}
 		counter += 0.01f;
 	}
 	
