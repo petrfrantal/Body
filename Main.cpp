@@ -22,66 +22,12 @@ int main(int argc, char* args[])
 {
 	Display display(DISPLAY_WIDTH, DISPLAY_HEIGHT, applicationName.c_str());
 
-	Vertex vertices[] =
-	{
-		Vertex(glm::vec3(-0, -0, -0), glm::vec2(1, 0), glm::vec3(0, 0, -1)),
-		Vertex(glm::vec3(-0, 0, -0), glm::vec2(0, 0), glm::vec3(0, 0, -1)),
-		Vertex(glm::vec3(0, 0, -0), glm::vec2(0, 1), glm::vec3(0, 0, -1)),
-		Vertex(glm::vec3(0, -0, -0), glm::vec2(1, 1), glm::vec3(0, 0, -1)),
-
-		Vertex(glm::vec3(-1, -1, 1), glm::vec2(1, 0), glm::vec3(0, 0, 1)),
-		Vertex(glm::vec3(-1, 1, 1), glm::vec2(0, 0), glm::vec3(0, 0, 1)),
-		Vertex(glm::vec3(1, 1, 1), glm::vec2(0, 1), glm::vec3(0, 0, 1)),
-		Vertex(glm::vec3(1, -1, 1), glm::vec2(1, 1), glm::vec3(0, 0, 1)),
-
-		Vertex(glm::vec3(-1, -1, -1), glm::vec2(0, 1), glm::vec3(0, -1, 0)),
-		Vertex(glm::vec3(-1, -1, 1), glm::vec2(1, 1), glm::vec3(0, -1, 0)),
-		Vertex(glm::vec3(1, -1, 1), glm::vec2(1, 0), glm::vec3(0, -1, 0)),
-		Vertex(glm::vec3(1, -1, -1), glm::vec2(0, 0), glm::vec3(0, -1, 0)),
-
-		Vertex(glm::vec3(-1, 1, -1), glm::vec2(0, 1), glm::vec3(0, 1, 0)),
-		Vertex(glm::vec3(-1, 1, 1), glm::vec2(1, 1), glm::vec3(0, 1, 0)),
-		Vertex(glm::vec3(1, 1, 1), glm::vec2(1, 0), glm::vec3(0, 1, 0)),
-		Vertex(glm::vec3(1, 1, -1), glm::vec2(0, 0), glm::vec3(0, 1, 0)),
-
-		Vertex(glm::vec3(-1, -1, -1), glm::vec2(1, 1), glm::vec3(-1, 0, 0)),
-		Vertex(glm::vec3(-1, -1, 1), glm::vec2(1, 0), glm::vec3(-1, 0, 0)),
-		Vertex(glm::vec3(-1, 1, 1), glm::vec2(0, 0), glm::vec3(-1, 0, 0)),
-		Vertex(glm::vec3(-1, 1, -1), glm::vec2(0, 1), glm::vec3(-1, 0, 0)),
-
-		Vertex(glm::vec3(1, -1, -1), glm::vec2(1, 1), glm::vec3(1, 0, 0)),
-		Vertex(glm::vec3(1, -1, 1), glm::vec2(1, 0), glm::vec3(1, 0, 0)),
-		Vertex(glm::vec3(1, 1, 1), glm::vec2(0, 0), glm::vec3(1, 0, 0)),
-		Vertex(glm::vec3(1, 1, -1), glm::vec2(0, 1), glm::vec3(1, 0, 0)),
-	};
-
-	unsigned int indices[] = { 0, 1, 2,
-		0, 2, 3,
-
-		6, 5, 4,
-		7, 6, 4,
-
-		10, 9, 8,
-		11, 10, 8,
-
-		12, 13, 14,
-		12, 14, 15,
-
-		16, 17, 18,
-		16, 18, 19,
-
-		22, 21, 20,
-		23, 22, 20
-	};
-
-
 	// BVH animation
-
 	BVHLoader loader;
 
 	// BVH DEFINITIONS -----------------------------------------------------------------------------------------------------------------------------------------------
 
-	Animation * animation = loader.loadAnimation("BVH Files/01_01.bvh");
+	Animation * animation = loader.loadAnimation("BVH Files/Female1_A07_Crouch.bvh");
 	//Animation * animation = loader.loadAnimation("BVH Files/basic.bvh");
 	//Animation * animation = loader.loadAnimation("BVH Files/basic2.bvh");
 	//Animation * animation = loader.loadAnimation("BVH Files/test.bvh");
@@ -99,10 +45,6 @@ int main(int argc, char* args[])
 
 	// OLD MESH / MODEL DEFINITIONS -----------------------------------------------------------------------------------------------------------------------------------------------
 
-	// monkey / cube
-	Mesh mesh(vertices, sizeof(vertices) / sizeof(vertices[0]), indices, sizeof(indices) / sizeof(indices[0]));
-	//Mesh mesh(vertices, sizeof(vertices) / sizeof(vertices[0]), indices, sizeof(indices) / sizeof(indices[0]));
-	//Mesh monkey("./res/monkey3.obj");
 	Shader shader("./Shaders/basicShader");
 	Texture texture("./res/bricks.jpg");
 	Transform transform;
@@ -132,6 +74,7 @@ int main(int argc, char* args[])
 
 	SDL_Event e;
 	bool isRunning = true;
+	bool play = false;
 	float counter = 0.0f;
 
 	while (isRunning)
@@ -140,41 +83,42 @@ int main(int argc, char* args[])
 		{
 			if (e.type == SDL_QUIT)
 				isRunning = false;
+			else if (e.type == SDL_KEYDOWN)
+			{
+				switch (e.key.keysym.sym)
+				{
+				case SDLK_RIGHT:
+					frame++;
+					break;
+				case SDLK_LEFT:
+					frame--;
+					break;
+				case SDLK_SPACE:
+					play = !play;
+					break;
+				default:
+					break;
+				}
+			}
 		}
 
-		display.Clear(0.0f, 0.0f, 0.0f, 1.0f);
+		display.Clear(0.0f, 0.0f, 0.0f, 1.0f);	
 
-		float sinCounter = sinf(counter);
-		float absSinCounter = abs(sinCounter);
-
-		//transform.getPos()->x = sinCounter;
-		//transform.GetRot()->y = counter * 0.2f;		// this was used for rotating the cube !!!
-		//transform.GetRot()->z = counter * 1;
-		//transform.GetRot()->x = counter * 1;
-		//transform.GetScale()->x = absSinCounter;
-		//transform.GetScale()->y = absSinCounter;
-
-		// draw cube or monkey
-		
-		/*
-		shader.Bind();
-		texture.Bind();
-		shader.Update(transform, camera);
-		//monkey.draw();
-		//mesh.draw();*/
-
-		animation->skeleton->drawWireframeModel(&wireframeShader, &boneShader, frame, camera);		// draw wireframeModel - points and lines
-		animation->skeleton->drawCylindricalModel(&wireframeShader, frame, camera);				// draw cylindrical model - bones as cylinders
-		
-		// update frame for animation
-		frame++;
 		if (frame == frameCount) {
 			frame = 0;
 		}
+		else if (frame == -1) {
+			frame = frameCount - 1;
+		}
+
+		animation->skeleton->drawWireframeModel(&wireframeShader, &boneShader, frame, camera);		// draw wireframeModel - points and lines
+		animation->skeleton->drawCylindricalModel(&wireframeShader, frame, camera);				// draw cylindrical model - bones as cylinders
 
 		display.SwapBuffers();
-		//SDL_Delay(animation->animationInfo->frameDuration);		// 1; but with animation probably should be according to framerate
-		SDL_Delay(5);
+		if (play) {
+			frame++;
+			SDL_Delay(20);
+		}		
 		counter += 0.01f;
 	}
 	
