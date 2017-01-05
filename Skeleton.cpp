@@ -105,7 +105,7 @@ void Skeleton::drawWireframeModel(Shader * jointShader, Shader * boneShader, uns
 		secondMVP = projectionViewMatrix * secondModelMatrix;
 		glUniformMatrix4fv(boneShader->firstMVPLocation, 1, GL_FALSE, &firstMVP[0][0]);
 		glUniformMatrix4fv(boneShader->secondMVPLocation, 1, GL_FALSE, &secondMVP[0][0]);
-		//glDrawArrays(GL_LINES, jointIndex, 2);
+		glDrawArrays(GL_LINES, jointIndex, 2);
 	}
 	glBindVertexArray(0);
 	glUseProgram(0);	
