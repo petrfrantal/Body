@@ -111,6 +111,8 @@ Mesh::Mesh(Shader * shader) {
 
 	glEnableVertexAttribArray(shader->positionLocation);
 	glVertexAttribPointer(shader->positionLocation, 3, GL_FLOAT, GL_FALSE, cylinderNAttribsPerVertex * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(shader->normalLocation);
+	glVertexAttribPointer(shader->normalLocation, 3, GL_FLOAT, GL_FALSE, cylinderNAttribsPerVertex * sizeof(float), (void*)(3 * sizeof(float)));
 
 	glBindVertexArray(0);
 
@@ -132,6 +134,8 @@ Mesh::Mesh(Shader * shader) {
 
 	glEnableVertexAttribArray(shader->positionLocation);
 	glVertexAttribPointer(shader->positionLocation, 3, GL_FLOAT, GL_FALSE, sphereNAttribsPerVertex * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(shader->normalLocation);
+	glVertexAttribPointer(shader->normalLocation, 3, GL_FLOAT, GL_FALSE, sphereNAttribsPerVertex * sizeof(float), (void*)(3 * sizeof(float)));
 
 	glBindVertexArray(0);
 

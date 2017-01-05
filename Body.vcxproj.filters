@@ -118,5 +118,11 @@
     <None Include="Shaders\LineBoneShader.vs">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="Shaders\CylindricalModelShader.fs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\CylindricalModelShader.vs">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

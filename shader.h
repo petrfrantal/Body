@@ -7,7 +7,6 @@
 class Shader {
 	private:
 		static const unsigned int NUM_UNIFORMS = 3;
-		static const int BONE_COUNT = 43;
 		
 		GLuint vertexShader;
 		GLuint fragmentShader;
@@ -18,14 +17,17 @@ class Shader {
 		void finishShaderCreation(void);
 		void finishWireframeShaderCreation(void);
 		void finishLineBoneShaderCreation(void);
+		void finishCylindricalModelShaderCreation(void);
 	public:
 		GLuint shaderProgram;
 		GLint positionLocation;
+		GLint normalLocation;
 		GLint jointIndexLocation;
 		GLint MVPLocation;
 		GLint firstMVPLocation;
 		GLint secondMVPLocation;
-		GLint MVPsLocations[BONE_COUNT];
+		GLint modelMatrixLocation;		// these two are for calculating of the lighting in the cylindrical model
+		GLint normalMatrixLocation;
 
 		Shader(const std::string& fileName);
 		Shader(const std::string vertexShaderName, const std::string fragmentShaderName);

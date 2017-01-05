@@ -18,9 +18,25 @@ Shader::Shader(const std::string & fileName)
 	fragmentShader = createShader(loadShader(fileName + ".fs"), GL_FRAGMENT_SHADER);
 	if (fileName == "./Shaders/WireframeShader") {
 		finishWireframeShaderCreation();
+	} else if (fileName == "./Shaders/CylindricalModelShader") {
+		finishCylindricalModelShaderCreation();
 	} else {
 		finishShaderCreation();
 	}
+}
+
+void Shader::finishCylindricalModelShaderCreation(void) {
+	glAttachShader(shaderProgram, vertexShader);
+	glAttachShader(shaderProgram, fragmentShader);
+	glLinkProgram(shaderProgram);
+	checkShaderError(shaderProgram, GL_LINK_STATUS, true, "Error linking shader program");
+	glValidateProgram(shaderProgram);
+	checkShaderError(shaderProgram, GL_LINK_STATUS, true, "Invalid shader program");
+	positionLocation = glGetAttribLocation(shaderProgram, "position");
+	MVPLocation = glGetUniformLocation(shaderProgram, "MVP");
+	normalLocation = glGetAttribLocation(shaderProgram, "normal");
+	modelMatrixLocation = glGetUniformLocation(shaderProgram, "modelMatrix");
+	normalMatrixLocation = glGetUniformLocation(shaderProgram, "normalMatrix");
 }
 
 void Shader::finishLineBoneShaderCreation(void) {
@@ -34,14 +50,6 @@ void Shader::finishLineBoneShaderCreation(void) {
 	jointIndexLocation = glGetAttribLocation(shaderProgram, "index");
 	firstMVPLocation = glGetUniformLocation(shaderProgram, "firstMVP");
 	secondMVPLocation = glGetUniformLocation(shaderProgram, "secondMVP");
-
-	/*
-	std::string name;
-	for (int i = 0; i < BONE_COUNT; i++) {
-		name = "MVP[" + std::to_string(i);
-		name += "]";
-		MVPsLocations[i] = glGetUniformLocation(shaderProgram, name.c_str());
-	}*/
 }
 
 void Shader::finishWireframeShaderCreation(void) {
