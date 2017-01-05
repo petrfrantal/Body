@@ -133,7 +133,7 @@ int main(int argc, char* args[])
 	unsigned int frame = 0;
 
 	// ------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
+  
 	SDL_Event e;
 	bool isRunning = true;
 	float counter = 0.0f;
@@ -183,7 +183,6 @@ int main(int argc, char* args[])
 		}
 		counter += 0.01f;
 	}
-	
 	delete animation;
 	return 0;
 }
