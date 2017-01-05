@@ -125,6 +125,7 @@ int main(int argc, char* args[])
 
 	// camera in z axis looking to the origin (good for BVH "basic")
 	Camera camera(glm::vec3(0.0f, 150.0f, -250.0f), glm::vec3(0.0f, 0.0f, 1.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 1000.0f);
+	//Camera camera(glm::vec3(0.0f, 00.0f, -50.0f), glm::vec3(0.0f, 0.0f, 1.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 1000.0f);
 
 	// FRAME DEFINITIONS ------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -172,8 +173,8 @@ int main(int argc, char* args[])
 			frame = frameCount - 1;
 		}
 
-		animation->skeleton->drawWireframeModel(&wireframeShader, &boneShader, frame, camera);		// draw wireframeModel - points and lines
-		//animation->skeleton->drawCylindricalModel(&wireframeShader, frame, camera);				// draw cylindrical model - bones as cylinders
+		//animation->skeleton->drawWireframeModel(&wireframeShader, &boneShader, frame, camera);		// draw wireframeModel - points and lines
+		animation->skeleton->drawCylindricalModel(&wireframeShader, frame, camera);				// draw cylindrical model - bones as cylinders
 
 		display.SwapBuffers();
 		if (play) {
