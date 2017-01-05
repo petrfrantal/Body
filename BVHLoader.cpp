@@ -235,7 +235,7 @@ Joint * BVHLoader::loadJoint(std::istream & file, Animation * animation, Joint *
 		float cylinderLength = 2.0f;
 		float desiredLength = sqrtf(desiredDirection.x * desiredDirection.x + desiredDirection.y * desiredDirection.y + desiredDirection.z * desiredDirection.z);
 		float zFactor = (desiredLength / cylinderLength) * 0.8;				// only 80% of the scale to leave space for the joints
-		glm::mat4 cylinderScale = glm::scale(glm::vec3(1.0f, 1.0f, zFactor));
+		glm::mat4 cylinderScale = glm::scale(glm::vec3(2.5f, 2.5f, zFactor));
 		bone->scale = cylinderScale;
 
 		animation->skeleton->cylinderBones.push_back(bone);
