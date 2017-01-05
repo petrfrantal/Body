@@ -14,8 +14,8 @@
 #include "camera.h"
 #include <glm/gtx/vector_angle.hpp>
 
-static const int DISPLAY_WIDTH = 800;
-static const int DISPLAY_HEIGHT = 600;
+static const int DISPLAY_WIDTH = 1280;
+static const int DISPLAY_HEIGHT = 720;
 std::string applicationName = "Body Animation";
 
 int main(int argc, char* args[])
@@ -81,8 +81,18 @@ int main(int argc, char* args[])
 
 	// BVH DEFINITIONS -----------------------------------------------------------------------------------------------------------------------------------------------
 
+	//Animation * animation = loader.loadAnimation("BVH Files/Female1_bvh/Female1_B25_CrouchToWalk.bvh");
+	//Animation * animation = loader.loadAnimation("BVH Files/Female1_bvh/Female1_C19_RunToHopToWalk.bvh");
+	Animation * animation = loader.loadAnimation("BVH Files/Female1_bvh/Female1_A13_Skipping.bvh");
+
+	
+	
+
+
+
 	//Animation * animation = loader.loadAnimation("BVH Files/01_01.bvh");
-	Animation * animation = loader.loadAnimation("BVH Files/Female1_A07_Crouch.bvh");
+	
+	
 	//Animation * animation = loader.loadAnimation("BVH Files/testLeg.bvh");
 	//Animation * animation = loader.loadAnimation("BVH Files/testBothLegs.bvh");
 	//Animation * animation = loader.loadAnimation("BVH Files/basic.bvh");
@@ -124,7 +134,7 @@ int main(int argc, char* args[])
 	//Camera camera(glm::vec3(0.0f, 500.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 1000.0f);
 
 	// camera in z axis looking to the origin (good for BVH "basic")
-	Camera camera(glm::vec3(0.0f, 150.0f, -250.0f), glm::vec3(0.0f, 0.0f, 1.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 1000.0f);
+	Camera camera(glm::vec3(0.0f, 150.0f, -400.0f), glm::vec3(0.0f, 0.0f, 1.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 1000.0f);
 	//Camera camera(glm::vec3(0.0f, 00.0f, -50.0f), glm::vec3(0.0f, 0.0f, 1.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 1000.0f);
 
 	// FRAME DEFINITIONS ------------------------------------------------------------------------------------------------------------------------------------------------
@@ -181,7 +191,7 @@ int main(int argc, char* args[])
 			frame++;
 			SDL_Delay(20);
 		}
-		counter += 0.01f;
+		counter += 0.033f;
 	}
 	delete animation;
 	return 0;
