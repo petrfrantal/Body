@@ -6,8 +6,11 @@
 
 #include <string>
 #include <vector>
-#include "Math.h"
 #include <glm/glm.hpp>
+#include "mesh.h"
+#include "obj_loader.h"
+#include "shader.h"
+#include "glm/gtc/type_ptr.hpp"
 
 /**
 *	Joint representation.
@@ -15,22 +18,53 @@
 struct Joint {
 	std::string name;
 	Joint * parent;
+	unsigned int index;			// used for indexing into EBO
 	std::vector<Joint *> children;
 	int childrenCount;
 	float offset[3];
-	int rotationOrder[3];	
-	std::vector<glm::vec3> positionPerFrame;	// used only in the root joint, only which has the position channels defined in BVH file
-	std::vector<glm::vec3> rotationPerFrame;
+	float globalOffset[3];
+	int rotationOrder[3];
+	std::vector<glm::mat4> transformPerFrame;
+};
+
+struct CylinderBone {
+	glm::vec3 halfTranslation;		// translation to the center of the bone; that is half way from the one joint to the another
+	glm::mat4 rotation;				// rotation to adjust the bone's direction to point from first joint to the other
+	glm::mat4 scale;
+	Joint * parentJoint;			// a joint which translation this bone inherits
 };
 
 /**
 *	Skeleton representation.
-*	In the article is it called MOCAPSEGMENT.
 */
 struct Skeleton {
 	Joint * root;
 	std::vector<Joint *> joints;		// array of pointers to all joints in the skeleton
-	void drawSkeleton(long frame);		// OpenGL drawing method
+	Mesh * mesh;
+	Mesh * cylindricalMesh;
+
+	// cylinder bones
+	std::vector<glm::vec3> cylinderTranslations;		// translations of the cylinder to bones
+	//std::vector<glm::mat4> cylinderTransforms;		// transforms of the cylinder bones per frame
+	std::vector<CylinderBone *> cylinderBones;
+
+	WireframeModel * wireframeModel;
+	std::vector<unsigned int> boneIndices;
+	const int BONE_COUNT = 43;
+	// testing viewport matrix
+	float arr [16] = {400.0f, 0.0f, 0.0f, 0.0f,
+						0.0f, 300.0f, 0.0f, 0.0f,
+						0.0f, 0.0, 1.0f, 0.0f, 
+						400.0f, 300.0f, 0.0f, 1.0f};
+	glm::mat4 viewport = glm::make_mat4(arr);
+	// constructors and methods
+	Skeleton(void);
+	void createWireframeModelMesh(Shader * shader);
+	void createWireframeModelMesh(Shader * jointShader, Shader * boneShader);
+	void createCylindricalMesh(Shader * shader);
+	void drawOnlyJoints(Shader * shader, unsigned int frame, Camera & camera);
+	void drawWireframeModel(Shader * jointShader, Shader * boneShader, unsigned int frame, Camera & camera);
+	void drawCylindricalModel(Shader * shader, unsigned int frame, Camera & camera);
 };
 
 

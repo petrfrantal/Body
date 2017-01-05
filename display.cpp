@@ -23,10 +23,14 @@ Display::Display(int width, int height, const std::string& title)
 		std::cerr << "Glew failed to initialize!" << std::endl;
     }
 
+	//std::cout << glGetString(GL_VERSION) << std::endl;
+
 	glEnable(GL_DEPTH_TEST);
 
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
+
+	glViewport(0, 0, (GLsizei)width, (GLsizei)height);
 }
 
 Display::~Display()
@@ -45,4 +49,14 @@ void Display::Clear(float r, float g, float b, float a)
 void Display::SwapBuffers()
 {
 	SDL_GL_SwapWindow(m_window);
+}
+
+// find out how many uniforms can we use; this varies for vertex and fragment shader
+void Display::printShaderUniformsCounts(void) {
+	GLint vertexUniformsCount = 0;
+	GLint fragmentUniformsCount = 0;
+	glGetIntegerv(GL_MAX_VERTEX_UNIFORM_COMPONENTS_ARB, &vertexUniformsCount);
+	glGetIntegerv(GL_MAX_FRAGMENT_UNIFORM_COMPONENTS_ARB, &fragmentUniformsCount);
+	std::cout << "Vertex shader usable uniforms count: " << vertexUniformsCount << std::endl;
+	std::cout << "Fragment shader usable uniforms count: " << fragmentUniformsCount << std::endl;
 }

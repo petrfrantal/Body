@@ -2,19 +2,57 @@
 #include <iostream>
 #include <fstream>
 
+Shader::Shader(const std::string vertexShaderName, const std::string fragmentShaderName) {
+	shaderProgram = glCreateProgram();
+	vertexShader = createShader(loadShader(vertexShaderName + ".vs"), GL_VERTEX_SHADER);
+	fragmentShader = createShader(loadShader(fragmentShaderName + ".fs"), GL_FRAGMENT_SHADER);
+	//finishShaderCreation();
+	//finishWireframeShaderCreation();
+	finishLineBoneShaderCreation();
+}
+
 Shader::Shader(const std::string & fileName)
 {
 	shaderProgram = glCreateProgram();
 	vertexShader = createShader(loadShader(fileName + ".vs"), GL_VERTEX_SHADER);
 	fragmentShader = createShader(loadShader(fileName + ".fs"), GL_FRAGMENT_SHADER);
-	finishShaderCreation();
+	if (fileName == "./Shaders/WireframeShader") {
+		finishWireframeShaderCreation();
+	} else {
+		finishShaderCreation();
+	}
 }
 
-Shader::Shader(const std::string vertexShaderName, const std::string fragmentShaderName) {
-	shaderProgram = glCreateProgram();
-	vertexShader = createShader(loadShader(vertexShaderName + ".vs"), GL_VERTEX_SHADER);
-	fragmentShader = createShader(loadShader(fragmentShaderName + ".fs"), GL_FRAGMENT_SHADER);
-	finishShaderCreation();
+void Shader::finishLineBoneShaderCreation(void) {
+	glAttachShader(shaderProgram, vertexShader);
+	glAttachShader(shaderProgram, fragmentShader);
+	glLinkProgram(shaderProgram);
+	checkShaderError(shaderProgram, GL_LINK_STATUS, true, "Error linking shader program");
+	glValidateProgram(shaderProgram);
+	checkShaderError(shaderProgram, GL_LINK_STATUS, true, "Invalid shader program");
+	positionLocation = glGetAttribLocation(shaderProgram, "position");
+	jointIndexLocation = glGetAttribLocation(shaderProgram, "index");
+	firstMVPLocation = glGetUniformLocation(shaderProgram, "firstMVP");
+	secondMVPLocation = glGetUniformLocation(shaderProgram, "secondMVP");
+
+	/*
+	std::string name;
+	for (int i = 0; i < BONE_COUNT; i++) {
+		name = "MVP[" + std::to_string(i);
+		name += "]";
+		MVPsLocations[i] = glGetUniformLocation(shaderProgram, name.c_str());
+	}*/
+}
+
+void Shader::finishWireframeShaderCreation(void) {
+	glAttachShader(shaderProgram, vertexShader);
+	glAttachShader(shaderProgram, fragmentShader);
+	glLinkProgram(shaderProgram);
+	checkShaderError(shaderProgram, GL_LINK_STATUS, true, "Error linking shader program");
+	glValidateProgram(shaderProgram);
+	checkShaderError(shaderProgram, GL_LINK_STATUS, true, "Invalid shader program");
+	positionLocation = glGetAttribLocation(shaderProgram, "position");
+	MVPLocation = glGetUniformLocation(shaderProgram, "MVP");
 }
 
 void Shader::finishShaderCreation(void) {
@@ -58,6 +96,10 @@ void Shader::Update(const Transform& transform, const Camera& camera)
 	glUniformMatrix4fv(m_uniforms[0], 1, GL_FALSE, &MVP[0][0]);
 	glUniformMatrix4fv(m_uniforms[1], 1, GL_FALSE, &Normal[0][0]);
 	glUniform3f(m_uniforms[2], 0.0f, 0.0f, 1.0f);
+}
+
+void Shader::setMVPMatrix(glm::mat4 & MVP) {
+	glUniformMatrix4fv(MVPLocation, 1, GL_FALSE, &MVP[0][0]);
 }
 
 std::string Shader::loadShader(const std::string& fileName)

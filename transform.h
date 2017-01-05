@@ -29,13 +29,13 @@ public:
 
 	inline glm::mat4 GetMVP(const Camera& camera) const
 	{
-		glm::mat4 VP = camera.GetViewProjection();
+		glm::mat4 VP = camera.getViewProjection();
 		glm::mat4 M = GetModel();
 
-		return VP * M;//camera.GetViewProjection() * GetModel();
+		return VP * M;//camera.getViewProjection() * GetModel();
 	}
 
-	inline glm::vec3* GetPos() { return &pos; }
+	inline glm::vec3* getPos() { return &pos; }
 	inline glm::vec3* GetRot() { return &rot; }
 	inline glm::vec3* GetScale() { return &scale; }
 

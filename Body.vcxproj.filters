@@ -45,6 +45,9 @@
     <ClCompile Include="stb_image.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Skeleton.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Skeleton.h">
@@ -89,12 +92,30 @@
     <ClInclude Include="texture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Math.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Cylinder.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sphere.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\basicShader.fs">
       <Filter>Shaders</Filter>
     </None>
     <None Include="Shaders\basicShader.vs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\WireframeShader.vs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\WireframeShader.fs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\LineBoneShader.vs">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>
