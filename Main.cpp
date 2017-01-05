@@ -119,7 +119,7 @@ int main(int argc, char* args[])
 	// CAMERA DEFINITIONS -----------------------------------------------------------------------------------------------------------------------------------------------
 
 	// camera in -x axis looking to the origin
-	Camera camera(glm::vec3(-400.0f, 150.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 1000.0f);
+	//Camera camera(glm::vec3(-400.0f, 150.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 1000.0f);
 	//Camera camera(glm::vec3(-50.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 1000.0f);
 
 	// camera in x axis looking to the origin
