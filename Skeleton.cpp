@@ -112,14 +112,35 @@ void Skeleton::drawWireframeModel(Shader * jointShader, Shader * boneShader, uns
 }
 
 void Skeleton::drawCylindricalModel(Shader * shader, unsigned int frame, Camera & camera) {
-	glUseProgram(shader->shaderProgram);
-	glBindVertexArray(cylindricalMesh->vertexArrayObject);
 	glm::mat4 projectionViewMatrix = camera.getViewProjection();
 	glm::mat4 modelMatrix;
 	glm::mat4 translate;
 	glm::mat4 rotation;
+	glm::mat4 scale;
 	glm::mat4 parentTransform;
 	glm::mat4 MVP;
+	glUseProgram(shader->shaderProgram);
+
+	// Draw spheres as joints
+
+	size_t jointCount = joints.size();
+	Joint * joint;
+	glBindVertexArray(cylindricalMesh->sphereVertexArrayObject);
+	for (size_t jointIndex = 0; jointIndex < jointCount; jointIndex++) {
+		joint = joints[jointIndex];
+		modelMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(3.5f, 3.5f, 3.5f));
+		translate = glm::translate(glm::mat4(1.0f), glm::vec3(joint->globalOffset[0], joint->globalOffset[1], joint->globalOffset[2]));
+		modelMatrix = translate * modelMatrix;
+		modelMatrix = joint->transformPerFrame[frame] * modelMatrix;
+		MVP = projectionViewMatrix * modelMatrix;
+		glUniformMatrix4fv(shader->MVPLocation, 1, GL_FALSE, &MVP[0][0]);
+		glDrawElements(GL_TRIANGLES, cylindricalMesh->sphereTriangleCount * 3, GL_UNSIGNED_INT, 0);
+	}
+	glBindVertexArray(0);
+
+	// Draw cylinders as bones
+
+	glBindVertexArray(cylindricalMesh->vertexArrayObject);
 	size_t boneCount = cylinderBones.size();
 	CylinderBone * bone;
 	for (size_t i = 0; i < boneCount; i++) {

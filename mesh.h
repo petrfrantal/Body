@@ -44,6 +44,8 @@ private:
 	//GLuint vertexArrayObject;		// VAO
 	GLuint vertexBufferObject;		// VBO
 	GLuint elementBufferObject;		// EBO
+	GLuint sphereVertexBufferObject;	// VBO for sphere model
+	GLuint sphereElementBufferObject;	// EBO for sphere model
 
 	// VBOs for bones as lines
 	GLuint lineVertexAttrBufferObject;		// vertices
@@ -52,10 +54,12 @@ private:
 	unsigned int m_numIndices;
 	void initMesh(const IndexedModel& model);
 public:
-	GLuint vertexArrayObject;		// VAO
+	GLuint vertexArrayObject;			// VAO for cylinder model
+	GLuint sphereVertexArrayObject;		// VAO for sphere model
 	GLuint lineVertexArrayObject;		// VAO for bones as lines
 
 	unsigned int cylinderTriangleCount;
+	unsigned int sphereTriangleCount;
 
     Mesh(const std::string& fileName);
 	Mesh(WireframeModel * wireframeModel, Shader * shader);

@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include "shader.h"
 #include "Cylinder.h"
+#include "Sphere.h"
 
 Mesh::Mesh(WireframeModel * wireframeModel, Shader * shader) {
 	// generate VAO
@@ -91,6 +92,9 @@ Mesh::Mesh(WireframeModel * wireframeModel, Shader * jointShader, Shader * lineB
 
 // Used for the cylindrical model
 Mesh::Mesh(Shader * shader) {
+
+	// Cylinder model
+
 	// generate VAO
 	glGenVertexArrays(1, &vertexArrayObject);
 	glBindVertexArray(vertexArrayObject);
@@ -98,13 +102,11 @@ Mesh::Mesh(Shader * shader) {
 	// vertices - VBO
 	glGenBuffers(1, &vertexBufferObject);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
-	//glBufferData(GL_ARRAY_BUFFER, sizeof(float) * verticesSize, vertices, GL_STATIC_DRAW);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(cylinderVertices), cylinderVertices, GL_STATIC_DRAW);
 
 	// indices - EBO
 	glGenBuffers(1, &elementBufferObject);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBufferObject);
-	//glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * indicesSize, indices, GL_STATIC_DRAW);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cylinderTriangles), cylinderTriangles, GL_STATIC_DRAW);
 
 	glEnableVertexAttribArray(shader->positionLocation);
@@ -112,7 +114,29 @@ Mesh::Mesh(Shader * shader) {
 
 	glBindVertexArray(0);
 
+	// Sphere model
+
+	// generate VAO
+	glGenVertexArrays(1, &sphereVertexArrayObject);
+	glBindVertexArray(sphereVertexArrayObject);
+
+	// vertices - VBO
+	glGenBuffers(1, &sphereVertexBufferObject);
+	glBindBuffer(GL_ARRAY_BUFFER, sphereVertexBufferObject);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(sphereVertices), sphereVertices, GL_STATIC_DRAW);
+
+	// indices - EBO
+	glGenBuffers(1, &sphereElementBufferObject);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sphereElementBufferObject);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(sphereTriangles), sphereTriangles, GL_STATIC_DRAW);
+
+	glEnableVertexAttribArray(shader->positionLocation);
+	glVertexAttribPointer(shader->positionLocation, 3, GL_FLOAT, GL_FALSE, sphereNAttribsPerVertex * sizeof(float), (void*)0);
+
+	glBindVertexArray(0);
+
 	cylinderTriangleCount = cylinderNTriangles;
+	sphereTriangleCount = sphereNTriangles;
 }
 
 Mesh::Mesh(const std::string& fileName)
