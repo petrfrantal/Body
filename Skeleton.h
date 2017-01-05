@@ -42,21 +42,10 @@ struct Skeleton {
 	std::vector<Joint *> joints;		// array of pointers to all joints in the skeleton
 	Mesh * mesh;
 	Mesh * cylindricalMesh;
-
 	// cylinder bones
-	std::vector<glm::vec3> cylinderTranslations;		// translations of the cylinder to bones
-	//std::vector<glm::mat4> cylinderTransforms;		// transforms of the cylinder bones per frame
 	std::vector<CylinderBone *> cylinderBones;
-
 	WireframeModel * wireframeModel;
 	std::vector<unsigned int> boneIndices;
-	const int BONE_COUNT = 43;
-	// testing viewport matrix
-	float arr [16] = {400.0f, 0.0f, 0.0f, 0.0f,
-						0.0f, 300.0f, 0.0f, 0.0f,
-						0.0f, 0.0, 1.0f, 0.0f, 
-						400.0f, 300.0f, 0.0f, 1.0f};
-	glm::mat4 viewport = glm::make_mat4(arr);
 	// constructors and methods
 	Skeleton(void);
 	void createWireframeModelMesh(Shader * shader);

@@ -160,6 +160,8 @@
   <ItemGroup>
     <None Include="Shaders\basicShader.fs" />
     <None Include="Shaders\basicShader.vs" />
+    <None Include="Shaders\CylindricalModelShader.fs" />
+    <None Include="Shaders\CylindricalModelShader.vs" />
     <None Include="Shaders\LineBoneShader.vs" />
     <None Include="Shaders\WireframeShader.fs" />
     <None Include="Shaders\WireframeShader.vs" />

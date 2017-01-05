@@ -119,6 +119,7 @@ void Skeleton::drawCylindricalModel(Shader * shader, unsigned int frame, Camera 
 	glm::mat4 scale;
 	glm::mat4 parentTransform;
 	glm::mat4 MVP;
+	glm::mat4 normalMatrix;
 	glUseProgram(shader->shaderProgram);
 
 	// Draw spheres as joints
@@ -132,8 +133,11 @@ void Skeleton::drawCylindricalModel(Shader * shader, unsigned int frame, Camera 
 		translate = glm::translate(glm::mat4(1.0f), glm::vec3(joint->globalOffset[0], joint->globalOffset[1], joint->globalOffset[2]));
 		modelMatrix = translate * modelMatrix;
 		modelMatrix = joint->transformPerFrame[frame] * modelMatrix;
+		normalMatrix = glm::transpose(glm::inverse(modelMatrix));
 		MVP = projectionViewMatrix * modelMatrix;
 		glUniformMatrix4fv(shader->MVPLocation, 1, GL_FALSE, &MVP[0][0]);
+		glUniformMatrix4fv(shader->modelMatrixLocation, 1, GL_FALSE, &modelMatrix[0][0]);
+		glUniformMatrix4fv(shader->normalMatrixLocation, 1, GL_FALSE, &normalMatrix[0][0]);
 		glDrawElements(GL_TRIANGLES, cylindricalMesh->sphereTriangleCount * 3, GL_UNSIGNED_INT, 0);
 	}
 	glBindVertexArray(0);
@@ -164,8 +168,11 @@ void Skeleton::drawCylindricalModel(Shader * shader, unsigned int frame, Camera 
 
 		//modelMatrix = glm::scale(modelMatrix, glm::vec3(3.0f, 3.0f, 3.0f));			// test scale
 
+		normalMatrix = glm::transpose(glm::inverse(modelMatrix));
 		MVP = projectionViewMatrix * modelMatrix;
 		glUniformMatrix4fv(shader->MVPLocation, 1, GL_FALSE, &MVP[0][0]);
+		glUniformMatrix4fv(shader->modelMatrixLocation, 1, GL_FALSE, &modelMatrix[0][0]);
+		glUniformMatrix4fv(shader->normalMatrixLocation, 1, GL_FALSE, &normalMatrix[0][0]);
 		glDrawElements(GL_TRIANGLES, cylindricalMesh->cylinderTriangleCount * 3, GL_UNSIGNED_INT, 0);
 	}
 	glBindVertexArray(0);

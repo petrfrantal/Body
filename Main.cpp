@@ -85,14 +85,9 @@ int main(int argc, char* args[])
 	//Animation * animation = loader.loadAnimation("BVH Files/Female1_bvh/Female1_C19_RunToHopToWalk.bvh");
 	Animation * animation = loader.loadAnimation("BVH Files/Female1_bvh/Female1_A13_Skipping.bvh");
 
-	
-	
-
-
 
 	//Animation * animation = loader.loadAnimation("BVH Files/01_01.bvh");
-	
-	
+	//Animation * animation = loader.loadAnimation("BVH Files/Female1_A07_Crouch.bvh");
 	//Animation * animation = loader.loadAnimation("BVH Files/testLeg.bvh");
 	//Animation * animation = loader.loadAnimation("BVH Files/testBothLegs.bvh");
 	//Animation * animation = loader.loadAnimation("BVH Files/basic.bvh");
@@ -103,12 +98,13 @@ int main(int argc, char* args[])
 
 	Shader wireframeShader("./Shaders/WireframeShader");
 	Shader boneShader("./Shaders/LineBoneShader", "./Shaders/WireframeShader");
+	Shader cylindricalModelShader("./Shaders/CylindricalModelShader");
 
 	// MESH / MODEL DEFINITIONS -----------------------------------------------------------------------------------------------------------------------------------------------
 
 	//animation->skeleton->createWireframeModelMesh(&wireframeShader);					// we create a mesh from the loaded vertices; this has to be done after the GLEW init (which is done in Display constructor)
 	animation->skeleton->createWireframeModelMesh(&wireframeShader, &boneShader);
-	animation->skeleton->createCylindricalMesh(&wireframeShader);	// create cylindrical mesh
+	animation->skeleton->createCylindricalMesh(&cylindricalModelShader);				// create cylindrical mesh
 
 	// OLD MESH / MODEL DEFINITIONS -----------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -123,17 +119,18 @@ int main(int argc, char* args[])
 	// CAMERA DEFINITIONS -----------------------------------------------------------------------------------------------------------------------------------------------
 
 	// camera in -x axis looking to the origin
-	//Camera camera(glm::vec3(-300.0f, 100.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 1000.0f);
+	Camera camera(glm::vec3(-400.0f, 150.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 1000.0f);
 	//Camera camera(glm::vec3(-50.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 1000.0f);
 
 	// camera in x axis looking to the origin
-	//Camera camera(glm::vec3(300.0f, 100.0f, 50.0f), glm::vec3(-1.0f, 0.0f, 0.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 1000.0f);
+	//Camera camera(glm::vec3(400.0f, 150.0f, 0.0f), glm::vec3(-1.0f, 0.0f, 0.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 1000.0f);
 	//Camera camera(glm::vec3(50.0f, 0.0f, 0.0f), glm::vec3(-1.0f, 0.0f, 0.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 1000.0f);
 
 	// camera in y axis looking to the origin - from above - doesn't work
 	//Camera camera(glm::vec3(0.0f, 500.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 1000.0f);
 
 	// camera in z axis looking to the origin (good for BVH "basic")
+	//Camera camera(glm::vec3(0.0f, 150.0f, -250.0f), glm::vec3(0.0f, 0.0f, 1.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 1000.0f);
 	Camera camera(glm::vec3(0.0f, 150.0f, -400.0f), glm::vec3(0.0f, 0.0f, 1.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 1000.0f);
 	//Camera camera(glm::vec3(0.0f, 00.0f, -50.0f), glm::vec3(0.0f, 0.0f, 1.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 1000.0f);
 
@@ -184,7 +181,7 @@ int main(int argc, char* args[])
 		}
 
 		//animation->skeleton->drawWireframeModel(&wireframeShader, &boneShader, frame, camera);		// draw wireframeModel - points and lines
-		animation->skeleton->drawCylindricalModel(&wireframeShader, frame, camera);				// draw cylindrical model - bones as cylinders
+		animation->skeleton->drawCylindricalModel(&cylindricalModelShader, frame, camera);			// draw cylindrical model - bones as cylinders
 
 		display.SwapBuffers();
 		if (play) {
