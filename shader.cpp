@@ -96,7 +96,7 @@ void Shader::Bind()
 	glUseProgram(shaderProgram);
 }
 
-void Shader::Update(const Transform& transform, const Camera& camera)
+void Shader::Update(const Transform& transform, Camera & camera)
 {
 	glm::mat4 MVP = transform.GetMVP(camera);
 	glm::mat4 Normal = transform.GetModel();

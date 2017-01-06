@@ -27,7 +27,7 @@ public:
 		return posMat * rotMat * scaleMat;
 	}
 
-	inline glm::mat4 GetMVP(const Camera& camera) const
+	inline glm::mat4 GetMVP(Camera & camera) const
 	{
 		glm::mat4 VP = camera.getViewProjection();
 		glm::mat4 M = GetModel();
