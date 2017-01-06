@@ -32,7 +32,7 @@ class Shader {
 		Shader(const std::string& fileName);
 		Shader(const std::string vertexShaderName, const std::string fragmentShaderName);
 		void Bind();
-		void Update(const Transform& transform, const Camera& camera);
+		void Update(const Transform& transform, Camera& camera);
 		void setMVPMatrix(glm::mat4 & MVP);
 		~Shader();
 };
