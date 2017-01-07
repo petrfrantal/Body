@@ -37,6 +37,8 @@ void Shader::finishCylindricalModelShaderCreation(void) {
 	normalLocation = glGetAttribLocation(shaderProgram, "normal");
 	modelMatrixLocation = glGetUniformLocation(shaderProgram, "modelMatrix");
 	normalMatrixLocation = glGetUniformLocation(shaderProgram, "normalMatrix");
+	pointLight1PositionLocation = glGetUniformLocation(shaderProgram, "pointLight1Position");
+	pointLight2PositionLocation = glGetUniformLocation(shaderProgram, "pointLight2Position");
 }
 
 void Shader::finishLineBoneShaderCreation(void) {

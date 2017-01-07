@@ -5,6 +5,8 @@ smooth in vec3 normal_v;
 
 uniform mat4 modelMatrix;
 uniform mat4 normalMatrix;
+uniform vec3 pointLight1Position;
+uniform vec3 pointLight2Position;
 
 out vec4 color_f;
 
@@ -14,12 +16,10 @@ vec4 sunDiffuseComponent(vec3 normal_v, vec3 materialDiffuse, vec3 sunDiffuse, v
 	return vec4(materialDiffuse * sunDiffuse * NLdot, 0.0f);
 }
 
-vec4 sunSpecularComponent(vec3 position_v, vec3 normal_v, vec3 cameraPosition, vec3 sunDirection, vec3 materialSpecular, vec3 sunSpecular, float materialShininess) {
-	vec3 L = normalize(-sunDirection);
-	vec3 R = reflect(-L, normal_v);
-	vec3 V = normalize(cameraPosition - position_v);
-	float RVdot = max(0.0f, dot(R, V));
-	return vec4(materialSpecular * sunSpecular * pow(RVdot, materialShininess), 0.0f);
+vec4 pointLightDiffuseComponent(vec3 position_v, vec3 normal_v, vec3 pointLightPosition, vec3 materialDiffuse, vec3 pointLightDiffuse) {
+	vec3 L = normalize(pointLightPosition - position_v);
+	float NLdot = max(0.0f, dot(normal_v, L));
+	return vec4(materialDiffuse * pointLightDiffuse * NLdot, 0.0f);
 }
 
 void main()
@@ -32,12 +32,15 @@ void main()
 
 	// hardcoded light and material
 	vec3 materialDiffuse = vec3(1.0f, 1.0f, 1.0f);
-	vec3 sunDiffuse = vec3(1.0f, 1.0f, 1.0f);
 	vec3 sunDirection = vec3(10.0f, -10.0f, 0.0f);
+	vec3 sunDiffuse = vec3(0.4f, 0.4f, 0.4f);
+	vec3 pointLight1Diffuse = vec3(0.5f, 0.5f, 0.5f);
+	vec3 pointLight2Diffuse = vec3(0.5f, 0.5f, 0.5f);
 
-	outputColor += sunDiffuseComponent(normalWorldSpace, materialDiffuse, sunDiffuse, sunDirection);
-	//outputColor += sunSpecularComponent(positionWorldSpace, normalWorldSpace, cameraPosition, sunDirection, materialSpecular, sunSpecular, materialShininess);
+	//outputColor += sunDiffuseComponent(normalWorldSpace, materialDiffuse, sunDiffuse, sunDirection);
+
+	outputColor += pointLightDiffuseComponent(positionWorldSpace, normalWorldSpace, pointLight1Position, materialDiffuse, pointLight1Diffuse);
+	outputColor += pointLightDiffuseComponent(positionWorldSpace, normalWorldSpace, pointLight2Position, materialDiffuse, pointLight2Diffuse);
 
 	color_f = outputColor;
-	//color_f = vec4(1.0, 0.0, 0.0, 0.0);
 }
