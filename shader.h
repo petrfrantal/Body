@@ -26,8 +26,10 @@ class Shader {
 		GLint MVPLocation;
 		GLint firstMVPLocation;
 		GLint secondMVPLocation;
-		GLint modelMatrixLocation;		// these two are for calculating of the lighting in the cylindrical model
+		GLint modelMatrixLocation;		// these three are for calculating of the lighting in the cylindrical model
 		GLint normalMatrixLocation;
+		GLint pointLight1PositionLocation;
+		GLint pointLight2PositionLocation;
 
 		Shader(const std::string& fileName);
 		Shader(const std::string vertexShaderName, const std::string fragmentShaderName);

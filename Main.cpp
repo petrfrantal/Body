@@ -119,10 +119,10 @@ int main(int argc, char* args[])
 	// CAMERA DEFINITIONS -----------------------------------------------------------------------------------------------------------------------------------------------
 
 	// camera in x axis looking to the origin
-	//Camera camera(glm::vec3(400.0f, 150.0f, 0.0f), glm::radians(180.0f), glm::radians(0.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 1000.0f);
+	//Camera camera(glm::vec3(400.0f, 150.0f, 0.0f), glm::radians(180.0f), glm::radians(0.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 5000.0f);
 
 	// camera in -z axis looking to the origin
-	Camera camera(glm::vec3(0.0f, 150.0f, -400.0f), glm::radians(270.0f), glm::radians(0.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 1000.0f);
+	Camera camera(glm::vec3(0.0f, 150.0f, -400.0f), glm::radians(270.0f), glm::radians(0.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 5000.0f);
 
 	// FRAME DEFINITIONS ------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -141,7 +141,17 @@ int main(int argc, char* args[])
 	bool rightMouseButtonPressed = false;
 	bool mouseWheelPressed = false;
 
+	float horizontalAngleDelta = 0.0f;
+	float verticalAngleDelta = 0.0f; 
+	float forwardBackwardMovementDelta = 0.0f;
+	float horizontalTranslationDelta = 0.0f;
+	float verticalTranslationDelta = 0.0f;
 
+	int mouseXPos;
+	int mouseYPos;
+	int newMouseXPos;
+	int newMouseYPos;
+	
 	while (isRunning)
 	{
 		while (SDL_PollEvent(&e))
@@ -165,27 +175,45 @@ int main(int argc, char* args[])
 					break;
 				}
 			} else if (e.type == SDL_MOUSEBUTTONDOWN) {
-				if (e.button.button = SDL_BUTTON_LEFT) {
+				if (e.button.button == SDL_BUTTON_LEFT) {
 					leftMouseButtonPressed = true;
-				} else if (e.button.button = SDL_BUTTON_RIGHT) {
+				} else if (e.button.button == SDL_BUTTON_RIGHT) {
 					rightMouseButtonPressed = true;
-				} else if (e.button.button = SDL_BUTTON_MIDDLE) {
+				} else if (e.button.button == SDL_BUTTON_MIDDLE) {
 					mouseWheelPressed = true;
 				}
-				
+				mouseXPos = e.motion.x;
+				mouseYPos = e.motion.y;
 			} else if (e.type == SDL_MOUSEBUTTONUP) {
-				// vyhodnotit pohyb
+				// vyhodnotit pohyb ?
 
 				leftMouseButtonPressed = false;
 				rightMouseButtonPressed = false;
 				mouseWheelPressed = false;
 			} else if (e.type == SDL_MOUSEMOTION) {
 				if (leftMouseButtonPressed) {
-					
+					newMouseXPos = e.motion.x;
+					newMouseYPos = e.motion.y;
+					horizontalAngleDelta = 0.005f * (newMouseXPos - mouseXPos);
+					verticalAngleDelta = 0.005f * (newMouseYPos - mouseYPos);
+					camera.updateCameraAngles(horizontalAngleDelta, verticalAngleDelta);
+					mouseXPos = newMouseXPos;
+					mouseYPos = newMouseYPos;
 				} else if (rightMouseButtonPressed) {
-					
+					newMouseXPos = e.motion.x;
+					newMouseYPos = e.motion.y;
+					forwardBackwardMovementDelta = newMouseXPos - mouseXPos;
+					camera.moveCameraForwardBackward(forwardBackwardMovementDelta);
+					mouseXPos = newMouseXPos;
+					mouseYPos = newMouseYPos;
 				} else if (mouseWheelPressed) {
-					
+					newMouseXPos = e.motion.x;
+					newMouseYPos = e.motion.y;
+					horizontalTranslationDelta = newMouseXPos - mouseXPos;
+					verticalTranslationDelta = newMouseYPos - mouseYPos;
+					camera.moveCameraRightLeftUpDown(horizontalTranslationDelta, verticalTranslationDelta);
+					mouseXPos = newMouseXPos;
+					mouseYPos = newMouseYPos;
 				}
 			}
 		}

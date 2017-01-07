@@ -120,6 +120,18 @@ void Skeleton::drawCylindricalModel(Shader * shader, unsigned int frame, Camera 
 	glm::mat4 parentTransform;
 	glm::mat4 MVP;
 	glm::mat4 normalMatrix;
+
+	// compute the positions of the point lights to illuminate the model from the positions of the root joint and camera
+	glm::vec3 rootPosition = glm::vec3(root->offset[0], root->offset[1], root->offset[2]);
+	rootPosition = glm::vec3(root->transformPerFrame[frame] * glm::vec4(rootPosition, 1.0f));
+	glm::vec3 cameraPosition = camera.getCameraPosition();
+	glm::vec3 cameraToRoot = cameraPosition - rootPosition;				// vector for the parametric equation
+	float parameter = 0.5f;
+	glm::vec3 pointLight1Position = glm::vec3(cameraPosition[0] + parameter * cameraToRoot[0],
+												cameraPosition[1] + parameter * cameraToRoot[1],
+												cameraPosition[2] + parameter * cameraToRoot[2]);	// compute the parametric equation to find the position of the light
+	glm::vec3 pointLight2Position = pointLight1Position + glm::vec3(0.0f, 100.0f, 0.0f);
+
 	glUseProgram(shader->shaderProgram);
 
 	// Draw spheres as joints
@@ -129,7 +141,7 @@ void Skeleton::drawCylindricalModel(Shader * shader, unsigned int frame, Camera 
 	glBindVertexArray(cylindricalMesh->sphereVertexArrayObject);
 	for (size_t jointIndex = 0; jointIndex < jointCount; jointIndex++) {
 		joint = joints[jointIndex];
-		modelMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(3.5f, 3.5f, 3.5f));
+		modelMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(2.5f, 2.5f, 2.5f));
 		translate = glm::translate(glm::mat4(1.0f), glm::vec3(joint->globalOffset[0], joint->globalOffset[1], joint->globalOffset[2]));
 		modelMatrix = translate * modelMatrix;
 		modelMatrix = joint->transformPerFrame[frame] * modelMatrix;
@@ -138,6 +150,8 @@ void Skeleton::drawCylindricalModel(Shader * shader, unsigned int frame, Camera 
 		glUniformMatrix4fv(shader->MVPLocation, 1, GL_FALSE, &MVP[0][0]);
 		glUniformMatrix4fv(shader->modelMatrixLocation, 1, GL_FALSE, &modelMatrix[0][0]);
 		glUniformMatrix4fv(shader->normalMatrixLocation, 1, GL_FALSE, &normalMatrix[0][0]);
+		glUniform3fv(shader->pointLight1PositionLocation, 1, glm::value_ptr(pointLight1Position));
+		glUniform3fv(shader->pointLight2PositionLocation, 1, glm::value_ptr(pointLight2Position));
 		glDrawElements(GL_TRIANGLES, cylindricalMesh->sphereTriangleCount * 3, GL_UNSIGNED_INT, 0);
 	}
 	glBindVertexArray(0);
@@ -173,6 +187,8 @@ void Skeleton::drawCylindricalModel(Shader * shader, unsigned int frame, Camera 
 		glUniformMatrix4fv(shader->MVPLocation, 1, GL_FALSE, &MVP[0][0]);
 		glUniformMatrix4fv(shader->modelMatrixLocation, 1, GL_FALSE, &modelMatrix[0][0]);
 		glUniformMatrix4fv(shader->normalMatrixLocation, 1, GL_FALSE, &normalMatrix[0][0]);
+		glUniform3fv(shader->pointLight1PositionLocation, 1, glm::value_ptr(pointLight1Position));
+		glUniform3fv(shader->pointLight2PositionLocation, 1, glm::value_ptr(pointLight2Position));
 		glDrawElements(GL_TRIANGLES, cylindricalMesh->cylinderTriangleCount * 3, GL_UNSIGNED_INT, 0);
 	}
 	glBindVertexArray(0);
