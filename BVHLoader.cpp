@@ -251,6 +251,14 @@ Joint * BVHLoader::loadJoint(std::istream & file, Animation * animation, Joint *
 		animation->skeleton->wireframeModel->boneVertices.push_back(joint->globalOffset[yOffset]);
 		animation->skeleton->wireframeModel->boneVertices.push_back(joint->globalOffset[zOffset]);
 	}
+	else {
+		joint->offset[xOffset] = 0;
+		joint->offset[yOffset] = 0;
+		joint->offset[zOffset] = 0;
+		joint->globalOffset[xOffset] = 0;
+		joint->globalOffset[yOffset] = 0;
+		joint->globalOffset[zOffset] = 0;
+	}
 	animation->skeleton->wireframeModel->vertices.push_back(joint->globalOffset[xOffset]);
 	animation->skeleton->wireframeModel->vertices.push_back(joint->globalOffset[yOffset]);
 	animation->skeleton->wireframeModel->vertices.push_back(joint->globalOffset[zOffset]);
