@@ -7,6 +7,7 @@
 #include <string>
 #include "BVHLoader.h"
 #include "display.h"
+#include "slider.h"
 #include "mesh.h"
 #include "shader.h"
 #include "texture.h"
@@ -79,11 +80,19 @@ int main(int argc, char* args[])
 
 	BVHLoader loader;
 
+	/*std::ifstream file("config.txt");
+	std::string input;
+	if (file.is_open()) {
+		
+		file >> input;
+	}
+	file.close();*/
+
 	// BVH DEFINITIONS -----------------------------------------------------------------------------------------------------------------------------------------------
 
 	//Animation * animation = loader.loadAnimation("BVH Files/Female1_bvh/Female1_B25_CrouchToWalk.bvh");
-	//Animation * animation = loader.loadAnimation("BVH Files/Female1_bvh/Female1_C19_RunToHopToWalk.bvh");
-	Animation * animation = loader.loadAnimation("BVH Files/Female1_bvh/Female1_A13_Skipping.bvh");
+	Animation * animation = loader.loadAnimation("BVH Files/Female1_bvh/Female1_C19_RunToHopToWalk.bvh");
+	//Animation * animation = loader.loadAnimation(input);
 
 
 	//Animation * animation = loader.loadAnimation("BVH Files/01_01.bvh");
@@ -131,6 +140,8 @@ int main(int argc, char* args[])
 
 	// ------------------------------------------------------------------------------------------------------------------------------------------------------------------
   
+	Slider* slider = new Slider();
+
 	SDL_Event e;
 	bool isRunning = true;
 	float counter = 0.0f;
@@ -140,6 +151,7 @@ int main(int argc, char* args[])
 	bool leftMouseButtonPressed = false;
 	bool rightMouseButtonPressed = false;
 	bool mouseWheelPressed = false;
+	bool leftMouseButtonSlider = false;
 
 	float horizontalAngleDelta = 0.0f;
 	float verticalAngleDelta = 0.0f; 
@@ -151,6 +163,7 @@ int main(int argc, char* args[])
 	int mouseYPos;
 	int newMouseXPos;
 	int newMouseYPos;
+	int sliderClickValue = -1;
 	
 	while (isRunning)
 	{
@@ -176,7 +189,15 @@ int main(int argc, char* args[])
 				}
 			} else if (e.type == SDL_MOUSEBUTTONDOWN) {
 				if (e.button.button == SDL_BUTTON_LEFT) {
-					leftMouseButtonPressed = true;
+					sliderClickValue = slider->clickSlider(e.motion.x, e.motion.y);
+					if (sliderClickValue >= 0) {
+						frame = sliderClickValue;
+						leftMouseButtonSlider = true;
+						play = false;
+					}
+					else {
+						leftMouseButtonPressed = true;
+					}
 				} else if (e.button.button == SDL_BUTTON_RIGHT) {
 					rightMouseButtonPressed = true;
 				} else if (e.button.button == SDL_BUTTON_MIDDLE) {
@@ -190,7 +211,9 @@ int main(int argc, char* args[])
 				leftMouseButtonPressed = false;
 				rightMouseButtonPressed = false;
 				mouseWheelPressed = false;
+				leftMouseButtonSlider = false;
 			} else if (e.type == SDL_MOUSEMOTION) {
+				
 				if (leftMouseButtonPressed) {
 					newMouseXPos = e.motion.x;
 					newMouseYPos = e.motion.y;
@@ -215,6 +238,11 @@ int main(int argc, char* args[])
 					mouseXPos = newMouseXPos;
 					mouseYPos = newMouseYPos;
 				}
+				else if (leftMouseButtonSlider) {
+					sliderClickValue = slider->dragSlider(e.motion.x);
+					frame = sliderClickValue;
+					sliderClickValue = -1;
+				}
 			}
 		}
 
@@ -229,6 +257,8 @@ int main(int argc, char* args[])
 
 		//animation->skeleton->drawWireframeModel(&wireframeShader, &boneShader, frame, camera);		// draw wireframeModel - points and lines
 		animation->skeleton->drawCylindricalModel(&cylindricalModelShader, frame, camera);			// draw cylindrical model - bones as cylinders
+
+		slider->drawSlider(DISPLAY_WIDTH, DISPLAY_HEIGHT, frame, frameCount);
 
 		display.SwapBuffers();
 		if (play) {

@@ -136,6 +136,7 @@
     <ClCompile Include="obj_loader.cpp" />
     <ClCompile Include="shader.cpp" />
     <ClCompile Include="Skeleton.cpp" />
+    <ClCompile Include="Slider.cpp" />
     <ClCompile Include="stb_image.c" />
     <ClCompile Include="texture.cpp" />
   </ItemGroup>
@@ -152,6 +153,7 @@
     <ClInclude Include="obj_loader.h" />
     <ClInclude Include="shader.h" />
     <ClInclude Include="Skeleton.h" />
+    <ClInclude Include="Slider.h" />
     <ClInclude Include="Sphere.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="texture.h" />
