@@ -6,6 +6,13 @@
 #include <fstream>
 #include <string>
 
+/**
+*	Defines the representation of the shaders.
+*/
+
+/**
+*	Shader object.
+*/
 class Shader {
 	private:
 		static const unsigned int NUM_UNIFORMS = 3;
@@ -13,12 +20,37 @@ class Shader {
 		GLuint vertexShader;
 		GLuint fragmentShader;
 		GLuint m_uniforms[NUM_UNIFORMS];
+
+		/**
+		*	Loads a shader from a file to a string.
+		*/
 		std::string loadShader(const std::string& fileName);
+
+		/**
+		*	Checks for the errors occured while linking or validating the shader program.
+		*/
 		void checkShaderError(GLuint shader, GLuint flag, bool isProgram, const std::string& errorMessage);
+
+		/**
+		*	Creates a vertex or fragment shader.
+		*/
 		GLuint createShader(const std::string& text, unsigned int type);
+
 		void finishShaderCreation(void);
+
+		/**
+		*	Finishes the creation of the shader used for the joints of the line model.
+		*/
 		void finishWireframeShaderCreation(void);
+
+		/**
+		*	Finishes the creation of the shader used for the bones of the line model.
+		*/
 		void finishLineBoneShaderCreation(void);
+
+		/**
+		*	Finishes the creation of the shader used for the cylindrical model.
+		*/
 		void finishCylindricalModelShaderCreation(void);
 	public:
 		GLuint shaderProgram;
@@ -28,7 +60,7 @@ class Shader {
 		GLint MVPLocation;
 		GLint firstMVPLocation;
 		GLint secondMVPLocation;
-		GLint modelMatrixLocation;		// these three are for calculating of the lighting in the cylindrical model
+		GLint modelMatrixLocation;				
 		GLint normalMatrixLocation;
 		GLint pointLight1PositionLocation;
 		GLint pointLight2PositionLocation;

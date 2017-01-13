@@ -7,3 +7,8 @@ Animation::Animation(void) {
 	animationInfo = new BVHInfo();
 	skeleton = new Skeleton();
 }
+
+Animation::~Animation(void) {
+	delete animationInfo;
+	delete skeleton;
+}

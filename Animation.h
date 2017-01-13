@@ -14,4 +14,5 @@ struct Animation {
 	BVHInfo * animationInfo;		// informations about the animation (frame duration, etc.)
 	Skeleton * skeleton;			// skeleton object with joints and transformation matrices
 	Animation(void);
+	~Animation(void);
 };

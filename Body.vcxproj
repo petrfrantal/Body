@@ -138,8 +138,6 @@
     <ClCompile Include="Skeleton.cpp" />
     <ClCompile Include="Slider.cpp" />
     <ClCompile Include="Timer.cpp" />
-    <ClCompile Include="stb_image.c" />
-    <ClCompile Include="texture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animation.h" />

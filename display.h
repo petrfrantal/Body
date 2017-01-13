@@ -5,8 +5,7 @@
 #include <GL/glew.h>
 #include <iostream>
 
-class Display
-{
+class Display {
 private:
 	SDL_Window * m_window;			// SDL window object
 	SDL_GLContext m_glContext;		// OpenGL context for the use of the SDL window
