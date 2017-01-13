@@ -1,5 +1,4 @@
 #include "Skeleton.h"
-#include <iostream>
 
 // test
 void printGlmMatrixColumnsAsColumns2(glm::mat4 & m) {

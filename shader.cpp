@@ -1,6 +1,4 @@
 #include "shader.h"
-#include <iostream>
-#include <fstream>
 
 Shader::Shader(const std::string vertexShaderName, const std::string fragmentShaderName) {
 	shaderProgram = glCreateProgram();
@@ -91,21 +89,6 @@ Shader::~Shader()
     glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
 	glDeleteProgram(shaderProgram);
-}
-
-void Shader::Bind()
-{
-	glUseProgram(shaderProgram);
-}
-
-void Shader::Update(const Transform& transform, Camera & camera)
-{
-	glm::mat4 MVP = transform.GetMVP(camera);
-	glm::mat4 Normal = transform.GetModel();
-
-	glUniformMatrix4fv(m_uniforms[0], 1, GL_FALSE, &MVP[0][0]);
-	glUniformMatrix4fv(m_uniforms[1], 1, GL_FALSE, &Normal[0][0]);
-	glUniform3f(m_uniforms[2], 0.0f, 0.0f, 1.0f);
 }
 
 void Shader::setMVPMatrix(glm::mat4 & MVP) {

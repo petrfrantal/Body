@@ -1,8 +1,10 @@
 #pragma once
 
-#include <string>
 #include <GL/glew.h>
-#include "transform.h"
+#include <glm/glm.hpp>
+#include <iostream>
+#include <fstream>
+#include <string>
 
 class Shader {
 	private:
@@ -33,8 +35,6 @@ class Shader {
 
 		Shader(const std::string& fileName);
 		Shader(const std::string vertexShaderName, const std::string fragmentShaderName);
-		void Bind();
-		void Update(const Transform& transform, Camera& camera);
 		void setMVPMatrix(glm::mat4 & MVP);
 		~Shader();
 };

@@ -1,3 +1,9 @@
+#pragma once
+
+/**
+*	A model of a simple sphere exported with a PGR Blender export plugin.
+*/
+
 const int sphereNAttribsPerVertex = 8;
 const int sphereNVertices = 1984;
 const int sphereNTriangles = 960;

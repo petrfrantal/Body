@@ -10,12 +10,6 @@ uniform vec3 pointLight2Position;
 
 out vec4 color_f;
 
-vec4 sunDiffuseComponent(vec3 normal_v, vec3 materialDiffuse, vec3 sunDiffuse, vec3 sunDirection) {
-	vec3 L = normalize(-sunDirection); //smer ke svetlu
-	float NLdot = max(0.0f, dot(normal_v, L));
-	return vec4(materialDiffuse * sunDiffuse * NLdot, 0.0f);
-}
-
 vec4 pointLightDiffuseComponent(vec3 position_v, vec3 normal_v, vec3 pointLightPosition, vec3 materialDiffuse, vec3 pointLightDiffuse) {
 	vec3 L = normalize(pointLightPosition - position_v);
 	float NLdot = max(0.0f, dot(normal_v, L));
@@ -36,8 +30,6 @@ void main()
 	vec3 sunDiffuse = vec3(0.4f, 0.4f, 0.4f);
 	vec3 pointLight1Diffuse = vec3(0.5f, 0.5f, 0.5f);
 	vec3 pointLight2Diffuse = vec3(0.5f, 0.5f, 0.5f);
-
-	//outputColor += sunDiffuseComponent(normalWorldSpace, materialDiffuse, sunDiffuse, sunDirection);
 
 	outputColor += pointLightDiffuseComponent(positionWorldSpace, normalWorldSpace, pointLight1Position, materialDiffuse, pointLight1Diffuse);
 	outputColor += pointLightDiffuseComponent(positionWorldSpace, normalWorldSpace, pointLight2Position, materialDiffuse, pointLight2Diffuse);

@@ -1,15 +1,4 @@
-#define _SCL_SECURE_NO_WARNINGS
 #include "mesh.h"
-#include "util.h"
-#include "debugTimer.h"
-#include <map>
-#include <algorithm>
-#include <fstream>
-#include <iostream>
-#include <stdlib.h>
-#include "shader.h"
-#include "Cylinder.h"
-#include "Sphere.h"
 
 Mesh::Mesh(WireframeModel * wireframeModel, Shader * shader) {
 	// generate VAO
@@ -192,10 +181,6 @@ Mesh::Mesh(Vertex* vertices, unsigned int numVertices, unsigned int* indices, un
 	
 	for(unsigned int i = 0; i < numIndices; i++)
         model.indices.push_back(indices[i]);
-
-	/*for (unsigned int i = 0; i < numVertices; i++) {
-		std::cout << "Vertex " << i << " " << model.positions[i].x << " " << model.positions[i].y << " " << model.positions[i].z << std::endl;
-	}*/
 
     initMesh(model);
 }

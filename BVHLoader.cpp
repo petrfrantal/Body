@@ -1,13 +1,5 @@
-/**
-*	Definitions of BVHLoader methods.
-*/
-
 #include "BVHLoader.h"
 #include "Math.h"
-#include <glm/glm.hpp>
-#include <glm/gtx/transform.hpp>
-#include <glm/gtx/vector_angle.hpp>
-#include <math.h>
 
 void BVHLoader::loadMotion(std::istream & file, Animation * animation) {
 	std::string input;
@@ -19,7 +11,7 @@ void BVHLoader::loadMotion(std::istream & file, Animation * animation) {
 	file >> input;
 	file >> input;
 	file >> frameDuration;
-	animation->animationInfo->frameDuration = frameDuration;
+	animation->animationInfo->frameDurationMS = frameDuration * 1000;			// multiply to get milliseconds (was in seconds)
 	animation->animationInfo->framesPerSecond = 1.0f / frameDuration;
 	// now the rest of the file is the motion data, each line contains one frame
 	unsigned int jointCount = animation->animationInfo->jointCount;
@@ -46,7 +38,7 @@ void BVHLoader::loadMotion(std::istream & file, Animation * animation) {
 	glm::mat4 jointTranslation;
 	glm::mat4 jointTranslation2;
 	for (unsigned int frame = 0; frame < frameCount; frame++) {
-		// init root related matrices that will be used later to identities
+		// init root related matrices, that will be used later, to identities
 		rootTransform = glm::mat4(1.0f);
 		rootTranslation = glm::mat4(1.0f);
 		rootRotation = glm::mat4(1.0f);
@@ -62,25 +54,6 @@ void BVHLoader::loadMotion(std::istream & file, Animation * animation) {
 		file >> rootRotationPerFrame[root->rotationOrder[0]];
 		file >> rootRotationPerFrame[root->rotationOrder[1]];
 		file >> rootRotationPerFrame[root->rotationOrder[2]];
-		//rootTransform = glm::translate(rootTransform, glm::vec3(rootPositionPerFrameX, rootPositionPerFrameY, rootPositionPerFrameZ));		// test
-
-		// Test matrices
-		/*
-		if (frame == 2) {
-			glm::mat4 testRotation = glm::mat4(1.0);
-			glm::mat4 testTranslation = glm::mat4(1.0);
-			testRotation = glm::rotate(testRotation, degreesToRadians(rootRotationPerFrame[root->rotationOrder[2]]), yAxis);		// rotation around y axis
-			testTranslation = glm::translate(testTranslation, glm::vec3(rootPositionPerFrameX, rootPositionPerFrameY, rootPositionPerFrameZ));
-			std::cout << "Matrix rotated around Y axis" << std::endl;
-			printGlmMatrixColumnsAsColumns(testRotation);
-			std::cout << "Matrix translated in X axis" << std::endl;
-			printGlmMatrixColumnsAsColumns(testTranslation);
-			std::cout << "Matice slozene transformace, nejdriv rotace, pak translace" << std::endl;
-			glm::mat4 testMat3 = testTranslation * testRotation;
-			printGlmMatrixColumnsAsColumns(testMat3);
-		}*/
-
-
 		for (int i = 2; i >= 0; i--) {
 			switch (root->rotationOrder[i]) {
 				case xRotation:
@@ -99,9 +72,8 @@ void BVHLoader::loadMotion(std::istream & file, Animation * animation) {
 		}
 		rootTranslation = glm::translate(glm::mat4(1.0f), glm::vec3(rootPositionPerFrameX, rootPositionPerFrameY, rootPositionPerFrameZ));
 		rootTransform = rootTranslation * rootRotation;
-		//printGlmMatrixColumnsAsColumns(rootTransform);
 		root->transformPerFrame.push_back(rootTransform);
-		// load other joint values
+		// load other joints' motion values
 		for (unsigned int jointIndex = 1; jointIndex < jointCount; jointIndex++) {
 			// init rotations to identities
 			jointXrotation = glm::mat4(1.0f);
@@ -131,11 +103,9 @@ void BVHLoader::loadMotion(std::istream & file, Animation * animation) {
 					break;
 				}				
 			}
-			//jointTransform = jointYrotation * jointXrotation * jointZrotation * jointTransform;
 			jointTranslation2 = glm::translate(glm::mat4(1.0f), glm::vec3(joints[jointIndex]->globalOffset[0], joints[jointIndex]->globalOffset[1], joints[jointIndex]->globalOffset[2]));
 			jointTransform = jointTranslation2 * jointTransform;
-			//printGlmMatrixColumnsAsColumns(joint->parent->transformPerFrame[frame] * jointTransform);
-			joint->transformPerFrame.push_back(joint->parent->transformPerFrame[frame] * jointTransform);
+			joint->transformPerFrame.push_back(joint->parent->transformPerFrame[frame] * jointTransform);			// write the transformation matrix to the joint
 		}
 	}
 }
