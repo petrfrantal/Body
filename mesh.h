@@ -1,11 +1,21 @@
 #pragma once
 
+#define _SCL_SECURE_NO_WARNINGS
+
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 #include <string>
 #include <vector>
+#include <fstream>
+#include <iostream>
 #include "obj_loader.h"
 #include "shader.h"
+#include "Cylinder.h"
+#include "Sphere.h"
+
+/**
+*	Defines the structures used for the representation of the meshes and OpenGL buffer objects (VAOs, VBOs, EBOs).
+*/
 
 struct Vertex
 {

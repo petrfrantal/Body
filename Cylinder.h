@@ -1,3 +1,9 @@
+#pragma once
+
+/**
+*	A model of the cylinder exported with a PGR Blender export plugin.
+*/
+
 const int cylinderNAttribsPerVertex = 8;
 const int cylinderNVertices = 192;
 const int cylinderNTriangles = 124;

@@ -4,13 +4,15 @@
 *	Data structures and functions related to skeleton and bones.
 */
 
+#include <glm/glm.hpp>
+#include "glm/gtc/type_ptr.hpp"
+#include <iostream>
 #include <string>
 #include <vector>
-#include <glm/glm.hpp>
 #include "mesh.h"
 #include "obj_loader.h"
 #include "shader.h"
-#include "glm/gtc/type_ptr.hpp"
+#include "camera.h"
 
 /**
 *	Joint representation.

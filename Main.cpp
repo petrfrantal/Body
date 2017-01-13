@@ -1,7 +1,4 @@
 #include <SDL2/SDL.h>
-//#include <GL/glew.h>
-//#include <gl\GLU.h>
-#undef main
 #include <iostream>
 #include <stdio.h>
 #include <string>
@@ -10,190 +7,127 @@
 #include "slider.h"
 #include "mesh.h"
 #include "shader.h"
-#include "texture.h"
-#include "transform.h"
 #include "camera.h"
-#include <glm/gtx/vector_angle.hpp>
+#include "Timer.h"
 
-static const int DISPLAY_WIDTH = 1280;
-static const int DISPLAY_HEIGHT = 720;
-std::string applicationName = "Body Animation";
+int main(int argc, char * argv[]) {
 
-int main(int argc, char* args[])
-{
+	// initialize OpenGL, SDL and open the SDL window
+	static const int DISPLAY_WIDTH = 1280;
+	static const int DISPLAY_HEIGHT = 720;
+	std::string applicationName = "Body Animation";
 	Display display(DISPLAY_WIDTH, DISPLAY_HEIGHT, applicationName.c_str());
 
-	Vertex vertices[] =
-	{
-		Vertex(glm::vec3(-0, -0, -0), glm::vec2(1, 0), glm::vec3(0, 0, -1)),
-		Vertex(glm::vec3(-0, 0, -0), glm::vec2(0, 0), glm::vec3(0, 0, -1)),
-		Vertex(glm::vec3(0, 0, -0), glm::vec2(0, 1), glm::vec3(0, 0, -1)),
-		Vertex(glm::vec3(0, -0, -0), glm::vec2(1, 1), glm::vec3(0, 0, -1)),
+	// path to a BVH file with animation
+	std::string bvhPath;
 
-		Vertex(glm::vec3(-1, -1, 1), glm::vec2(1, 0), glm::vec3(0, 0, 1)),
-		Vertex(glm::vec3(-1, 1, 1), glm::vec2(0, 0), glm::vec3(0, 0, 1)),
-		Vertex(glm::vec3(1, 1, 1), glm::vec2(0, 1), glm::vec3(0, 0, 1)),
-		Vertex(glm::vec3(1, -1, 1), glm::vec2(1, 1), glm::vec3(0, 0, 1)),
-
-		Vertex(glm::vec3(-1, -1, -1), glm::vec2(0, 1), glm::vec3(0, -1, 0)),
-		Vertex(glm::vec3(-1, -1, 1), glm::vec2(1, 1), glm::vec3(0, -1, 0)),
-		Vertex(glm::vec3(1, -1, 1), glm::vec2(1, 0), glm::vec3(0, -1, 0)),
-		Vertex(glm::vec3(1, -1, -1), glm::vec2(0, 0), glm::vec3(0, -1, 0)),
-
-		Vertex(glm::vec3(-1, 1, -1), glm::vec2(0, 1), glm::vec3(0, 1, 0)),
-		Vertex(glm::vec3(-1, 1, 1), glm::vec2(1, 1), glm::vec3(0, 1, 0)),
-		Vertex(glm::vec3(1, 1, 1), glm::vec2(1, 0), glm::vec3(0, 1, 0)),
-		Vertex(glm::vec3(1, 1, -1), glm::vec2(0, 0), glm::vec3(0, 1, 0)),
-
-		Vertex(glm::vec3(-1, -1, -1), glm::vec2(1, 1), glm::vec3(-1, 0, 0)),
-		Vertex(glm::vec3(-1, -1, 1), glm::vec2(1, 0), glm::vec3(-1, 0, 0)),
-		Vertex(glm::vec3(-1, 1, 1), glm::vec2(0, 0), glm::vec3(-1, 0, 0)),
-		Vertex(glm::vec3(-1, 1, -1), glm::vec2(0, 1), glm::vec3(-1, 0, 0)),
-
-		Vertex(glm::vec3(1, -1, -1), glm::vec2(1, 1), glm::vec3(1, 0, 0)),
-		Vertex(glm::vec3(1, -1, 1), glm::vec2(1, 0), glm::vec3(1, 0, 0)),
-		Vertex(glm::vec3(1, 1, 1), glm::vec2(0, 0), glm::vec3(1, 0, 0)),
-		Vertex(glm::vec3(1, 1, -1), glm::vec2(0, 1), glm::vec3(1, 0, 0)),
-	};
-
-	unsigned int indices[] = { 0, 1, 2,
-		0, 2, 3,
-
-		6, 5, 4,
-		7, 6, 4,
-
-		10, 9, 8,
-		11, 10, 8,
-
-		12, 13, 14,
-		12, 14, 15,
-
-		16, 17, 18,
-		16, 18, 19,
-
-		22, 21, 20,
-		23, 22, 20
-	};
-
-
-	// BVH animation
-
+	// as a path to a BVH file use either a command line argument if there is, or a default path
+	if (argc == 2) {
+		bvhPath = argv[1];
+	} else {
+		bvhPath = "BVH Files/Female1_bvh/Female1_C19_RunToHopToWalk.bvh";
+		//bvhPath = "BVH Files/Female1_bvh/Female1_B25_CrouchToWalk.bvh";
+		//bvhPath = "BVH Files/Female1_A07_Crouch.bvh";
+		//bvhPath = "BVH Files/testLeg.bvh";
+		//bvhPath = "BVH Files/basic.bvh";
+		//bvhPath = "BVH Files/basic2.bvh";
+		//bvhPath = "BVH Files/test.bvh";
+	}
+	
+	// Load the animation from a BVH file
 	BVHLoader loader;
+	Animation * animation = loader.loadAnimation(bvhPath);
 
 	/*std::ifstream file("config.txt");
 	std::string input;
 	if (file.is_open()) {
-		
 		file >> input;
 	}
-	file.close();*/
+	file.close();
+	Animation * animation = loader.loadAnimation(input);*/
 
-	// BVH DEFINITIONS -----------------------------------------------------------------------------------------------------------------------------------------------
-
-	//Animation * animation = loader.loadAnimation("BVH Files/Female1_bvh/Female1_B25_CrouchToWalk.bvh");
-	Animation * animation = loader.loadAnimation("BVH Files/Female1_bvh/Female1_C19_RunToHopToWalk.bvh");
-	//Animation * animation = loader.loadAnimation(input);
-
-
-	//Animation * animation = loader.loadAnimation("BVH Files/01_01.bvh");
-	//Animation * animation = loader.loadAnimation("BVH Files/Female1_A07_Crouch.bvh");
-	//Animation * animation = loader.loadAnimation("BVH Files/testLeg.bvh");
-	//Animation * animation = loader.loadAnimation("BVH Files/testBothLegs.bvh");
-	//Animation * animation = loader.loadAnimation("BVH Files/basic.bvh");
-	//Animation * animation = loader.loadAnimation("BVH Files/basic2.bvh");
-	//Animation * animation = loader.loadAnimation("BVH Files/test.bvh");
-
-	// SHADER DEFINITIONS -----------------------------------------------------------------------------------------------------------------------------------------------
-
+	// create shaders
 	Shader wireframeShader("./Shaders/WireframeShader");
 	Shader boneShader("./Shaders/LineBoneShader", "./Shaders/WireframeShader");
 	Shader cylindricalModelShader("./Shaders/CylindricalModelShader");
 
-	// MESH / MODEL DEFINITIONS -----------------------------------------------------------------------------------------------------------------------------------------------
-
-	//animation->skeleton->createWireframeModelMesh(&wireframeShader);					// we create a mesh from the loaded vertices; this has to be done after the GLEW init (which is done in Display constructor)
-	animation->skeleton->createWireframeModelMesh(&wireframeShader, &boneShader);
+	// create meshes and OpenGL buffers
+	//animation->skeleton->createWireframeModelMesh(&wireframeShader);
+	animation->skeleton->createWireframeModelMesh(&wireframeShader, &boneShader);		// create a mesh used for the line model
 	animation->skeleton->createCylindricalMesh(&cylindricalModelShader);				// create cylindrical mesh
 
-	// OLD MESH / MODEL DEFINITIONS -----------------------------------------------------------------------------------------------------------------------------------------------
-
-	// monkey / cube
-	Mesh mesh(vertices, sizeof(vertices) / sizeof(vertices[0]), indices, sizeof(indices) / sizeof(indices[0]));
-	//Mesh mesh(vertices, sizeof(vertices) / sizeof(vertices[0]), indices, sizeof(indices) / sizeof(indices[0]));
-	//Mesh monkey("./res/monkey3.obj");
-	Shader shader("./Shaders/basicShader");
-	Texture texture("./res/bricks.jpg");
-	Transform transform;
-
-	// CAMERA DEFINITIONS -----------------------------------------------------------------------------------------------------------------------------------------------
-
-	// camera in x axis looking to the origin
-	//Camera camera(glm::vec3(400.0f, 150.0f, 0.0f), glm::radians(180.0f), glm::radians(0.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 5000.0f);
-
-	// camera in -z axis looking to the origin
+	// create a camera
 	Camera camera(glm::vec3(0.0f, 150.0f, -400.0f), glm::radians(270.0f), glm::radians(0.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 5000.0f);
 
-	// FRAME DEFINITIONS ------------------------------------------------------------------------------------------------------------------------------------------------
-
+	// frame and frame rate related variables; load the frame duration value from the animation object
+	float frameDurationMS = animation->animationInfo->frameDurationMS;
 	unsigned int frameCount = animation->animationInfo->frameCount;
 	unsigned int frame = 0;
 
-	// ------------------------------------------------------------------------------------------------------------------------------------------------------------------
-  
-	Slider* slider = new Slider();
+	// create a frame slider
+	Slider slider;
 
+	// create a timer
+	Timer timer;
+	double elapsedMS;
+
+	// SDL and run related variables
 	SDL_Event e;
-	bool isRunning = true;
-	float counter = 0.0f;
-	bool play = false;
+	bool appRunning = true;						// whether the whole app is running or is to be closed
+	bool animationRunning = false;				// whether the animation is running in a loop or is stopped at a frame
+	int modelType = 0;							// the model that is being drawn
 
 	// mouse motion related variables
-	bool leftMouseButtonPressed = false;
+	bool leftMouseButtonPressed = false;		// buttons
 	bool rightMouseButtonPressed = false;
 	bool mouseWheelPressed = false;
 	bool leftMouseButtonSlider = false;
-
-	float horizontalAngleDelta = 0.0f;
+	float horizontalAngleDelta = 0.0f;			// angles to rotate the camera
 	float verticalAngleDelta = 0.0f; 
-	float forwardBackwardMovementDelta = 0.0f;
+	float forwardBackwardMovementDelta = 0.0f;	// variables to move the camera
 	float horizontalTranslationDelta = 0.0f;
 	float verticalTranslationDelta = 0.0f;
-
-	int mouseXPos;
+	int mouseXPos;								// auxiliary variables
 	int mouseYPos;
 	int newMouseXPos;
 	int newMouseYPos;
 	int sliderClickValue = -1;
 	
-	while (isRunning)
-	{
-		while (SDL_PollEvent(&e))
-		{
-			if (e.type == SDL_QUIT)
-				isRunning = false;
-			else if (e.type == SDL_KEYDOWN)
-			{
-				switch (e.key.keysym.sym)
-				{
+	// the SDL run loop
+	while (appRunning) {
+		while (SDL_PollEvent(&e)) {
+			if (e.type == SDL_QUIT) {
+				appRunning = false;				// exit the app
+			} else if (e.type == SDL_KEYDOWN) {
+				switch (e.key.keysym.sym) {
 				case SDLK_RIGHT:
-					frame++;
+					frame++;					// move by a one frame
 					break;
 				case SDLK_LEFT:
 					frame--;
 					break;
 				case SDLK_SPACE:
-					play = !play;
+					animationRunning = !animationRunning; // run the animation or stop it
 					break;
+				case SDLK_ESCAPE:
+					appRunning = false;			// exit the app
+					break;
+				case SDLK_m:
+					if (modelType == 0) {
+						modelType = 1;			// change the type of the model to be drawn
+					} else {
+						modelType = 0;
+					}
 				default:
 					break;
 				}
 			} else if (e.type == SDL_MOUSEBUTTONDOWN) {
 				if (e.button.button == SDL_BUTTON_LEFT) {
-					sliderClickValue = slider->clickSlider(e.motion.x, e.motion.y);
+					sliderClickValue = slider.clickSlider(e.motion.x, e.motion.y);
 					if (sliderClickValue >= 0) {
 						frame = sliderClickValue;
 						leftMouseButtonSlider = true;
-						play = false;
+						animationRunning = false;
 					}
 					else {
 						leftMouseButtonPressed = true;
@@ -206,8 +140,6 @@ int main(int argc, char* args[])
 				mouseXPos = e.motion.x;
 				mouseYPos = e.motion.y;
 			} else if (e.type == SDL_MOUSEBUTTONUP) {
-				// vyhodnotit pohyb ?
-
 				leftMouseButtonPressed = false;
 				rightMouseButtonPressed = false;
 				mouseWheelPressed = false;
@@ -215,7 +147,7 @@ int main(int argc, char* args[])
 			} else if (e.type == SDL_MOUSEMOTION) {
 				
 				if (leftMouseButtonPressed) {
-					newMouseXPos = e.motion.x;
+					newMouseXPos = e.motion.x;				// rotate the camera
 					newMouseYPos = e.motion.y;
 					horizontalAngleDelta = 0.005f * (newMouseXPos - mouseXPos);
 					verticalAngleDelta = 0.005f * (newMouseYPos - mouseYPos);
@@ -223,14 +155,14 @@ int main(int argc, char* args[])
 					mouseXPos = newMouseXPos;
 					mouseYPos = newMouseYPos;
 				} else if (rightMouseButtonPressed) {
-					newMouseXPos = e.motion.x;
+					newMouseXPos = e.motion.x;				// move the camera forward of backward (in the camera direction)
 					newMouseYPos = e.motion.y;
 					forwardBackwardMovementDelta = newMouseXPos - mouseXPos;
 					camera.moveCameraForwardBackward(forwardBackwardMovementDelta);
 					mouseXPos = newMouseXPos;
 					mouseYPos = newMouseYPos;
 				} else if (mouseWheelPressed) {
-					newMouseXPos = e.motion.x;
+					newMouseXPos = e.motion.x;				// translate the camera left, right, up or down
 					newMouseYPos = e.motion.y;
 					horizontalTranslationDelta = newMouseXPos - mouseXPos;
 					verticalTranslationDelta = newMouseYPos - mouseYPos;
@@ -239,33 +171,45 @@ int main(int argc, char* args[])
 					mouseYPos = newMouseYPos;
 				}
 				else if (leftMouseButtonSlider) {
-					sliderClickValue = slider->dragSlider(e.motion.x);
+					sliderClickValue = slider.dragSlider(e.motion.x);
 					frame = sliderClickValue;
 					sliderClickValue = -1;
 				}
 			}
 		}
 
-		display.Clear(0.0f, 0.0f, 0.0f, 1.0f);
+		timer.getTimeElapsed();					// just set the actual time value to measure later
 
+		display.clear(0.0f, 0.0f, 0.0f, 1.0f);
+
+		// adjust the frame to run the animation in a loop
 		if (frame == frameCount) {
 			frame = 0;
-		}
-		else if (frame == -1) {
+		} else if (frame == -1) {
 			frame = frameCount - 1;
 		}
 
-		//animation->skeleton->drawWireframeModel(&wireframeShader, &boneShader, frame, camera);		// draw wireframeModel - points and lines
-		animation->skeleton->drawCylindricalModel(&cylindricalModelShader, frame, camera);			// draw cylindrical model - bones as cylinders
-
-		slider->drawSlider(DISPLAY_WIDTH, DISPLAY_HEIGHT, frame, frameCount);
-
-		display.SwapBuffers();
-		if (play) {
-			frame++;
-			SDL_Delay(20);
+		// draw the seleted model
+		if (modelType == 0) {
+			animation->skeleton->drawWireframeModel(&wireframeShader, &boneShader, frame, camera);		// draw wireframeModel - points and lines
+		} else {
+			animation->skeleton->drawCylindricalModel(&cylindricalModelShader, frame, camera);			// draw cylindrical model - bones as cylinders
 		}
-		counter += 0.033f;
+
+		slider.drawSlider(DISPLAY_WIDTH, DISPLAY_HEIGHT, frame, frameCount);
+
+		display.swapBuffers();
+
+		// delay the SDL window to achieve the desired framerate
+		if (animationRunning) {
+			frame++;
+
+			/*elapsedMS = timer.getTimeElapsed();
+			std::cout << elapsedMS << std::endl;
+			SDL_Delay(frameDurationMS - elapsedMS);*/
+ 			SDL_Delay(frameDurationMS);
+
+		}
 	}
 	delete animation;
 	return 0;

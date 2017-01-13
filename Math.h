@@ -1,12 +1,19 @@
 #pragma once
 #include <iostream>
 
-#define PI 3.14159265358979323846f
+/**
+*	Auxiliary methods and defines.
+*/
+
+#define PI 3.14159f
 
 float degreesToRadians(float angleDeg) {
 	return angleDeg * (PI / 180.0f);
 }
 
+/***
+*	Prints the given matrix so that it's columns are printed in columns (does not transpose the matrix).
+*/
 void printGlmMatrixColumnsAsColumns(glm::mat4 & m) {
 	std::cout << m[0][0] << " " << m[1][0] << " " << m[2][0] << " " << m[3][0] << " |" << std::endl;
 	std::cout << m[0][1] << " " << m[1][1] << " " << m[2][1] << " " << m[3][1] << " |" << std::endl;
