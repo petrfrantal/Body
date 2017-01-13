@@ -145,6 +145,7 @@ int main(int argc, char * argv[]) {
 				mouseWheelPressed = false;
 				leftMouseButtonSlider = false;
 			} else if (e.type == SDL_MOUSEMOTION) {
+				
 				if (leftMouseButtonPressed) {
 					newMouseXPos = e.motion.x;				// rotate the camera
 					newMouseYPos = e.motion.y;
