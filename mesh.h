@@ -45,39 +45,40 @@ enum MeshBufferPositions
 	INDEX_VB
 };
 
-class Mesh
-{
-private:
-	static const unsigned int NUM_BUFFERS = 4;
-	GLuint m_vertexArrayObject;
-	GLuint m_vertexArrayBuffers[NUM_BUFFERS];
-	//GLuint vertexArrayObject;		// VAO
-	GLuint vertexBufferObject;		// VBO
-	GLuint elementBufferObject;		// EBO
-	GLuint sphereVertexBufferObject;	// VBO for sphere model
-	GLuint sphereElementBufferObject;	// EBO for sphere model
+class Mesh {
+	private:
+		static const unsigned int NUM_BUFFERS = 4;
+		GLuint m_vertexArrayObject;
+		GLuint m_vertexArrayBuffers[NUM_BUFFERS];
+		GLuint cylinderVertexArrayObject;	// VAO for cylinder model
+		GLuint sphereVertexArrayObject;		// VAO for sphere model
+		GLuint jointVertexArrayObject;		// VAO for joints as points
+		GLuint lineVertexArrayObject;		// VAO for bones as lines
+		GLuint cylinderVertexBufferObject;	// VBO for cylinder model
+		GLuint cylinderElementBufferObject;	// EBO for cylinder model
+		GLuint sphereVertexBufferObject;	// VBO for sphere model
+		GLuint sphereElementBufferObject;	// EBO for sphere model
+		GLuint jointVertexBufferObject;		// VBO for joints as points
+		GLuint lineVertexAttrBufferObject;	// VBO for bones as lines
+		GLuint lineIndexAttrBufferObject;	// second VBO for bones as lines: contains indices of the joint in bone
+		unsigned int cylinderTriangleCount;
+		unsigned int sphereTriangleCount;
 
-	// VBOs for bones as lines
-	GLuint lineVertexAttrBufferObject;		// vertices
-	GLuint lineIndexAttrBufferObject;	// indices 1 2, 1 2, ...
-
-	unsigned int m_numIndices;
-	void initMesh(const IndexedModel& model);
-public:
-	GLuint vertexArrayObject;			// VAO for cylinder model
-	GLuint sphereVertexArrayObject;		// VAO for sphere model
-	GLuint lineVertexArrayObject;		// VAO for bones as lines
-
-	unsigned int cylinderTriangleCount;
-	unsigned int sphereTriangleCount;
-
-    Mesh(const std::string& fileName);
-	Mesh(WireframeModel * wireframeModel, Shader * shader);
-	Mesh(WireframeModel * wireframeModel, Shader * jointShader, Shader * lineBoneShader);
-	Mesh(Vertex* vertices, unsigned int numVertices, unsigned int* indices, unsigned int numIndices);
-	Mesh(Shader * shader);
-	void draw();
-	~Mesh();
-
-	std::vector<glm::vec3> positions;
+		unsigned int m_numIndices;
+		std::vector<glm::vec3> positions;
+		void initMesh(const IndexedModel& model);
+	public:
+		Mesh(const std::string& fileName);
+		Mesh(WireframeModel * wireframeModel, Shader * shader);
+		Mesh(WireframeModel * wireframeModel, Shader * jointShader, Shader * lineBoneShader);
+		Mesh(Vertex* vertices, unsigned int numVertices, unsigned int* indices, unsigned int numIndices);
+		Mesh(Shader * shader);
+		GLuint getCylinderVAO(void);
+		GLuint getSphereVAO(void);
+		GLuint getLineBoneVAO(void);
+		GLuint getPointJointVAO(void);
+		unsigned int getCylinderTrinagleCount(void);
+		unsigned int getSphereTriangleCount(void);
+		void draw();
+		~Mesh();
 };

@@ -14,8 +14,7 @@
 /**
 *	Camera object.
 */
-struct Camera
-{
+class Camera {
 	private:
 		glm::mat4 projection;		// projection matrix
 		glm::vec3 position;

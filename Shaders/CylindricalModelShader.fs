@@ -24,7 +24,7 @@ void main()
 
 	vec4 outputColor = vec4(0.0f, 0.0f, 0.0f, 0.0f);
 
-	// hardcoded light and material
+	// light and material specification
 	vec3 materialDiffuse = vec3(1.0f, 1.0f, 1.0f);
 	vec3 sunDirection = vec3(10.0f, -10.0f, 0.0f);
 	vec3 sunDiffuse = vec3(0.4f, 0.4f, 0.4f);

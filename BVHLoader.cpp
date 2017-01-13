@@ -1,5 +1,4 @@
 #include "BVHLoader.h"
-#include "Math.h"
 
 void BVHLoader::loadMotion(std::istream & file, Animation * animation) {
 	std::string input;
@@ -57,15 +56,15 @@ void BVHLoader::loadMotion(std::istream & file, Animation * animation) {
 		for (int i = 2; i >= 0; i--) {
 			switch (root->rotationOrder[i]) {
 				case xRotation:
-					rootXrotation = glm::rotate(glm::mat4(1.0f), degreesToRadians(rootRotationPerFrame[root->rotationOrder[i]]), xAxis);
+					rootXrotation = glm::rotate(glm::mat4(1.0f), glm::radians(rootRotationPerFrame[root->rotationOrder[i]]), xAxis);
 					rootRotation = rootXrotation * rootRotation;
 					break;
 				case yRotation:
-					rootYrotation = glm::rotate(glm::mat4(1.0f), degreesToRadians(rootRotationPerFrame[root->rotationOrder[i]]), yAxis);
+					rootYrotation = glm::rotate(glm::mat4(1.0f), glm::radians(rootRotationPerFrame[root->rotationOrder[i]]), yAxis);
 					rootRotation = rootYrotation * rootRotation;
 					break;
 				case zRotation:
-					rootZrotation = glm::rotate(glm::mat4(1.0f), degreesToRadians(rootRotationPerFrame[root->rotationOrder[i]]), zAxis);
+					rootZrotation = glm::rotate(glm::mat4(1.0f), glm::radians(rootRotationPerFrame[root->rotationOrder[i]]), zAxis);
 					rootRotation = rootZrotation * rootRotation;
 					break;
 				}
@@ -90,15 +89,15 @@ void BVHLoader::loadMotion(std::istream & file, Animation * animation) {
 			for (int i = 2; i >= 0; i--) {
 				switch (joint->rotationOrder[i]) {
 				case xRotation:
-					jointXrotation = glm::rotate(glm::mat4(1.0f), degreesToRadians(jointRotationPerFrame[joint->rotationOrder[i]]), xAxis);
+					jointXrotation = glm::rotate(glm::mat4(1.0f), glm::radians(jointRotationPerFrame[joint->rotationOrder[i]]), xAxis);
 					jointTransform = jointXrotation * jointTransform;
 					break;
 				case yRotation:
-					jointYrotation = glm::rotate(glm::mat4(1.0f), degreesToRadians(jointRotationPerFrame[joint->rotationOrder[i]]), yAxis);
+					jointYrotation = glm::rotate(glm::mat4(1.0f), glm::radians(jointRotationPerFrame[joint->rotationOrder[i]]), yAxis);
 					jointTransform = jointYrotation * jointTransform;
 					break;
 				case zRotation:
-					jointZrotation = glm::rotate(glm::mat4(1.0f), degreesToRadians(jointRotationPerFrame[joint->rotationOrder[i]]), zAxis);
+					jointZrotation = glm::rotate(glm::mat4(1.0f), glm::radians(jointRotationPerFrame[joint->rotationOrder[i]]), zAxis);
 					jointTransform = jointZrotation * jointTransform;
 					break;
 				}				
@@ -238,6 +237,7 @@ Joint * BVHLoader::loadJoint(std::istream & file, Animation * animation, Joint *
 		if (input == "JOINT") {
 			Joint * child = loadJoint(file, animation, joint);
 			joint->children.push_back(child);
+			joint->childrenCount++;
 		} else if (input == "End") {
 			file >> input;		// Site
 			file >> input;		// {

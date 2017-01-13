@@ -52,7 +52,6 @@ int main(int argc, char * argv[]) {
 	Shader cylindricalModelShader("./Shaders/CylindricalModelShader");
 
 	// create meshes and OpenGL buffers
-	//animation->skeleton->createWireframeModelMesh(&wireframeShader);
 	animation->skeleton->createWireframeModelMesh(&wireframeShader, &boneShader);		// create a mesh used for the line model
 	animation->skeleton->createCylindricalMesh(&cylindricalModelShader);				// create cylindrical mesh
 

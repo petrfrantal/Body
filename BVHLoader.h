@@ -18,27 +18,29 @@
 /**
 *	The class of the BVH loader.
 */
-struct BVHLoader {
+class BVHLoader {
+
+	public:
 	
-	/**
-	*	Main method for creating and loading the animation.
-	*/
-	Animation * loadAnimation(const std::string & fileName);
+		/**
+		*	Main method for creating and loading the animation.
+		*/
+		Animation * loadAnimation(const std::string & fileName);
 
-	/**
-	*	Loads the hierarchy part of a BVH file.
-	*/
-	void loadHierarchy(std::istream & file, Animation * animation);
+		/**
+		*	Loads the hierarchy part of a BVH file.
+		*/
+		void loadHierarchy(std::istream & file, Animation * animation);
 
-	/**
-	*	Loads the motion part of a BVH file.
-	*/
-	void loadMotion(std::istream & file, Animation * animation);
+		/**
+		*	Loads the motion part of a BVH file.
+		*/
+		void loadMotion(std::istream & file, Animation * animation);
 
-	/**
-	*	Loads a joint's information, most importatly it's transformation matrices.
-	*/
-	Joint * loadJoint(std::istream & file, Animation * animation, Joint * parent = NULL);
+		/**
+		*	Loads a joint's information, most importatly it's transformation matrices.
+		*/
+		Joint * loadJoint(std::istream & file, Animation * animation, Joint * parent = NULL);
 };
 
 /**
