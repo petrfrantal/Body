@@ -1,13 +1,4 @@
-/**
-*	Definitions of BVHLoader methods.
-*/
-
 #include "BVHLoader.h"
-#include "Math.h"
-#include <glm/glm.hpp>
-#include <glm/gtx/transform.hpp>
-#include <glm/gtx/vector_angle.hpp>
-#include <math.h>
 
 void BVHLoader::loadMotion(std::istream & file, Animation * animation) {
 	std::string input;
@@ -19,7 +10,7 @@ void BVHLoader::loadMotion(std::istream & file, Animation * animation) {
 	file >> input;
 	file >> input;
 	file >> frameDuration;
-	animation->animationInfo->frameDuration = frameDuration;
+	animation->animationInfo->frameDurationMS = frameDuration * 1000;			// multiply to get milliseconds (was in seconds)
 	animation->animationInfo->framesPerSecond = 1.0f / frameDuration;
 	// now the rest of the file is the motion data, each line contains one frame
 	unsigned int jointCount = animation->animationInfo->jointCount;
@@ -46,7 +37,7 @@ void BVHLoader::loadMotion(std::istream & file, Animation * animation) {
 	glm::mat4 jointTranslation;
 	glm::mat4 jointTranslation2;
 	for (unsigned int frame = 0; frame < frameCount; frame++) {
-		// init root related matrices that will be used later to identities
+		// init root related matrices, that will be used later, to identities
 		rootTransform = glm::mat4(1.0f);
 		rootTranslation = glm::mat4(1.0f);
 		rootRotation = glm::mat4(1.0f);
@@ -62,46 +53,26 @@ void BVHLoader::loadMotion(std::istream & file, Animation * animation) {
 		file >> rootRotationPerFrame[root->rotationOrder[0]];
 		file >> rootRotationPerFrame[root->rotationOrder[1]];
 		file >> rootRotationPerFrame[root->rotationOrder[2]];
-		//rootTransform = glm::translate(rootTransform, glm::vec3(rootPositionPerFrameX, rootPositionPerFrameY, rootPositionPerFrameZ));		// test
-
-		// Test matrices
-		/*
-		if (frame == 2) {
-			glm::mat4 testRotation = glm::mat4(1.0);
-			glm::mat4 testTranslation = glm::mat4(1.0);
-			testRotation = glm::rotate(testRotation, degreesToRadians(rootRotationPerFrame[root->rotationOrder[2]]), yAxis);		// rotation around y axis
-			testTranslation = glm::translate(testTranslation, glm::vec3(rootPositionPerFrameX, rootPositionPerFrameY, rootPositionPerFrameZ));
-			std::cout << "Matrix rotated around Y axis" << std::endl;
-			printGlmMatrixColumnsAsColumns(testRotation);
-			std::cout << "Matrix translated in X axis" << std::endl;
-			printGlmMatrixColumnsAsColumns(testTranslation);
-			std::cout << "Matice slozene transformace, nejdriv rotace, pak translace" << std::endl;
-			glm::mat4 testMat3 = testTranslation * testRotation;
-			printGlmMatrixColumnsAsColumns(testMat3);
-		}*/
-
-
 		for (int i = 2; i >= 0; i--) {
 			switch (root->rotationOrder[i]) {
 				case xRotation:
-					rootXrotation = glm::rotate(glm::mat4(1.0f), degreesToRadians(rootRotationPerFrame[root->rotationOrder[i]]), xAxis);
+					rootXrotation = glm::rotate(glm::mat4(1.0f), glm::radians(rootRotationPerFrame[root->rotationOrder[i]]), xAxis);
 					rootRotation = rootXrotation * rootRotation;
 					break;
 				case yRotation:
-					rootYrotation = glm::rotate(glm::mat4(1.0f), degreesToRadians(rootRotationPerFrame[root->rotationOrder[i]]), yAxis);
+					rootYrotation = glm::rotate(glm::mat4(1.0f), glm::radians(rootRotationPerFrame[root->rotationOrder[i]]), yAxis);
 					rootRotation = rootYrotation * rootRotation;
 					break;
 				case zRotation:
-					rootZrotation = glm::rotate(glm::mat4(1.0f), degreesToRadians(rootRotationPerFrame[root->rotationOrder[i]]), zAxis);
+					rootZrotation = glm::rotate(glm::mat4(1.0f), glm::radians(rootRotationPerFrame[root->rotationOrder[i]]), zAxis);
 					rootRotation = rootZrotation * rootRotation;
 					break;
 				}
 		}
 		rootTranslation = glm::translate(glm::mat4(1.0f), glm::vec3(rootPositionPerFrameX, rootPositionPerFrameY, rootPositionPerFrameZ));
 		rootTransform = rootTranslation * rootRotation;
-		//printGlmMatrixColumnsAsColumns(rootTransform);
 		root->transformPerFrame.push_back(rootTransform);
-		// load other joint values
+		// load other joints' motion values
 		for (unsigned int jointIndex = 1; jointIndex < jointCount; jointIndex++) {
 			// init rotations to identities
 			jointXrotation = glm::mat4(1.0f);
@@ -110,38 +81,30 @@ void BVHLoader::loadMotion(std::istream & file, Animation * animation) {
 			glm::mat4 jointTransform = glm::mat4(1.0f);
 			// get joint and load values
 			joint = joints[jointIndex];
-			if (joint->name == "Site") {
-				joint->transformPerFrame.push_back(joint->parent->transformPerFrame[frame]);
+			file >> jointRotationPerFrame[joint->rotationOrder[0]];
+			file >> jointRotationPerFrame[joint->rotationOrder[1]];
+			file >> jointRotationPerFrame[joint->rotationOrder[2]];
+			jointTranslation = glm::translate(glm::mat4(1.0f), glm::vec3(-joints[jointIndex]->globalOffset[0], -joints[jointIndex]->globalOffset[1], -joints[jointIndex]->globalOffset[2]));
+			jointTransform = jointTranslation * jointTransform;
+			for (int i = 2; i >= 0; i--) {
+				switch (joint->rotationOrder[i]) {
+				case xRotation:
+					jointXrotation = glm::rotate(glm::mat4(1.0f), glm::radians(jointRotationPerFrame[joint->rotationOrder[i]]), xAxis);
+					jointTransform = jointXrotation * jointTransform;
+					break;
+				case yRotation:
+					jointYrotation = glm::rotate(glm::mat4(1.0f), glm::radians(jointRotationPerFrame[joint->rotationOrder[i]]), yAxis);
+					jointTransform = jointYrotation * jointTransform;
+					break;
+				case zRotation:
+					jointZrotation = glm::rotate(glm::mat4(1.0f), glm::radians(jointRotationPerFrame[joint->rotationOrder[i]]), zAxis);
+					jointTransform = jointZrotation * jointTransform;
+					break;
+				}				
 			}
-			else {
-				file >> jointRotationPerFrame[joint->rotationOrder[0]];
-				file >> jointRotationPerFrame[joint->rotationOrder[1]];
-				file >> jointRotationPerFrame[joint->rotationOrder[2]];
-
-				jointTranslation = glm::translate(glm::mat4(1.0f), glm::vec3(-joints[jointIndex]->globalOffset[0], -joints[jointIndex]->globalOffset[1], -joints[jointIndex]->globalOffset[2]));
-				jointTransform = jointTranslation * jointTransform;
-				for (int i = 2; i >= 0; i--) {
-					switch (joint->rotationOrder[i]) {
-					case xRotation:
-						jointXrotation = glm::rotate(glm::mat4(1.0f), degreesToRadians(jointRotationPerFrame[joint->rotationOrder[i]]), xAxis);
-						jointTransform = jointXrotation * jointTransform;
-						break;
-					case yRotation:
-						jointYrotation = glm::rotate(glm::mat4(1.0f), degreesToRadians(jointRotationPerFrame[joint->rotationOrder[i]]), yAxis);
-						jointTransform = jointYrotation * jointTransform;
-						break;
-					case zRotation:
-						jointZrotation = glm::rotate(glm::mat4(1.0f), degreesToRadians(jointRotationPerFrame[joint->rotationOrder[i]]), zAxis);
-						jointTransform = jointZrotation * jointTransform;
-						break;
-					}
-				}
-				//jointTransform = jointYrotation * jointXrotation * jointZrotation * jointTransform;
-				jointTranslation2 = glm::translate(glm::mat4(1.0f), glm::vec3(joints[jointIndex]->globalOffset[0], joints[jointIndex]->globalOffset[1], joints[jointIndex]->globalOffset[2]));
-				jointTransform = jointTranslation2 * jointTransform;
-				//printGlmMatrixColumnsAsColumns(joint->parent->transformPerFrame[frame] * jointTransform);
-				joint->transformPerFrame.push_back(joint->parent->transformPerFrame[frame] * jointTransform);
-			}
+			jointTranslation2 = glm::translate(glm::mat4(1.0f), glm::vec3(joints[jointIndex]->globalOffset[0], joints[jointIndex]->globalOffset[1], joints[jointIndex]->globalOffset[2]));
+			jointTransform = jointTranslation2 * jointTransform;
+			joint->transformPerFrame.push_back(joint->parent->transformPerFrame[frame] * jointTransform);			// write the transformation matrix to the joint
 		}
 	}
 }
@@ -166,32 +129,27 @@ Joint * BVHLoader::loadJoint(std::istream & file, Animation * animation, Joint *
 	joint->globalOffset[xOffset] = inputXOffset;
 	joint->globalOffset[yOffset] = inputYOffset;
 	joint->globalOffset[zOffset] = inputZOffset;
-	if (joint->name != "Site") {
-		// then there are always the channels
+	// then there are always the channels
+	file >> input;
+	int channelCount;
+	file >> channelCount;
+	if (channelCount == 6) {		// root joint, where xPosition, yPosition and zPosition are added. Jump over them, we expect them always in this order.
 		file >> input;
-		int channelCount;
-		file >> channelCount;
-		if (channelCount == 6) {		// root joint, where xPosition, yPosition and zPosition are added. Jump over them, we expect them always in this order.
-			file >> input;
-			file >> input;
-			file >> input;
-		}
-		// rotation channels
-		for (int i = 0; i < 3; i++) {
-			file >> input;
-			if (input[0] == 'X') {
-				joint->rotationOrder[i] = xRotation;
-			}
-			else if (input[0] == 'Y') {
-				joint->rotationOrder[i] = yRotation;
-			}
-			else if (input[0] == 'Z') {
-				joint->rotationOrder[i] = zRotation;
-			}
-			else {
-				std::cout << "ERROR: occured while parsing the channels of a joint in part HIERARCHY." << std::endl;
-				return NULL;
-			}
+		file >> input;
+		file >> input;
+	}
+	// rotation channels
+	for (int i = 0; i < 3; i++) {
+		file >> input;
+		if (input[0] == 'X') {
+			joint->rotationOrder[i] = xRotation;
+		} else if (input[0] == 'Y') {
+			joint->rotationOrder[i] = yRotation;
+		} else if (input[0] == 'Z') {
+			joint->rotationOrder[i] = zRotation;
+		} else {
+			std::cout << "ERROR: occured while parsing the channels of a joint in part HIERARCHY." << std::endl;
+			return NULL;
 		}
 	}
 	// save this joint into the skeleton
@@ -276,9 +234,19 @@ Joint * BVHLoader::loadJoint(std::istream & file, Animation * animation, Joint *
 	// now only keywords JOINT, End Site or '}' can occur
 	while (file.good()) {
 		file >> input;
-		if (input == "JOINT" || input == "End") {
+		if (input == "JOINT") {
 			Joint * child = loadJoint(file, animation, joint);
 			joint->children.push_back(child);
+			joint->childrenCount++;
+		} else if (input == "End") {
+			file >> input;		// Site
+			file >> input;		// {
+			file >> input;		// OFFSET
+			// TODO: determine length of the last bone based on the end site offset, so far we do not save the length based on offsets
+			file >> input;		// x
+			file >> input;		// y
+			file >> input;		// z
+			file >> input;		// }
 		} else if (input == "}") {
 			return joint;
 		} else {

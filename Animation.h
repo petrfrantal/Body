@@ -8,14 +8,11 @@
 #include "Skeleton.h"
 
 /**
-*	Animation object. Introduces the API for playing the animation.
-*	Also serves as a container object holding all the animation related informations.
+*	Animation object. Contains the skeleton object and a informational object about the animation.
 */
 struct Animation {
-	BVHInfo * animationInfo;
-	Skeleton * skeleton;
-
+	BVHInfo * animationInfo;		// informations about the animation (frame duration, etc.)
+	Skeleton * skeleton;			// skeleton object with joints and transformation matrices
 	Animation(void);
-	void playAnimation(long frame);
-	void goToFrame(long frame);		// this method maybe will not be necessary
+	~Animation(void);
 };

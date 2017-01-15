@@ -1,11 +1,6 @@
 #include "Slider.h"
-#include <GL/glew.h>
-#include <iostream>
 
-
-Slider::Slider()
-{
-}
+Slider::Slider() {}
 
 void Slider::drawSlider(int windowWidth, int windowHeight, int frame, int frameCount) {
 

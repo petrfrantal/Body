@@ -1,26 +1,15 @@
-#define _SCL_SECURE_NO_WARNINGS
 #include "mesh.h"
-#include "util.h"
-#include "debugTimer.h"
-#include <map>
-#include <algorithm>
-#include <fstream>
-#include <iostream>
-#include <stdlib.h>
-#include "shader.h"
-#include "Cylinder.h"
-#include "Sphere.h"
 
 Mesh::Mesh(WireframeModel * wireframeModel, Shader * shader) {
 	// generate VAO
-	glGenVertexArrays(1, &vertexArrayObject);
-	glBindVertexArray(vertexArrayObject);
+	glGenVertexArrays(1, &jointVertexArrayObject);
+	glBindVertexArray(jointVertexArrayObject);
 	
 	// generate VBO, first copy vertices
 	float * vertices = new float[wireframeModel->vertices.size()];
 	std::copy(wireframeModel->vertices.begin(), wireframeModel->vertices.end(), vertices);
-	glGenBuffers(1, &vertexBufferObject);
-	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
+	glGenBuffers(1, &jointVertexBufferObject);
+	glBindBuffer(GL_ARRAY_BUFFER, jointVertexBufferObject);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
 	// enable attributes to shaders
@@ -33,16 +22,15 @@ Mesh::Mesh(WireframeModel * wireframeModel, Shader * shader) {
 
 Mesh::Mesh(WireframeModel * wireframeModel, Shader * jointShader, Shader * lineBoneShader) {
 	// generate VAO
-	glGenVertexArrays(1, &vertexArrayObject);
-	glBindVertexArray(vertexArrayObject);
+	glGenVertexArrays(1, &jointVertexArrayObject);
+	glBindVertexArray(jointVertexArrayObject);
 
 	// generate VBO for drawing of the joints, first copy vertices
 	int verticesSize = wireframeModel->vertices.size();
 	float * vertices = new float[verticesSize];
 	std::copy(wireframeModel->vertices.begin(), wireframeModel->vertices.end(), vertices);
-	glGenBuffers(1, &vertexBufferObject);
-	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
-	//glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	glGenBuffers(1, &jointVertexBufferObject);
+	glBindBuffer(GL_ARRAY_BUFFER, jointVertexBufferObject);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * verticesSize, vertices, GL_STATIC_DRAW);
 
 	// enable attributes to the joint vertex shader
@@ -96,17 +84,17 @@ Mesh::Mesh(Shader * shader) {
 	// Cylinder model
 
 	// generate VAO
-	glGenVertexArrays(1, &vertexArrayObject);
-	glBindVertexArray(vertexArrayObject);
+	glGenVertexArrays(1, &cylinderVertexArrayObject);
+	glBindVertexArray(cylinderVertexArrayObject);
 
 	// vertices - VBO
-	glGenBuffers(1, &vertexBufferObject);
-	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
+	glGenBuffers(1, &cylinderVertexBufferObject);
+	glBindBuffer(GL_ARRAY_BUFFER, cylinderVertexBufferObject);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(cylinderVertices), cylinderVertices, GL_STATIC_DRAW);
 
 	// indices - EBO
-	glGenBuffers(1, &elementBufferObject);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBufferObject);
+	glGenBuffers(1, &cylinderElementBufferObject);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, cylinderElementBufferObject);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cylinderTriangles), cylinderTriangles, GL_STATIC_DRAW);
 
 	glEnableVertexAttribArray(shader->positionLocation);
@@ -193,17 +181,22 @@ Mesh::Mesh(Vertex* vertices, unsigned int numVertices, unsigned int* indices, un
 	for(unsigned int i = 0; i < numIndices; i++)
         model.indices.push_back(indices[i]);
 
-	/*for (unsigned int i = 0; i < numVertices; i++) {
-		std::cout << "Vertex " << i << " " << model.positions[i].x << " " << model.positions[i].y << " " << model.positions[i].z << std::endl;
-	}*/
-
     initMesh(model);
 }
 
 Mesh::~Mesh()
 {
-	glDeleteVertexArrays(1, &vertexArrayObject);
-	glDeleteBuffers(1, &vertexBufferObject);
+	glDeleteVertexArrays(1, &cylinderVertexArrayObject);
+	glDeleteBuffers(1, &cylinderVertexBufferObject);
+	glDeleteBuffers(1, &cylinderElementBufferObject);
+	glDeleteVertexArrays(1, &sphereVertexArrayObject);
+	glDeleteBuffers(1, &sphereVertexBufferObject);
+	glDeleteBuffers(1, &sphereElementBufferObject);
+	glDeleteVertexArrays(1, &lineVertexArrayObject);
+	glDeleteBuffers(1, &lineVertexAttrBufferObject);
+	glDeleteBuffers(1, &lineIndexAttrBufferObject);
+	glDeleteVertexArrays(1, &jointVertexArrayObject);
+	glDeleteBuffers(1, &jointVertexBufferObject);
 	// former buffers
 	glDeleteBuffers(NUM_BUFFERS, m_vertexArrayBuffers);
 	glDeleteVertexArrays(1, &m_vertexArrayObject);
@@ -217,4 +210,28 @@ void Mesh::draw()
 	glDrawElementsBaseVertex(GL_POINTS, m_numIndices, GL_UNSIGNED_INT, 0, 0);
 
 	glBindVertexArray(0);
+}
+
+GLuint Mesh::getCylinderVAO(void) {
+	return cylinderVertexArrayObject;
+}
+
+GLuint Mesh::getSphereVAO(void) {
+	return sphereVertexArrayObject;
+}
+
+GLuint Mesh::getLineBoneVAO(void) {
+	return lineVertexArrayObject;
+}
+
+GLuint Mesh::getPointJointVAO(void) {
+	return jointVertexArrayObject;
+}
+
+unsigned int Mesh::getCylinderTrinagleCount(void) {
+	return cylinderTriangleCount;
+}
+
+unsigned int Mesh::getSphereTriangleCount(void) {
+	return sphereTriangleCount;
 }

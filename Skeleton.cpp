@@ -1,20 +1,7 @@
 #include "Skeleton.h"
-#include <iostream>
-
-// test
-void printGlmMatrixColumnsAsColumns2(glm::mat4 & m) {
-	std::cout << m[0][0] << " " << m[1][0] << " " << m[2][0] << " " << m[3][0] << " |" << std::endl;
-	std::cout << m[0][1] << " " << m[1][1] << " " << m[2][1] << " " << m[3][1] << " |" << std::endl;
-	std::cout << m[0][2] << " " << m[1][2] << " " << m[2][2] << " " << m[3][2] << " |" << std::endl;
-	std::cout << m[0][3] << " " << m[1][3] << " " << m[2][3] << " " << m[3][3] << " V" << std::endl;
-}
 
 Skeleton::Skeleton(void) {
 	wireframeModel = new WireframeModel();
-}
-
-void Skeleton::createWireframeModelMesh(Shader * shader) {
-	mesh = new Mesh(wireframeModel, shader);
 }
 
 void Skeleton::createCylindricalMesh(Shader * shader) {
@@ -23,76 +10,32 @@ void Skeleton::createCylindricalMesh(Shader * shader) {
 
 void Skeleton::createWireframeModelMesh(Shader * jointShader, Shader * boneShader) {
 	wireframeModel->boneIndices = boneIndices;
-	mesh = new Mesh(wireframeModel, jointShader, boneShader);
-}
-
-void Skeleton::drawOnlyJoints(Shader * shader, unsigned int frame, Camera & camera) {
-	glPointSize(5.0f);
-	size_t jointCount = joints.size();
-	glm::mat4 modelMatrix;
-	glm::mat4 MVP;
-	glm::mat4 projectionViewMatrix = camera.getViewProjection();
-	glUseProgram(shader->shaderProgram);
-	glBindVertexArray(mesh->vertexArrayObject);
-	for (size_t jointIndex = 0; jointIndex < jointCount; jointIndex++) {
-		// transform the joint
-		modelMatrix = joints[jointIndex]->transformPerFrame[frame];
-		MVP = projectionViewMatrix * modelMatrix;
-		glUniformMatrix4fv(shader->MVPLocation, 1, GL_FALSE, &MVP[0][0]);
-		glDrawArrays(GL_POINTS, (int)jointIndex, 1);						// draw the joint
-	}
-	glUseProgram(0);
-	glBindVertexArray(0);
+	pointLineMesh = new Mesh(wireframeModel, jointShader, boneShader);
 }
 
 void Skeleton::drawWireframeModel(Shader * jointShader, Shader * boneShader, unsigned int frame, Camera & camera) {
+	
+	// first draw joints as GL_POINTS
 	glPointSize(5.0f);
 	size_t jointCount = joints.size();
 	glm::mat4 modelMatrix;
 	glm::mat4 MVP;
 	glm::mat4 projectionViewMatrix = camera.getViewProjection();
 	glUseProgram(jointShader->shaderProgram);
-	glBindVertexArray(mesh->vertexArrayObject);
+	glBindVertexArray(pointLineMesh->getPointJointVAO());
 	for (size_t jointIndex = 0; jointIndex < jointCount; jointIndex++) {
-		modelMatrix = joints[jointIndex]->transformPerFrame[frame];		// transform the joint
-		//printGlmMatrixColumnsAsColumns2(modelMatrix);
+		modelMatrix = joints[jointIndex]->transformPerFrame[frame];				// transform matrix of the joint
 		MVP = projectionViewMatrix * modelMatrix;
 		glUniformMatrix4fv(jointShader->MVPLocation, 1, GL_FALSE, &MVP[0][0]);
-		glDrawArrays(GL_POINTS, (int)jointIndex, 1);							// draws one joint as a point
-
-		// testing prints
-
-
-		if (jointIndex != jointCount - 1) {
-			glm::vec4 v = glm::vec4(joints[jointIndex + 1]->globalOffset[0], joints[jointIndex + 1]->globalOffset[1], joints[jointIndex + 1]->globalOffset[2], 1.0f);
-			//glm::vec4 a = modelMatrix * v;
-
-			//std::cout << a.x << " " << a.y << " " << a.z << " " << a.w << std::endl;
-		}
-
-		//glm::vec4 position = glm::vec4(wireframeModel->vertices[3 * jointIndex], wireframeModel->vertices[3 * jointIndex + 1], wireframeModel->vertices[3 * jointIndex + 2], 1.0f);
-		// model coords
-		//glm::vec4 transformed = modelMatrix * position;
-		//std::cout << "Joint " << jointIndex << "(" << joints[jointIndex]->name << ") " << ": " << transformed[0] / transformed[3] << " " << transformed[1] / transformed[3] << " " << transformed[2] / transformed[3] << " " << transformed[3] / transformed[3] << std::endl;
-		
-		//glm::vec4 transformed = MVP * position;
-		//glm::vec4 transformedWithViewport = viewport * transformed;
-		//std::cout << "Joint " << jointIndex << ": " << transformed[0] << " " << transformed[1] << " " << transformed[2] << " " << transformed[3] << std::endl;
-		//transformed = modelMatrix * position;
-		// after projection
-		//std::cout << "Joint " << jointIndex << ": " << transformed[0] / transformed[3] << " " << transformed[1] / transformed[3] << " " << transformed[2] / transformed[3] << " " << transformed[3] / transformed[3] << std::endl;
-		// after viewport
-		//std::cout << "Joint " << jointIndex << "(" << joints[jointIndex]->name << ") " << ": " << transformedWithViewport[0] / transformedWithViewport[3] << " " << transformedWithViewport[1] / transformedWithViewport[3] << " " << transformedWithViewport[2] / transformedWithViewport[3] << " " << transformedWithViewport[3] / transformedWithViewport[3] << std::endl;
+		glDrawArrays(GL_POINTS, (int)jointIndex, 1);
 	}
 	glBindVertexArray(0);
 	glUseProgram(0);
-	//std::cout << "----------------------------------------------------------------------" << std::endl;
 	
 	// now draw bones as GL_LINES consisting of two joints
-	
 	glLineWidth(3.0f);
 	glUseProgram(boneShader->shaderProgram);
-	glBindVertexArray(mesh->lineVertexArrayObject);
+	glBindVertexArray(pointLineMesh->getLineBoneVAO());
 	size_t vertexCount = boneIndices.size();
 	glm::mat4 firstModelMatrix;
 	glm::mat4 secondModelMatrix;
@@ -138,7 +81,7 @@ void Skeleton::drawCylindricalModel(Shader * shader, unsigned int frame, Camera 
 
 	size_t jointCount = joints.size();
 	Joint * joint;
-	glBindVertexArray(cylindricalMesh->sphereVertexArrayObject);
+	glBindVertexArray(cylindricalMesh->getSphereVAO());
 	for (size_t jointIndex = 0; jointIndex < jointCount; jointIndex++) {
 		joint = joints[jointIndex];
 		modelMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(2.5f, 2.5f, 2.5f));
@@ -152,13 +95,13 @@ void Skeleton::drawCylindricalModel(Shader * shader, unsigned int frame, Camera 
 		glUniformMatrix4fv(shader->normalMatrixLocation, 1, GL_FALSE, &normalMatrix[0][0]);
 		glUniform3fv(shader->pointLight1PositionLocation, 1, glm::value_ptr(pointLight1Position));
 		glUniform3fv(shader->pointLight2PositionLocation, 1, glm::value_ptr(pointLight2Position));
-		glDrawElements(GL_TRIANGLES, cylindricalMesh->sphereTriangleCount * 3, GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, cylindricalMesh->getSphereTriangleCount() * 3, GL_UNSIGNED_INT, 0);
 	}
 	glBindVertexArray(0);
 
 	// Draw cylinders as bones
 
-	glBindVertexArray(cylindricalMesh->vertexArrayObject);
+	glBindVertexArray(cylindricalMesh->getCylinderVAO());
 	size_t boneCount = cylinderBones.size();
 	CylinderBone * bone;
 	for (size_t i = 0; i < boneCount; i++) {
@@ -189,7 +132,7 @@ void Skeleton::drawCylindricalModel(Shader * shader, unsigned int frame, Camera 
 		glUniformMatrix4fv(shader->normalMatrixLocation, 1, GL_FALSE, &normalMatrix[0][0]);
 		glUniform3fv(shader->pointLight1PositionLocation, 1, glm::value_ptr(pointLight1Position));
 		glUniform3fv(shader->pointLight2PositionLocation, 1, glm::value_ptr(pointLight2Position));
-		glDrawElements(GL_TRIANGLES, cylindricalMesh->cylinderTriangleCount * 3, GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, cylindricalMesh->getCylinderTrinagleCount() * 3, GL_UNSIGNED_INT, 0);
 	}
 	glBindVertexArray(0);
 	glUseProgram(0);
