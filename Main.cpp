@@ -1,4 +1,5 @@
 #include <SDL2/SDL.h>
+//#include <SDL2/SDL_TTF.h>
 //#include <GL/glew.h>
 //#include <gl\GLU.h>
 #undef main
@@ -22,7 +23,11 @@ std::string applicationName = "Body Animation";
 int main(int argc, char* args[])
 {
 	Display display(DISPLAY_WIDTH, DISPLAY_HEIGHT, applicationName.c_str());
-
+	/*if (TTF_Init() == -1)
+	{
+		std::cout << "Init TTF  failt : " << SDL_GetError() << std::endl;
+		return -1;
+	}*/
 	Vertex vertices[] =
 	{
 		Vertex(glm::vec3(-0, -0, -0), glm::vec2(1, 0), glm::vec3(0, 0, -1)),
@@ -90,8 +95,8 @@ int main(int argc, char* args[])
 
 	// BVH DEFINITIONS -----------------------------------------------------------------------------------------------------------------------------------------------
 
-	//Animation * animation = loader.loadAnimation("BVH Files/Female1_bvh/Female1_B25_CrouchToWalk.bvh");
-	Animation * animation = loader.loadAnimation("BVH Files/Female1_bvh/Female1_C19_RunToHopToWalk.bvh");
+	Animation * animation = loader.loadAnimation("BVH Files/Female1_bvh/Female1_B25_CrouchToWalk.bvh");
+	//Animation * animation = loader.loadAnimation("BVH Files/Female1_bvh/Female1_C19_RunToHopToWalk.bvh");
 	//Animation * animation = loader.loadAnimation(input);
 
 
