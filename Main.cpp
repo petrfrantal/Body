@@ -1,4 +1,5 @@
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 #include <iostream>
 #include <stdio.h>
 #include <string>
@@ -16,7 +17,7 @@ int main(int argc, char * argv[]) {
 	static const int DISPLAY_WIDTH = 1280;
 	static const int DISPLAY_HEIGHT = 720;
 	std::string applicationName = "Body Animation";
-	Display display(DISPLAY_WIDTH, DISPLAY_HEIGHT, applicationName.c_str());
+	Display display(DISPLAY_WIDTH, DISPLAY_HEIGHT, applicationName.c_str());	
 
 	// path to a BVH file with animation
 	std::string bvhPath;
