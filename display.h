@@ -2,10 +2,12 @@
 
 #include <string>
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
 #include <GL/glew.h>
 #include <iostream>
 
+/**
+*	Represents the SDL window of the application.
+*/
 class Display {
 private:
 	SDL_Window * m_window;			// SDL window object

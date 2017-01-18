@@ -3,6 +3,9 @@
 #include <GL/glew.h>
 #include <iostream>
 
+/**
+*	Represents the slider to go through the animation frame by frame.
+*/
 class Slider
 {
 public:

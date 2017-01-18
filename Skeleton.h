@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 #include "mesh.h"
-#include "obj_loader.h"
 #include "shader.h"
 #include "camera.h"
 

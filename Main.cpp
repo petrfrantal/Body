@@ -1,5 +1,4 @@
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
 #include <iostream>
 #include <stdio.h>
 #include <string>
@@ -9,7 +8,6 @@
 #include "mesh.h"
 #include "shader.h"
 #include "camera.h"
-#include "Timer.h"
 
 int main(int argc, char * argv[]) {
 
@@ -28,24 +26,11 @@ int main(int argc, char * argv[]) {
 	} else {
 		bvhPath = "BVH Files/Female1_bvh/Female1_C19_RunToHopToWalk.bvh";
 		//bvhPath = "BVH Files/Female1_bvh/Female1_B25_CrouchToWalk.bvh";
-		//bvhPath = "BVH Files/Female1_A07_Crouch.bvh";
-		//bvhPath = "BVH Files/testLeg.bvh";
-		//bvhPath = "BVH Files/basic.bvh";
-		//bvhPath = "BVH Files/basic2.bvh";
-		//bvhPath = "BVH Files/test.bvh";
 	}
 	
 	// Load the animation from a BVH file
 	BVHLoader loader;
 	Animation * animation = loader.loadAnimation(bvhPath);
-
-	/*std::ifstream file("config.txt");
-	std::string input;
-	if (file.is_open()) {
-		file >> input;
-	}
-	file.close();
-	Animation * animation = loader.loadAnimation(input);*/
 
 	// create shaders
 	Shader wireframeShader("./Shaders/WireframeShader");
@@ -66,10 +51,6 @@ int main(int argc, char * argv[]) {
 
 	// create a frame slider
 	Slider slider;
-
-	// create a timer
-	Timer timer;
-	double elapsedMS;
 
 	// SDL and run related variables
 	SDL_Event e;
@@ -102,9 +83,11 @@ int main(int argc, char * argv[]) {
 				switch (e.key.keysym.sym) {
 				case SDLK_RIGHT:
 					frame++;					// move by a one frame
+					std::cout << "Frame: " << frame << std::endl;
 					break;
 				case SDLK_LEFT:
 					frame--;
+					std::cout << "Frame: " << frame << std::endl;
 					break;
 				case SDLK_SPACE:
 					animationRunning = !animationRunning; // run the animation or stop it
@@ -128,6 +111,7 @@ int main(int argc, char * argv[]) {
 						frame = sliderClickValue;
 						leftMouseButtonSlider = true;
 						animationRunning = false;
+						std::cout << "Frame: " << frame << std::endl;
 					}
 					else {
 						leftMouseButtonPressed = true;
@@ -174,11 +158,10 @@ int main(int argc, char * argv[]) {
 					sliderClickValue = slider.dragSlider(e.motion.x);
 					frame = sliderClickValue;
 					sliderClickValue = -1;
+					std::cout << "Frame: " << frame << std::endl;
 				}
 			}
 		}
-
-		timer.getTimeElapsed();					// just set the actual time value to measure later
 
 		display.clear(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -203,10 +186,7 @@ int main(int argc, char * argv[]) {
 		// delay the SDL window to achieve the desired framerate
 		if (animationRunning) {
 			frame++;
-
-			/*elapsedMS = timer.getTimeElapsed();
-			std::cout << elapsedMS << std::endl;
-			SDL_Delay(frameDurationMS - elapsedMS);*/
+			std::cout << "Frame: " << frame << std::endl;
  			SDL_Delay(frameDurationMS);
 
 		}

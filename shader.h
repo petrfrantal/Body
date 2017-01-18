@@ -15,11 +15,8 @@
 */
 class Shader {
 	private:
-		static const unsigned int NUM_UNIFORMS = 3;
-		
 		GLuint vertexShader;
 		GLuint fragmentShader;
-		GLuint m_uniforms[NUM_UNIFORMS];
 
 		/**
 		*	Loads a shader from a file to a string.
@@ -35,8 +32,6 @@ class Shader {
 		*	Creates a vertex or fragment shader.
 		*/
 		GLuint createShader(const std::string& text, unsigned int type);
-
-		void finishShaderCreation(void);
 
 		/**
 		*	Finishes the creation of the shader used for the joints of the line model.
