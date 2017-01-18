@@ -18,8 +18,6 @@ Shader::Shader(const std::string & fileName)
 		finishWireframeShaderCreation();
 	} else if (fileName == "./Shaders/CylindricalModelShader") {
 		finishCylindricalModelShaderCreation();
-	} else {
-		finishShaderCreation();
 	}
 }
 
@@ -61,25 +59,6 @@ void Shader::finishWireframeShaderCreation(void) {
 	checkShaderError(shaderProgram, GL_LINK_STATUS, true, "Invalid shader program");
 	positionLocation = glGetAttribLocation(shaderProgram, "position");
 	MVPLocation = glGetUniformLocation(shaderProgram, "MVP");
-}
-
-void Shader::finishShaderCreation(void) {
-	glAttachShader(shaderProgram, vertexShader);
-	glAttachShader(shaderProgram, fragmentShader);
-
-	glBindAttribLocation(shaderProgram, 0, "position");
-	glBindAttribLocation(shaderProgram, 1, "texCoord");
-	glBindAttribLocation(shaderProgram, 2, "normal");
-
-	glLinkProgram(shaderProgram);
-	checkShaderError(shaderProgram, GL_LINK_STATUS, true, "Error linking shader program");
-
-	glValidateProgram(shaderProgram);
-	checkShaderError(shaderProgram, GL_LINK_STATUS, true, "Invalid shader program");
-
-	m_uniforms[0] = glGetUniformLocation(shaderProgram, "MVP");
-	m_uniforms[1] = glGetUniformLocation(shaderProgram, "Normal");
-	m_uniforms[2] = glGetUniformLocation(shaderProgram, "lightDirection");
 }
 
 Shader::~Shader()
